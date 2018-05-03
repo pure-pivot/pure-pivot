@@ -1,0 +1,33 @@
+{
+  "name": "pure-pivot-examples",
+  "version": "0.1.0",
+  "description": "",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woutervh-/pure-pivot.git"
+  },
+  "author": "Wouter van Heeswijk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/woutervh-/pure-pivot/issues"
+  },
+  "homepage": "https://github.com/woutervh-/pure-pivot#readme",
+  "devDependencies": {
+    "@types/react": "^16.3.13",
+    "@types/react-dom": "^16.0.5",
+    "html-webpack-plugin": "^3.2.0",
+    "source-map-loader": "^0.2.3",
+    "ts-loader": "^4.2.0",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.1.2",
+    "webpack-dev-server": "^3.1.4"
+  },
+  "dependencies": {
+    "react": "^16.3.2",
+    "react-dom": "^16.3.2"
+  }
+}

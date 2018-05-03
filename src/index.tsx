@@ -4,7 +4,7 @@ import * as ReactDOM from 'react-dom';
 export class MyCoolComponent extends React.Component<{}, never> {
     render() {
         return <React.Fragment>
-            Cool yo
+            Cool yow!
         </React.Fragment>;
     }
 }

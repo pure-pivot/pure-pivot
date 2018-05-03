@@ -18,7 +18,7 @@ export default {
     input: 'lib/es6/index.js',
     output: {
         format: 'umd',
-        file: 'umd/bundle.js',
+        file: 'lib/umd/bundle.js',
         name: 'PurePivot',
         globals: {
             'react': 'React',
