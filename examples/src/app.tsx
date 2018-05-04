@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { Configuration, Field, Fields, ConfigurationBuilder } from '../../lib/es6/index';
+import { FieldsComponentProps } from '../../lib/es6/fields/component';
+import { ConfigurationBuilder, Configuration } from '../../lib/es6/configuration';
 
 interface Data {
     method: 'GET' | 'POST';
@@ -15,26 +16,17 @@ const data: Data[] = [{
     url: ''
 }];
 
-const fields: Fields<Data> = {
-    method: {
-        type: 'string',
-        format: 'text'
-    },
-    statusCode: {
-        type: 'number',
-        format: 'number'
-    },
-    time: {
-        type: 'number',
-        format: 'date-time'
-    },
-    url: {
-        type: 'string',
-        format: 'text'
-    }
-};
+type Foo = Data[keyof Data];
 
-const configuration = new ConfigurationBuilder<Data>(data, fields).build();
+const configuration = new ConfigurationBuilder<Data>(data)
+    .withFieldsComponent((props) =>
+        <React.Fragment>
+            {(Object.keys(props.fields) as (keyof Data)[])
+                .map((key) => <props.fieldComponent key={key} field={props.fields[key]} fieldName={key} />)}
+        </React.Fragment>
+    )
+    .withFieldComponent((props) => <div>{props.fieldName} ({props.field.type})</div>)
+    .build();
 
 type AppState = Configuration<Data>;
 
@@ -42,6 +34,6 @@ export class App extends React.Component<{}, AppState> {
     state: AppState = configuration;
 
     render() {
-        return <Everything.MyCoolComponent />;
+        return <configuration.fieldsComponent />;
     }
 }

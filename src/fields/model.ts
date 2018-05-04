@@ -2,7 +2,9 @@ export type Formats<T> =
     T extends number ? 'number' | 'date' | 'time' | 'date-time' :
     T extends string ? 'text' :
     T extends boolean ? 'yes-no' :
-    never;
+    T extends undefined ? 'undefined' :
+    T extends null ? 'null' :
+    'empty';
 
 export type TypeName<T> =
     T extends number ? 'number' :
