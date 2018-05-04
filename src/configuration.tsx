@@ -3,6 +3,9 @@ import { Field, Fields } from './fields/model';
 import { FieldsComponentProps, FieldsComponent } from './fields/fields-component';
 import { FieldComponentProps, FieldComponent } from './fields/field-component';
 import { inferFields } from './fields/infer-fields';
+import { FieldNumberSelectionComponent } from './fields/selection/field-number-component';
+import { FieldStringSelectionComponent } from './fields/selection/field-string-component';
+import { FieldBooleanSelectionComponent } from './fields/selection/field-boolean-component';
 
 export interface Configuration<D extends { [Key in keyof D]: D[Key] }> {
     fields: { [Key in keyof D]: Field<D[Key]> };
@@ -61,7 +64,14 @@ export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Ke
         return {
             data: this.data,
             fields: this.fields,
-            fieldsComponent: providePropsComponentFactory(this.fieldsComponent, { fields: this.fields, fieldComponent: this.fieldComponent })
+            fieldsComponent: providePropsComponentFactory(this.fieldsComponent, {
+                fields: this.fields,
+                fieldComponent: providePropsComponentFactory(this.fieldComponent, {
+                    fieldNumberSelectionComponent: FieldNumberSelectionComponent,
+                    fieldStringSelectionComponent: FieldStringSelectionComponent,
+                    fieldBooleanSelectionComponent: FieldBooleanSelectionComponent
+                })
+            })
         };
     }
 }

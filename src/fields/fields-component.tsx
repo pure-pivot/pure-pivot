@@ -5,7 +5,7 @@ import { FieldComponentProps } from './field-component';
 
 export interface FieldsComponentProps<D extends { [Key in keyof D]: D[Key] }> {
     fields: Fields<D>;
-    fieldComponent: React.ComponentType<FieldComponentProps<D, keyof D>>;
+    fieldComponent: React.ComponentType<Pick<FieldComponentProps<D, keyof D>, Exclude<keyof FieldComponentProps<D, keyof D>, 'fieldNumberSelectionComponent' | 'fieldStringSelectionComponent' | 'fieldBooleanSelectionComponent'>>>;
     onFieldsChange?: (fields: Fields<D>) => void;
 }
 

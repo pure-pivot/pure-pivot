@@ -18,17 +18,18 @@ const data: Data[] = [{
 
 const configurationBuilder = new ConfigurationBuilder(data)
     .withFieldFormat('time', 'date-time')
+    .withFieldFormat('statusCode', (statusCode: number) => 200 <= statusCode && statusCode < 300 ? 'OK' : 'NOT OK')
     .withFieldsComponent((props) =>
         <React.Fragment>
             {(Object.keys(props.fields) as (keyof Data)[])
                 .map((key) => <props.fieldComponent key={key} name={key} field={props.fields[key]} />)}
         </React.Fragment>
-    )
-    .withFieldComponent((props) =>
-        <div>
-            {props.name} ({props.field.type}{typeof props.field.format === 'string' ? `, ${props.field.format}` : ''})
-        </div>
     );
+    // .withFieldComponent((props) =>
+    //     <div>
+    //         {props.name} ({props.field.type}{typeof props.field.format === 'string' ? `, ${props.field.format}` : ''})
+    //     </div>
+    // );
 
 type AppState = Configuration<Data>;
 

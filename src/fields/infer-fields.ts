@@ -7,11 +7,7 @@ export function inferFields<D extends { [Key in keyof D]: D[Key] }>(data: D[]): 
     for (const row of data) {
         for (const key of ObjectKeys(row)) {
             let field: Field<any>;
-            if (row[key] === undefined) {
-                field = { type: 'undefined', format: 'undefined' };
-            } else if (row[key] === null) {
-                field = { type: 'null', format: 'null' };
-            } else if (typeof row[key] === 'string') {
+            if (typeof row[key] === 'string') {
                 field = { type: 'string', format: 'text' };
             } else if (typeof row[key] === 'number') {
                 field = { type: 'number', format: 'number' };
