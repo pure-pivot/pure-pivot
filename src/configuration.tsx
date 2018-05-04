@@ -7,8 +7,7 @@ import { inferFields } from './fields/infer-fields';
 export interface Configuration<D extends { [Key in keyof D]: D[Key] }> {
     fields: { [Key in keyof D]: Field<D[Key]> };
     data: { [Key in keyof D]: D[Key] }[];
-    fieldComponent: React.ComponentType<FieldComponentProps<D>>;
-    fieldsComponent: React.ComponentType<{}>;
+    fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, 'fields' | 'fieldComponent'>>>;
 }
 
 export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
@@ -18,7 +17,7 @@ export function providePropsComponentFactory<P, U>(Component: React.ComponentTyp
 export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Key in keyof D]: D[Key] }> {
     private data: D[];
     private fields: { [Key in keyof D]: Field<D[Key]> };
-    private fieldComponent: React.ComponentType<FieldComponentProps<D>>;
+    private fieldComponent: React.ComponentType<FieldComponentProps<D, keyof D>>;
     private fieldsComponent: React.ComponentType<FieldsComponentProps<D>>;
 
     constructor(data: { [Key in keyof D]: D[Key] }[]) {
@@ -48,7 +47,7 @@ export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Ke
         return this;
     }
 
-    withFieldComponent(fieldComponent: React.ComponentType<FieldComponentProps<D>>) {
+    withFieldComponent(fieldComponent: React.ComponentType<FieldComponentProps<D, keyof D>>) {
         this.fieldComponent = fieldComponent;
         return this;
     }
@@ -62,7 +61,6 @@ export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Ke
         return {
             data: this.data,
             fields: this.fields,
-            fieldComponent: this.fieldComponent,
             fieldsComponent: providePropsComponentFactory(this.fieldsComponent, { fields: this.fields, fieldComponent: this.fieldComponent })
         };
     }

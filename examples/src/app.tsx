@@ -12,31 +12,30 @@ interface Data {
 const data: Data[] = [{
     method: 'GET',
     statusCode: 400,
-    time: 1000,
-    url: ''
+    time: 1525436119501,
+    url: 'http://example.org'
 }];
 
-const configuration = new ConfigurationBuilder(data)
+const configurationBuilder = new ConfigurationBuilder(data)
     .withFieldFormat('time', 'date-time')
     .withFieldsComponent((props) =>
         <React.Fragment>
             {(Object.keys(props.fields) as (keyof Data)[])
-                .map((key) => <props.fieldComponent key={key} field={props.fields[key]} fieldName={key} />)}
+                .map((key) => <props.fieldComponent key={key} name={key} field={props.fields[key]} />)}
         </React.Fragment>
     )
     .withFieldComponent((props) =>
         <div>
-            {props.fieldName} ({props.field.type}{typeof props.field.format === 'string' ? `, ${props.field.format}` : ''})
+            {props.name} ({props.field.type}{typeof props.field.format === 'string' ? `, ${props.field.format}` : ''})
         </div>
-    )
-    .build();
+    );
 
 type AppState = Configuration<Data>;
 
 export class App extends React.Component<{}, AppState> {
-    state: AppState = configuration;
+    state: AppState = configurationBuilder.build();
 
     render() {
-        return <configuration.fieldsComponent />;
+        return <this.state.fieldsComponent />;
     }
 }
