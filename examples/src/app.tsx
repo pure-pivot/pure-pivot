@@ -16,16 +16,19 @@ const data: Data[] = [{
     url: ''
 }];
 
-type Foo = Data[keyof Data];
-
-const configuration = new ConfigurationBuilder<Data>(data)
+const configuration = new ConfigurationBuilder(data)
+    .withFieldFormat('time', 'date-time')
     .withFieldsComponent((props) =>
         <React.Fragment>
             {(Object.keys(props.fields) as (keyof Data)[])
                 .map((key) => <props.fieldComponent key={key} field={props.fields[key]} fieldName={key} />)}
         </React.Fragment>
     )
-    .withFieldComponent((props) => <div>{props.fieldName} ({props.field.type})</div>)
+    .withFieldComponent((props) =>
+        <div>
+            {props.fieldName} ({props.field.type}{typeof props.field.format === 'string' ? `, ${props.field.format}` : ''})
+        </div>
+    )
     .build();
 
 type AppState = Configuration<Data>;
