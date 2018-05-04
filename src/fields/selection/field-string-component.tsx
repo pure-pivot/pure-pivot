@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Field } from '../model';
+
+export type FormatString = 'text' | ((value: string) => string);
 
 export interface FieldStringSelectionComponentProps {
-    format: Field<string>['format'];
-    onChangeFormat?: (format: Field<string>['format']) => void;
+    format: FormatString;
+    onChangeFormat?: (format: FormatString) => void;
 }
 
 export class FieldStringSelectionComponent extends React.Component<FieldStringSelectionComponentProps, never> {

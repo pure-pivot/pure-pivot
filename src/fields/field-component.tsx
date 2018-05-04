@@ -1,29 +1,54 @@
 import * as React from 'react';
-import { Field, Fields } from './model';
-import { FieldNumberSelectionComponentProps } from './selection/field-number-component';
-import { FieldStringSelectionComponentProps } from './selection/field-string-component';
-import { FieldBooleanSelectionComponentProps } from './selection/field-boolean-component';
+import { Fields } from './model';
+import { FieldBooleanSelectionComponentProps, FormatBoolean } from './selection/field-boolean-component';
+import { FieldNumberSelectionComponentProps, FormatNumber } from './selection/field-number-component';
+import { FieldStringSelectionComponentProps, FormatString } from './selection/field-string-component';
 
-export interface FieldComponentProps<T> {
+export interface FieldBoolean {
+    type: 'boolean';
+    format: FormatBoolean;
+}
+
+export interface FieldNumber {
+    type: 'number';
+    format: FormatNumber;
+}
+
+export interface FieldString {
+    type: 'string';
+    format: FormatString;
+}
+
+export interface FieldOther {
+    type: 'other';
+    format: 'empty';
+}
+
+export type Field = FieldBoolean | FieldNumber | FieldString | FieldOther;
+
+export interface FieldComponentProps {
     name: string;
-    field: Field<T>;
+    field: Field;
     fieldNumberSelectionComponent: React.ComponentType<FieldNumberSelectionComponentProps>;
     fieldStringSelectionComponent: React.ComponentType<FieldStringSelectionComponentProps>;
     fieldBooleanSelectionComponent: React.ComponentType<FieldBooleanSelectionComponentProps>;
-    onFieldChange?: (field: Field<T>) => void;
+    onFieldChange?: (field: Field) => void;
 }
 
-export class FieldComponent<T> extends React.Component<FieldComponentProps<T>, never> {
-    handleFormatChange(format: Field<T>['format']) {
+export class FieldComponent<T> extends React.Component<FieldComponentProps, never> {
+    handleFieldChange(field: Field) {
         if (this.props.onFieldChange) {
-            this.props.onFieldChange({ type: this.props.field.type, format });
+            this.props.onFieldChange(field);
         }
     }
 
     renderSelectionComponent() {
         switch (this.props.field.type) {
             case 'number':
-                return <this.props.fieldNumberSelectionComponent format={this.props.field.format} onChangeFormat={(format) => this.handleFormatChange(format)} />;
+                return <this.props.fieldNumberSelectionComponent
+                    format={this.props.field.format}
+                    onChangeFormat={(format) => this.handleFieldChange({ type: this.props.field.type, format })}
+                />;
             case 'string':
                 return <this.props.fieldStringSelectionComponent format={this.props.field.format} />;
             case 'boolean':

@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { Field } from '../model';
+
+export type FormatNumber = 'number' | 'date' | 'time' | 'date-time' | ((value: number) => string);
 
 export interface FieldNumberSelectionComponentProps {
-    format: Field<number>['format'];
-    onChangeFormat?: (format: Field<number>['format']) => void;
+    format: FormatNumber;
+    onChangeFormat?: (format: FormatNumber) => void;
 }
 
 export class FieldNumberSelectionComponent extends React.Component<FieldNumberSelectionComponentProps, never> {
