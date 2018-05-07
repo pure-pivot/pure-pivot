@@ -1,18 +1,15 @@
 import * as React from 'react';
-
-export type FormatString = 'text' | ((value: string) => string);
+import { Field } from '../model';
 
 export interface FieldStringSelectionComponentProps {
-    format: FormatString;
-    onChangeFormat?: (format: FormatString) => void;
+    format: Field<string>['format'];
+    onChangeFormat: (format: Field<string>['format']) => void;
 }
 
 export class FieldStringSelectionComponent extends React.Component<FieldStringSelectionComponentProps, never> {
     handleChange(format: string) {
-        if (this.props.onChangeFormat) {
-            if (format === 'text') {
-                this.props.onChangeFormat(format);
-            }
+        if (format === 'text') {
+            this.props.onChangeFormat(format);
         }
     }
 

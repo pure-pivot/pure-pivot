@@ -1,9 +1,9 @@
-import { Fields, Field } from './model';
+import { Fields, Field, AnyField } from './model';
 import { ObjectKeys } from '../util/keys';
 
-export function inferFields<D extends { [Key in keyof D]: D[Key] }>(data: D[]): Fields<D> {
+export function inferFields<D>(data: D[]): Fields<D> {
     const fields: Fields<D> = {} as Fields<D>;
-    const anyField: Field<any> = { type: 'any', format: 'empty' };
+    const anyField: AnyField = { type: 'other', format: 'empty' };
     for (const row of data) {
         for (const key of ObjectKeys(row)) {
             let field: Field<any>;
@@ -18,9 +18,9 @@ export function inferFields<D extends { [Key in keyof D]: D[Key] }>(data: D[]): 
             }
 
             if (fields[key] && fields[key].type !== field.type) {
-                fields[key] = anyField;
+                fields[key] = anyField as Field<D[keyof D]>;
             } else {
-                fields[key] = field;
+                fields[key] = field as Field<D[keyof D]>;
             }
         }
     }

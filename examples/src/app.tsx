@@ -20,16 +20,28 @@ const configurationBuilder = new ConfigurationBuilder(data)
     .withFieldFormat('time', 'date-time')
     .withFieldFormat('statusCode', (statusCode: number) => 200 <= statusCode && statusCode < 300 ? 'OK' : 'NOT OK')
     .withFieldsComponent((props) =>
-        <React.Fragment>
+        <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
+            <h4>Field</h4>
+            <h4>Type</h4>
+            <h4>Format</h4>
             {(Object.keys(props.fields) as (keyof Data)[])
-                .map((key) => <props.fieldComponent key={key} name={key} field={props.fields[key]} />)}
+                .map((key) =>
+                    <props.fieldComponent
+                        key={key}
+                        name={key}
+                        field={props.fields[key]}
+                        onFieldChange={(field) => props.onFieldsChange({ ...props.fields, [key]: field })}
+                    />
+                )}
+        </div>
+    )
+    .withFieldComponent((props) =>
+        <React.Fragment>
+            <div>{props.name}</div>
+            <div>{props.field.type}</div>
+            <div><props.fieldSelectionComponent field={props.field} onFieldChange={(field) => props.onFieldChange(field)} /></div>
         </React.Fragment>
     );
-    // .withFieldComponent((props) =>
-    //     <div>
-    //         {props.name} ({props.field.type}{typeof props.field.format === 'string' ? `, ${props.field.format}` : ''})
-    //     </div>
-    // );
 
 type AppState = Configuration<Data>;
 
@@ -37,6 +49,6 @@ export class App extends React.Component<{}, AppState> {
     state: AppState = configurationBuilder.build();
 
     render() {
-        return <this.state.fieldsComponent />;
+        return <this.state.fieldsComponent fields={this.state.fields} onFieldsChange={(fields) => this.setState({ fields })} />;
     }
 }

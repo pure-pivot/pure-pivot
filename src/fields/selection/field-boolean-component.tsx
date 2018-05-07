@@ -1,18 +1,15 @@
 import * as React from 'react';
-
-export type FormatBoolean = 'yes-no' | ((value: boolean) => string);
+import { Field } from '../model';
 
 export interface FieldBooleanSelectionComponentProps {
-    format: FormatBoolean;
-    onChangeFormat?: (format: FormatBoolean) => void;
+    format: Field<boolean>['format'];
+    onChangeFormat: (format: Field<boolean>['format']) => void;
 }
 
 export class FieldBooleanSelectionComponent extends React.Component<FieldBooleanSelectionComponentProps, never> {
     handleChange(format: string) {
-        if (this.props.onChangeFormat) {
-            if (format === 'yes-no') {
-                this.props.onChangeFormat(format);
-            }
+        if (format === 'yes-no') {
+            this.props.onChangeFormat(format);
         }
     }
 

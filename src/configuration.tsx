@@ -6,26 +6,29 @@ import { inferFields } from './fields/infer-fields';
 import { FieldNumberSelectionComponent } from './fields/selection/field-number-component';
 import { FieldStringSelectionComponent } from './fields/selection/field-string-component';
 import { FieldBooleanSelectionComponent } from './fields/selection/field-boolean-component';
+import { FieldSelectionComponentProps, FieldSelectionComponent } from './fields/selection/field-selection-component';
 
-export interface Configuration<D extends { [Key in keyof D]: D[Key] }> {
-    fields: { [Key in keyof D]: Field<D[Key]> };
-    data: { [Key in keyof D]: D[Key] }[];
-    fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, 'fields' | 'fieldComponent'>>>;
+export interface Configuration<D> {
+    fields: Fields<D>;
+    data: D[];
+    fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, 'fieldComponent'>>>;
 }
 
 export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
     return (props: Pick<P, Exclude<keyof P, keyof U>>) => <Component {...providedProps} {...props} />;
 }
 
-export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Key in keyof D]: D[Key] }> {
+export class ConfigurationBuilder<D> {
     private data: D[];
-    private fields: { [Key in keyof D]: Field<D[Key]> };
-    private fieldComponent: React.ComponentType<FieldComponentProps<D, keyof D>>;
+    private fields: Fields<D>;
+    private fieldSelectionComponent: React.ComponentType<FieldSelectionComponentProps<D[keyof D]>>;
+    private fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>;
     private fieldsComponent: React.ComponentType<FieldsComponentProps<D>>;
 
     constructor(data: { [Key in keyof D]: D[Key] }[]) {
         this.data = data;
         this.fields = inferFields(data);
+        this.fieldSelectionComponent = FieldSelectionComponent;
         this.fieldComponent = FieldComponent;
         this.fieldsComponent = FieldsComponent;
     }
@@ -40,7 +43,7 @@ export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Ke
         return this;
     }
 
-    withFieldFormat<F extends keyof D>(name: F, format: Fields<D>[F]['format']) {
+    withFieldFormat<F extends keyof D>(name: F, format: Field<D[F]>['format']) {
         this.fields[name].format = format;
         return this;
     }
@@ -50,7 +53,12 @@ export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Ke
         return this;
     }
 
-    withFieldComponent(fieldComponent: React.ComponentType<FieldComponentProps<D, keyof D>>) {
+    withFieldSelectionComponent(fieldSelectionComponent: React.ComponentType<FieldSelectionComponentProps<D[keyof D]>>) {
+        this.fieldSelectionComponent = fieldSelectionComponent;
+        return this;
+    }
+
+    withFieldComponent(fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>) {
         this.fieldComponent = fieldComponent;
         return this;
     }
@@ -65,11 +73,12 @@ export class ConfigurationBuilder<D extends { [Key in keyof D]: D[Key] } = { [Ke
             data: this.data,
             fields: this.fields,
             fieldsComponent: providePropsComponentFactory(this.fieldsComponent, {
-                fields: this.fields,
                 fieldComponent: providePropsComponentFactory(this.fieldComponent, {
-                    fieldNumberSelectionComponent: FieldNumberSelectionComponent,
-                    fieldStringSelectionComponent: FieldStringSelectionComponent,
-                    fieldBooleanSelectionComponent: FieldBooleanSelectionComponent
+                    fieldSelectionComponent: providePropsComponentFactory(this.fieldSelectionComponent, {
+                        fieldNumberSelectionComponent: FieldNumberSelectionComponent,
+                        fieldStringSelectionComponent: FieldStringSelectionComponent,
+                        fieldBooleanSelectionComponent: FieldBooleanSelectionComponent
+                    })
                 })
             })
         };
