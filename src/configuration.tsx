@@ -3,9 +3,9 @@ import { Field, Fields } from './fields/model';
 import { FieldsComponentProps, FieldsComponent } from './fields/fields-component';
 import { FieldComponentProps, FieldComponent } from './fields/field-component';
 import { inferFields } from './fields/infer-fields';
-import { FieldNumberSelectionComponent } from './fields/selection/field-number-component';
-import { FieldStringSelectionComponent } from './fields/selection/field-string-component';
-import { FieldBooleanSelectionComponent } from './fields/selection/field-boolean-component';
+import { FieldNumberSelectionComponent, FieldNumberSelectionComponentProps } from './fields/selection/field-number-component';
+import { FieldStringSelectionComponent, FieldStringSelectionComponentProps } from './fields/selection/field-string-component';
+import { FieldBooleanSelectionComponent, FieldBooleanSelectionComponentProps } from './fields/selection/field-boolean-component';
 import { FieldSelectionComponentProps, FieldSelectionComponent } from './fields/selection/field-selection-component';
 
 export interface Configuration<D> {
@@ -22,6 +22,9 @@ export class ConfigurationBuilder<D> {
     private data: D[];
     private fields: Fields<D>;
     private fieldSelectionComponent: React.ComponentType<FieldSelectionComponentProps<D[keyof D]>>;
+    private fieldBooleanSelectionComponent: React.ComponentType<FieldBooleanSelectionComponentProps>;
+    private fieldNumberSelectionComponent: React.ComponentType<FieldNumberSelectionComponentProps>;
+    private fieldStringSelectionComponent: React.ComponentType<FieldStringSelectionComponentProps>;
     private fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>;
     private fieldsComponent: React.ComponentType<FieldsComponentProps<D>>;
 
@@ -29,6 +32,9 @@ export class ConfigurationBuilder<D> {
         this.data = data;
         this.fields = inferFields(data);
         this.fieldSelectionComponent = FieldSelectionComponent;
+        this.fieldBooleanSelectionComponent = FieldBooleanSelectionComponent;
+        this.fieldNumberSelectionComponent = FieldNumberSelectionComponent;
+        this.fieldStringSelectionComponent = FieldStringSelectionComponent;
         this.fieldComponent = FieldComponent;
         this.fieldsComponent = FieldsComponent;
     }
@@ -58,6 +64,21 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
+    withFieldBooleanSelectionComponent(fieldBooleanSelectionComponent: React.ComponentType<FieldBooleanSelectionComponentProps>) {
+        this.fieldBooleanSelectionComponent = fieldBooleanSelectionComponent;
+        return this;
+    }
+
+    withFieldNumberSelectionComponent(fieldNumberSelectionComponent: React.ComponentType<FieldNumberSelectionComponentProps>) {
+        this.fieldNumberSelectionComponent = fieldNumberSelectionComponent;
+        return this;
+    }
+
+    withFieldStringSelectionComponent(fieldStringSelectionComponent: React.ComponentType<FieldStringSelectionComponentProps>) {
+        this.fieldStringSelectionComponent = fieldStringSelectionComponent;
+        return this;
+    }
+
     withFieldComponent(fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>) {
         this.fieldComponent = fieldComponent;
         return this;
@@ -75,9 +96,9 @@ export class ConfigurationBuilder<D> {
             fieldsComponent: providePropsComponentFactory(this.fieldsComponent, {
                 fieldComponent: providePropsComponentFactory(this.fieldComponent, {
                     fieldSelectionComponent: providePropsComponentFactory(this.fieldSelectionComponent, {
-                        fieldNumberSelectionComponent: FieldNumberSelectionComponent,
-                        fieldStringSelectionComponent: FieldStringSelectionComponent,
-                        fieldBooleanSelectionComponent: FieldBooleanSelectionComponent
+                        fieldBooleanSelectionComponent: this.fieldBooleanSelectionComponent,
+                        fieldNumberSelectionComponent: this.fieldNumberSelectionComponent,
+                        fieldStringSelectionComponent: this.fieldStringSelectionComponent
                     })
                 })
             })
