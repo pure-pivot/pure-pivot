@@ -12,14 +12,25 @@ import { FilterComponentProps, FilterComponent } from './filters/filter-componen
 import { AndFilterComponentProps, AndFilterComponent } from './filters/filter-components/and-filter-component';
 import { NotFilterComponent, NotFilterComponentProps } from './filters/filter-components/not-filter-components';
 import { EqualsFilterComponent, EqualsFilterComponentProps } from './filters/filter-components/equals-filter-component';
+import { GroupByValueComponentProps, GroupByValueComponent, GroupByValueComponentProvidedProps } from './group-by/group-by-value-component';
+import { GroupByValue, GroupByDescription, GroupBy } from './group-by/model';
+import { GroupByComponentProps, GroupByComponent } from './group-by/group-by-components/group-by-component';
+import { NumberEqualityComponent } from './group-by/group-by-components/number-equality-component';
+import { StringEqualityComponent } from './group-by/group-by-components/string-equality-component';
+import { BooleanEqualityComponent } from './group-by/group-by-components/boolean-equality-component';
+import { NumberCountComponent } from './group-by/group-by-components/number-count-component';
+import { NumberRangeComponent } from './group-by/group-by-components/number-range-component';
+import { OtherEqualityComponent } from './group-by/group-by-components/other-equality-component';
 
 export interface Configuration<D> {
     data: D[];
     fields: Fields<D>;
     filters: Filters<D>;
+    groupBy: GroupByValue<D, keyof D>;
     formats: Formats<D>;
     fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, FieldsComponentProvidedProps>>>;
     filtersComponent: React.ComponentType<Pick<FiltersComponentProps<D>, Exclude<keyof FiltersComponentProps<D>, FiltersComponentProvidedProps>>>;
+    groupByValueComponent: React.ComponentType<Pick<GroupByValueComponentProps<D, keyof D>, Exclude<keyof GroupByValueComponentProps<D, keyof D>, GroupByValueComponentProvidedProps>>>;
 }
 
 export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
@@ -30,6 +41,7 @@ export class ConfigurationBuilder<D> {
     private data: D[];
     private fields: Fields<D>;
     private filters: Filters<D>;
+    private groupBy: GroupByValue<D, keyof D>;
     private formats: Formats<D>;
     private fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>;
     private fieldsComponent: React.ComponentType<FieldsComponentProps<D>>;
@@ -39,11 +51,14 @@ export class ConfigurationBuilder<D> {
     private equalsFilterComponent: React.ComponentType<EqualsFilterComponentProps<D[keyof D]>>;
     private filterDescriptionComponent: React.ComponentType<FilterDescriptionComponentProps<D, keyof D>>;
     private filtersComponent: React.ComponentType<FiltersComponentProps<D>>;
+    private groupByComponent: React.ComponentType<GroupByComponentProps<D[keyof D]>>;
+    private groupByValueComponent: React.ComponentType<GroupByValueComponentProps<D, keyof D>>;
 
     constructor(data: { [Key in keyof D]: D[Key] }[]) {
         this.data = data;
         this.fields = inferFields(data);
         this.filters = [];
+        this.groupBy = { type: 'identity' };
         this.formats = inferFormats(this.fields);
         this.fieldComponent = FieldComponent;
         this.fieldsComponent = FieldsComponent;
@@ -53,6 +68,8 @@ export class ConfigurationBuilder<D> {
         this.equalsFilterComponent = EqualsFilterComponent;
         this.filterDescriptionComponent = FilterDescriptionComponent;
         this.filtersComponent = FiltersComponent;
+        this.groupByComponent = GroupByComponent;
+        this.groupByValueComponent = GroupByValueComponent;
     }
 
     withData(data: D[]) {
@@ -110,6 +127,22 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
+    withGroupByIdentity() {
+        this.groupBy = { type: 'identity' };
+        return this;
+    }
+
+    withGroupByField(groupByDescription: Pick<GroupByDescription<D, keyof D>, Exclude<keyof GroupByDescription<D, keyof D>, 'type'>>) {
+        const typeDescription: { type: 'description' } = { type: 'description' };
+        this.groupBy = Object.assign({}, groupByDescription, typeDescription);
+        return this;
+    }
+
+    withGroupByValueComponent(groupByValueComponent: React.ComponentType<GroupByValueComponentProps<D, keyof D>>) {
+        this.groupByValueComponent = groupByValueComponent;
+        return this;
+    }
+
     withFormats(formats: Formats<D>) {
         this.formats = formats;
         return this;
@@ -139,6 +172,7 @@ export class ConfigurationBuilder<D> {
             data: this.data,
             fields: this.fields,
             filters: this.filters,
+            groupBy: this.groupBy,
             formats: this.formats,
             fieldsComponent: providePropsComponentFactory(this.fieldsComponent, {
                 fieldComponent: this.fieldComponent
@@ -146,6 +180,16 @@ export class ConfigurationBuilder<D> {
             filtersComponent: providePropsComponentFactory(this.filtersComponent, {
                 filterDescriptionComponent: providePropsComponentFactory(this.filterDescriptionComponent, {
                     filterComponent: specificFilterComponentProvidedProps.filterComponent
+                })
+            }),
+            groupByValueComponent: providePropsComponentFactory(this.groupByValueComponent, {
+                groupByComponent: providePropsComponentFactory(this.groupByComponent, {
+                    booleanEqualityComponent: BooleanEqualityComponent,
+                    numberEqualityComponent: NumberEqualityComponent,
+                    numberCountComponent: NumberCountComponent,
+                    numberRangeComponent: NumberRangeComponent,
+                    stringEqualityComponent: StringEqualityComponent,
+                    otherEqualityComponent: OtherEqualityComponent
                 })
             })
         };

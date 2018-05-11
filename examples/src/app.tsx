@@ -23,46 +23,46 @@ const data: Data[] = [{
 const configurationBuilder = new ConfigurationBuilder(data)
     .withFormat('time', 'date-time')
     .withFormat('statusCode', (statusCode: number) => 200 <= statusCode && statusCode < 300 ? 'OK' : 'NOT OK')
-    .withFieldsComponent((props) =>
-        <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
-            <h4>Field</h4>
-            <h4>Type</h4>
-            {(Object.keys(props.fields) as (keyof Data)[])
-                .map((key) =>
-                    <props.fieldComponent
-                        key={key}
-                        name={key}
-                        field={props.fields[key]}
-                    />
-                )}
-        </div>
-    )
-    .withFieldComponent((props) =>
-        <React.Fragment>
-            <div>{props.name}</div>
-            <div>{props.field}</div>
-        </React.Fragment>
-    )
-    .withFiltersComponent((props) =>
-        <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
-            <h4>Field (ID)</h4>
-            <h4>Filter</h4>
-            {props.filters.map((filterDescription) => <props.filterDescriptionComponent key={filterDescription.id} filterDescription={filterDescription} />)}
-        </div>
-    )
-    .withFilterDescriptionComponent((props) =>
-        <React.Fragment>
-            <div>{props.filterDescription.name} ({props.filterDescription.id})</div>
-            <div><props.filterComponent filter={props.filterDescription.filter} /></div>
-        </React.Fragment>
-    )
-    .withAndFilterComponent((props) =>
-        <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content max-content', alignItems: 'center', gridColumnGap: '8px' }}>
-            <div style={{ border: '1px solid black', padding: '2px' }}><props.filterComponent filter={props.filter.left} /></div>
-            <div>AND</div>
-            <div style={{ border: '1px solid black', padding: '2px' }}><props.filterComponent filter={props.filter.right} /></div>
-        </div>
-    )
+    // .withFieldsComponent((props) =>
+    //     <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
+    //         <h4>Field</h4>
+    //         <h4>Type</h4>
+    //         {(Object.keys(props.fields) as (keyof Data)[])
+    //             .map((key) =>
+    //                 <props.fieldComponent
+    //                     key={key}
+    //                     name={key}
+    //                     field={props.fields[key]}
+    //                 />
+    //             )}
+    //     </div>
+    // )
+    // .withFieldComponent((props) =>
+    //     <React.Fragment>
+    //         <div>{props.name}</div>
+    //         <div>{props.field}</div>
+    //     </React.Fragment>
+    // )
+    // .withFiltersComponent((props) =>
+    //     <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
+    //         <h4>Field (ID)</h4>
+    //         <h4>Filter</h4>
+    //         {props.filters.map((filterDescription) => <props.filterDescriptionComponent key={filterDescription.id} filterDescription={filterDescription} />)}
+    //     </div>
+    // )
+    // .withFilterDescriptionComponent((props) =>
+    //     <React.Fragment>
+    //         <div>{props.filterDescription.name} ({props.filterDescription.id})</div>
+    //         <div><props.filterComponent filter={props.filterDescription.filter} /></div>
+    //     </React.Fragment>
+    // )
+    // .withAndFilterComponent((props) =>
+    //     <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content max-content', alignItems: 'center', gridColumnGap: '8px' }}>
+    //         <div style={{ border: '1px solid black', padding: '2px' }}><props.filterComponent filter={props.filter.left} /></div>
+    //         <div>AND</div>
+    //         <div style={{ border: '1px solid black', padding: '2px' }}><props.filterComponent filter={props.filter.right} /></div>
+    //     </div>
+    // )
     .withFilter({
         id: '0',
         name: 'method',
@@ -83,6 +83,13 @@ const configurationBuilder = new ConfigurationBuilder(data)
                 }
             }
         }
+    })
+    .withGroupByField({
+        name: 'time',
+        groupBy: {
+            type: 'number-range',
+            range: 30
+        }
     });
 
 type AppState = Configuration<Data>;
@@ -96,6 +103,8 @@ export class App extends React.Component<{}, AppState> {
             <this.state.fieldsComponent fields={this.state.fields} />
             <h3>Filters</h3>
             <this.state.filtersComponent filters={this.state.filters} />
+            <h3>Group by</h3>
+            <this.state.groupByValueComponent groupByValue={this.state.groupBy} />
         </React.Fragment>;
     }
 }

@@ -22,8 +22,6 @@ export class FilterComponent<T> extends React.Component<FilterComponentProps<T>,
                 return <this.props.equalsFilterComponent filter={this.props.filter} />;
             case 'not':
                 return <this.props.notFilterComponent filter={this.props.filter} />;
-            default:
-                return null;
         }
     }
 }
