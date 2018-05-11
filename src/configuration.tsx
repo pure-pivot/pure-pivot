@@ -1,17 +1,25 @@
 import * as React from 'react';
 import { Field, Fields } from './fields/model';
-import { FieldsComponentProps, FieldsComponent } from './fields/fields-component';
+import { FieldsComponentProps, FieldsComponent, FieldsComponentProvidedProps } from './fields/fields-component';
 import { FieldComponentProps, FieldComponent } from './fields/field-component';
 import { inferFields } from './fields/infer-fields';
-import { FieldNumberSelectionComponent, FieldNumberSelectionComponentProps } from './fields/selection/field-number-component';
-import { FieldStringSelectionComponent, FieldStringSelectionComponentProps } from './fields/selection/field-string-component';
-import { FieldBooleanSelectionComponent, FieldBooleanSelectionComponentProps } from './fields/selection/field-boolean-component';
-import { FieldSelectionComponentProps, FieldSelectionComponent } from './fields/selection/field-selection-component';
+import { Filters, FilterDescription } from './filters/model';
+import { FiltersComponentProps, FiltersComponent, FiltersComponentProvidedProps } from './filters/filters-component';
+import { Formats, Format } from './formats/model';
+import { inferFormats } from './formats/infer-formats';
+import { FilterDescriptionComponentProps, FilterDescriptionComponent } from './filters/filter-description-component';
+import { FilterComponentProps, FilterComponent } from './filters/filter-components/filter-component';
+import { AndFilterComponentProps, AndFilterComponent } from './filters/filter-components/and-filter-component';
+import { NotFilterComponent, NotFilterComponentProps } from './filters/filter-components/not-filter-components';
+import { EqualsFilterComponent, EqualsFilterComponentProps } from './filters/filter-components/equals-filter-component';
 
 export interface Configuration<D> {
-    fields: Fields<D>;
     data: D[];
-    fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, 'fieldComponent'>>>;
+    fields: Fields<D>;
+    filters: Filters<D>;
+    formats: Formats<D>;
+    fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, FieldsComponentProvidedProps>>>;
+    filtersComponent: React.ComponentType<Pick<FiltersComponentProps<D>, Exclude<keyof FiltersComponentProps<D>, FiltersComponentProvidedProps>>>;
 }
 
 export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
@@ -21,22 +29,30 @@ export function providePropsComponentFactory<P, U>(Component: React.ComponentTyp
 export class ConfigurationBuilder<D> {
     private data: D[];
     private fields: Fields<D>;
-    private fieldSelectionComponent: React.ComponentType<FieldSelectionComponentProps<D[keyof D]>>;
-    private fieldBooleanSelectionComponent: React.ComponentType<FieldBooleanSelectionComponentProps>;
-    private fieldNumberSelectionComponent: React.ComponentType<FieldNumberSelectionComponentProps>;
-    private fieldStringSelectionComponent: React.ComponentType<FieldStringSelectionComponentProps>;
+    private filters: Filters<D>;
+    private formats: Formats<D>;
     private fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>;
     private fieldsComponent: React.ComponentType<FieldsComponentProps<D>>;
+    private filterComponent: React.ComponentType<FilterComponentProps<D[keyof D]>>;
+    private andFilterComponent: React.ComponentType<AndFilterComponentProps<D[keyof D]>>;
+    private notFilterComponent: React.ComponentType<NotFilterComponentProps<D[keyof D]>>;
+    private equalsFilterComponent: React.ComponentType<EqualsFilterComponentProps<D[keyof D]>>;
+    private filterDescriptionComponent: React.ComponentType<FilterDescriptionComponentProps<D, keyof D>>;
+    private filtersComponent: React.ComponentType<FiltersComponentProps<D>>;
 
     constructor(data: { [Key in keyof D]: D[Key] }[]) {
         this.data = data;
         this.fields = inferFields(data);
-        this.fieldSelectionComponent = FieldSelectionComponent;
-        this.fieldBooleanSelectionComponent = FieldBooleanSelectionComponent;
-        this.fieldNumberSelectionComponent = FieldNumberSelectionComponent;
-        this.fieldStringSelectionComponent = FieldStringSelectionComponent;
+        this.filters = [];
+        this.formats = inferFormats(this.fields);
         this.fieldComponent = FieldComponent;
         this.fieldsComponent = FieldsComponent;
+        this.filterComponent = FilterComponent;
+        this.andFilterComponent = AndFilterComponent;
+        this.notFilterComponent = NotFilterComponent;
+        this.equalsFilterComponent = EqualsFilterComponent;
+        this.filterDescriptionComponent = FilterDescriptionComponent;
+        this.filtersComponent = FiltersComponent;
     }
 
     withData(data: D[]) {
@@ -45,37 +61,12 @@ export class ConfigurationBuilder<D> {
     }
 
     withField<F extends keyof D>(name: F, field: Fields<D>[F]) {
-        this.fields[name] = field;
-        return this;
-    }
-
-    withFieldFormat<F extends keyof D>(name: F, format: Field<D[F]>['format']) {
-        this.fields[name].format = format;
+        this.fields = Object.assign({}, this.fields, { [name]: field });
         return this;
     }
 
     withFields(fields: { [Key in keyof D]: Field<D[Key]> }) {
         this.fields = fields;
-        return this;
-    }
-
-    withFieldSelectionComponent(fieldSelectionComponent: React.ComponentType<FieldSelectionComponentProps<D[keyof D]>>) {
-        this.fieldSelectionComponent = fieldSelectionComponent;
-        return this;
-    }
-
-    withFieldBooleanSelectionComponent(fieldBooleanSelectionComponent: React.ComponentType<FieldBooleanSelectionComponentProps>) {
-        this.fieldBooleanSelectionComponent = fieldBooleanSelectionComponent;
-        return this;
-    }
-
-    withFieldNumberSelectionComponent(fieldNumberSelectionComponent: React.ComponentType<FieldNumberSelectionComponentProps>) {
-        this.fieldNumberSelectionComponent = fieldNumberSelectionComponent;
-        return this;
-    }
-
-    withFieldStringSelectionComponent(fieldStringSelectionComponent: React.ComponentType<FieldStringSelectionComponentProps>) {
-        this.fieldStringSelectionComponent = fieldStringSelectionComponent;
         return this;
     }
 
@@ -89,17 +80,72 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
+    withFilters(filters: Filters<D>) {
+        this.filters = filters;
+        return this;
+    }
+
+    withFilter<F extends keyof D>(filter: FilterDescription<D, F>) {
+        this.filters = [...this.filters, filter];
+        return this;
+    }
+
+    withFilterComponent(filterComponent: React.ComponentType<FilterComponentProps<D[keyof D]>>) {
+        this.filterComponent = filterComponent;
+        return this;
+    }
+
+    withAndFilterComponent(andFilterComponent: React.ComponentType<AndFilterComponentProps<D[keyof D]>>) {
+        this.andFilterComponent = andFilterComponent;
+        return this;
+    }
+
+    withFilterDescriptionComponent(filterDescriptionComponent: React.ComponentType<FilterDescriptionComponentProps<D, keyof D>>) {
+        this.filterDescriptionComponent = filterDescriptionComponent;
+        return this;
+    }
+
+    withFiltersComponent(filtersComponent: React.ComponentType<FiltersComponentProps<D>>) {
+        this.filtersComponent = filtersComponent;
+        return this;
+    }
+
+    withFormats(formats: Formats<D>) {
+        this.formats = formats;
+        return this;
+    }
+
+    withFormat<F extends keyof D>(name: F, format: Format<D[F]>) {
+        this.formats = Object.assign({}, this.formats, { [name]: format });
+        return this;
+    }
+
     build(): Configuration<D> {
+        const filterComponentProvidedProps: { [Key: string]: React.ComponentType<any> } = {
+            andFilterComponent: this.andFilterComponent,
+            notFilterComponent: this.notFilterComponent,
+            equalsFilterComponent: this.equalsFilterComponent
+        };
+
+        const specificFilterComponentProvidedProps = {
+            filterComponent: providePropsComponentFactory(this.filterComponent, filterComponentProvidedProps)
+        };
+
+        for (const key of Object.keys(filterComponentProvidedProps)) {
+            filterComponentProvidedProps[key] = providePropsComponentFactory(filterComponentProvidedProps[key], specificFilterComponentProvidedProps);
+        }
+
         return {
             data: this.data,
             fields: this.fields,
+            filters: this.filters,
+            formats: this.formats,
             fieldsComponent: providePropsComponentFactory(this.fieldsComponent, {
-                fieldComponent: providePropsComponentFactory(this.fieldComponent, {
-                    fieldSelectionComponent: providePropsComponentFactory(this.fieldSelectionComponent, {
-                        fieldBooleanSelectionComponent: this.fieldBooleanSelectionComponent,
-                        fieldNumberSelectionComponent: this.fieldNumberSelectionComponent,
-                        fieldStringSelectionComponent: this.fieldStringSelectionComponent
-                    })
+                fieldComponent: this.fieldComponent
+            }),
+            filtersComponent: providePropsComponentFactory(this.filtersComponent, {
+                filterDescriptionComponent: providePropsComponentFactory(this.filterDescriptionComponent, {
+                    filterComponent: specificFilterComponentProvidedProps.filterComponent
                 })
             })
         };

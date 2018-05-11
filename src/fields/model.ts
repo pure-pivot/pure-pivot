@@ -1,47 +1,17 @@
-export type FormatBoolean = ((value: boolean) => string) | 'yes-no';
+export type FieldBoolean = 'boolean';
 
-export type FormatNumber = ((value: number) => string) | 'number' | 'date' | 'time' | 'date-time';
+export type FieldNumber = 'number';
 
-export type FormatString = ((value: string) => string) | 'text';
+export type FieldString = 'string';
 
-export interface FieldBoolean {
-    type: 'boolean';
-    format: FormatBoolean;
-}
+export type FieldOther = 'other';
 
-export interface FieldNumber {
-    type: 'number';
-    format: FormatNumber;
-}
-
-export interface FieldString {
-    type: 'string';
-    format: FormatString;
-}
-
-export interface FieldOther<T> {
-    type: 'other';
-    format: 'empty' | ((value: T) => string);
-}
-
-export type AnyField = FieldBoolean | FieldNumber | FieldString | FieldOther<any>;
+export type AnyField = FieldBoolean | FieldNumber | FieldString | FieldOther;
 
 export type Field<T> =
     T extends boolean ? FieldBoolean :
     T extends number ? FieldNumber :
     T extends string ? FieldString :
-    FieldOther<T>;
-
-export function isFieldBoolean(field: AnyField): field is FieldBoolean {
-    return field.type === 'boolean';
-}
-
-export function isFieldNumber(field: AnyField): field is FieldNumber {
-    return field.type === 'number';
-}
-
-export function isFieldString(field: AnyField): field is FieldString {
-    return field.type === 'string';
-}
+    FieldOther;
 
 export type Fields<D> = { [Key in keyof D]: Field<D[Key]> };

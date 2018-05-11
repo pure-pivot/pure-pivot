@@ -9,6 +9,7 @@
   "devDependencies": {
     "@types/react": "^16.3.13",
     "react": "^16.3.2",
+    "rimraf": "^2.6.2",
     "rollup": "^0.58.2",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
@@ -17,7 +18,7 @@
     "typescript": "^2.8.3"
   },
   "scripts": {
-    "build": "tsc && rollup --config",
+    "build": "rimraf ./lib && tsc && rollup --config",
     "lint": "tslint --project tsconfig.json",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
