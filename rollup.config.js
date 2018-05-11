@@ -14,15 +14,14 @@ if (process.env.ROLLUP_UGLIFY === 'true') {
 }
 
 export default {
-    external: ['react', 'react-dom'],
+    external: ['react'],
     input: 'lib/es6/index.js',
     output: {
         format: 'umd',
         file: 'lib/umd/bundle.js',
         name: 'PurePivot',
         globals: {
-            'react': 'React',
-            'react-dom': 'ReactDOM'
+            'react': 'React'
         },
         sourceMap: true
     },
