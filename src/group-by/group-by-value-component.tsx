@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { GroupByValue, GroupByDescription } from './model';
-import { GroupByComponentProps, GroupByComponentProvidedProps } from './group-by-components/group-by-component';
+import { GroupByComponentProps, GroupByComponentProvidedProps } from './components/group-by-component';
 
 export interface GroupByValueComponentProps<D, F extends keyof D> {
     groupByValue: GroupByValue<D, F>;

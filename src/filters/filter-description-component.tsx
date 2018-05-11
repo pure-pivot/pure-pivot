@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FilterDescription } from './model';
-import { FilterComponentProps, FilterComponentProvidedProps } from './filter-components/filter-component';
+import { FilterComponentProps, FilterComponentProvidedProps } from './components/filter-component';
 
 export interface FilterDescriptionComponentProps<D, F extends keyof D> {
     filterDescription: FilterDescription<D, F>;

@@ -105,6 +105,8 @@ export class App extends React.Component<{}, AppState> {
             <this.state.filtersComponent filters={this.state.filters} />
             <h3>Group by</h3>
             <this.state.groupByValueComponent groupByValue={this.state.groupBy} />
+            <h3>Values</h3>
+            <this.state.valuesComponent values={this.state.values} />
         </React.Fragment>;
     }
 }

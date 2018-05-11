@@ -8,29 +8,40 @@ import { FiltersComponentProps, FiltersComponent, FiltersComponentProvidedProps 
 import { Formats, Format } from './formats/model';
 import { inferFormats } from './formats/infer-formats';
 import { FilterDescriptionComponentProps, FilterDescriptionComponent } from './filters/filter-description-component';
-import { FilterComponentProps, FilterComponent } from './filters/filter-components/filter-component';
-import { AndFilterComponentProps, AndFilterComponent } from './filters/filter-components/and-filter-component';
-import { NotFilterComponent, NotFilterComponentProps } from './filters/filter-components/not-filter-components';
-import { EqualsFilterComponent, EqualsFilterComponentProps } from './filters/filter-components/equals-filter-component';
+import { FilterComponentProps, FilterComponent } from './filters/components/filter-component';
+import { AndFilterComponentProps, AndFilterComponent } from './filters/components/and-filter-component';
+import { NotFilterComponent, NotFilterComponentProps } from './filters/components/not-filter-components';
+import { EqualsFilterComponent, EqualsFilterComponentProps } from './filters/components/equals-filter-component';
 import { GroupByValueComponentProps, GroupByValueComponent, GroupByValueComponentProvidedProps } from './group-by/group-by-value-component';
 import { GroupByValue, GroupByDescription, GroupBy } from './group-by/model';
-import { GroupByComponentProps, GroupByComponent } from './group-by/group-by-components/group-by-component';
-import { NumberEqualityComponent } from './group-by/group-by-components/number-equality-component';
-import { StringEqualityComponent } from './group-by/group-by-components/string-equality-component';
-import { BooleanEqualityComponent } from './group-by/group-by-components/boolean-equality-component';
-import { NumberCountComponent } from './group-by/group-by-components/number-count-component';
-import { NumberRangeComponent } from './group-by/group-by-components/number-range-component';
-import { OtherEqualityComponent } from './group-by/group-by-components/other-equality-component';
+import { GroupByComponentProps, GroupByComponent } from './group-by/components/group-by-component';
+import { NumberEqualityComponent, NumberEqualityComponentProps } from './group-by/components/number-equality-component';
+import { StringEqualityComponent, StringEqualityComponentProps } from './group-by/components/string-equality-component';
+import { BooleanEqualityComponent, BooleanEqualityComponentProps } from './group-by/components/boolean-equality-component';
+import { NumberCountComponent, NumberCountComponentProps } from './group-by/components/number-count-component';
+import { NumberRangeComponent, NumberRangeComponentProps } from './group-by/components/number-range-component';
+import { OtherEqualityComponent, OtherEqualityComponentProps } from './group-by/components/other-equality-component';
+import { Aggregates, Aggregate, AggregateDescription } from './values/model';
+import { AggregatesComponentProps, AggregatesComponentProvidedProps, AggregatesComponent } from './values/aggregates-component';
+import { AggregateComponentProps, AggregateComponent } from './values/aggregate-component';
+import { AnyAggregateComponentProps, AnyAggregateComponent } from './values/components/any-aggregate-component';
+import { StringAggregateComponentProps, StringAggregateComponent } from './values/components/string-aggregate-component';
+import { BooleanAggregateComponentProps, BooleanAggregateComponent } from './values/components/boolean-aggregate-component';
+import { NumberAggregateComponentProps, NumberAggregateComponent } from './values/components/number-aggregate-component';
+import { OtherAggregateComponentProps, OtherAggregateComponent } from './values/components/other-aggregate-component';
+import { inferValues } from './values/infer-values';
 
 export interface Configuration<D> {
     data: D[];
     fields: Fields<D>;
     filters: Filters<D>;
     groupBy: GroupByValue<D, keyof D>;
+    values: Aggregates<D>;
     formats: Formats<D>;
     fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, FieldsComponentProvidedProps>>>;
     filtersComponent: React.ComponentType<Pick<FiltersComponentProps<D>, Exclude<keyof FiltersComponentProps<D>, FiltersComponentProvidedProps>>>;
     groupByValueComponent: React.ComponentType<Pick<GroupByValueComponentProps<D, keyof D>, Exclude<keyof GroupByValueComponentProps<D, keyof D>, GroupByValueComponentProvidedProps>>>;
+    valuesComponent: React.ComponentType<Pick<AggregatesComponentProps<D>, Exclude<keyof AggregatesComponentProps<D>, AggregatesComponentProvidedProps>>>;
 }
 
 export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
@@ -42,6 +53,7 @@ export class ConfigurationBuilder<D> {
     private fields: Fields<D>;
     private filters: Filters<D>;
     private groupBy: GroupByValue<D, keyof D>;
+    private values: Aggregates<D>;
     private formats: Formats<D>;
     private fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>;
     private fieldsComponent: React.ComponentType<FieldsComponentProps<D>>;
@@ -52,13 +64,27 @@ export class ConfigurationBuilder<D> {
     private filterDescriptionComponent: React.ComponentType<FilterDescriptionComponentProps<D, keyof D>>;
     private filtersComponent: React.ComponentType<FiltersComponentProps<D>>;
     private groupByComponent: React.ComponentType<GroupByComponentProps<D[keyof D]>>;
+    private booleanEqualityComponent: React.ComponentType<BooleanEqualityComponentProps>;
+    private numberEqualityComponent: React.ComponentType<NumberEqualityComponentProps>;
+    private numberCountComponent: React.ComponentType<NumberCountComponentProps>;
+    private numberRangeComponent: React.ComponentType<NumberRangeComponentProps>;
+    private stringEqualityComponent: React.ComponentType<StringEqualityComponentProps>;
+    private otherEqualityComponent: React.ComponentType<OtherEqualityComponentProps<D[keyof D]>>;
     private groupByValueComponent: React.ComponentType<GroupByValueComponentProps<D, keyof D>>;
+    private anyValueComponent: React.ComponentType<AnyAggregateComponentProps>;
+    private booleanValueComponent: React.ComponentType<BooleanAggregateComponentProps>;
+    private numberValueComponent: React.ComponentType<NumberAggregateComponentProps>;
+    private otherValueComponent: React.ComponentType<OtherAggregateComponentProps<D[keyof D]>>;
+    private stringValueComponent: React.ComponentType<StringAggregateComponentProps>;
+    private valueComponent: React.ComponentType<AggregateComponentProps<D, keyof D>>;
+    private valuesComponent: React.ComponentType<AggregatesComponentProps<D>>;
 
     constructor(data: { [Key in keyof D]: D[Key] }[]) {
         this.data = data;
         this.fields = inferFields(data);
         this.filters = [];
         this.groupBy = { type: 'identity' };
+        this.values = inferValues(this.fields);
         this.formats = inferFormats(this.fields);
         this.fieldComponent = FieldComponent;
         this.fieldsComponent = FieldsComponent;
@@ -69,7 +95,20 @@ export class ConfigurationBuilder<D> {
         this.filterDescriptionComponent = FilterDescriptionComponent;
         this.filtersComponent = FiltersComponent;
         this.groupByComponent = GroupByComponent;
+        this.booleanEqualityComponent = BooleanEqualityComponent;
+        this.numberEqualityComponent = NumberEqualityComponent;
+        this.numberCountComponent = NumberCountComponent;
+        this.numberRangeComponent = NumberRangeComponent;
+        this.stringEqualityComponent = StringEqualityComponent;
+        this.otherEqualityComponent = OtherEqualityComponent;
         this.groupByValueComponent = GroupByValueComponent;
+        this.anyValueComponent = AnyAggregateComponent;
+        this.booleanValueComponent = BooleanAggregateComponent;
+        this.numberValueComponent = NumberAggregateComponent;
+        this.otherValueComponent = OtherAggregateComponent;
+        this.stringValueComponent = StringAggregateComponent;
+        this.valueComponent = AggregateComponent;
+        this.valuesComponent = AggregatesComponent;
     }
 
     withData(data: D[]) {
@@ -138,8 +177,83 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
+    withBooleanEqualityComponent(booleanEqualityComponent: React.ComponentType<BooleanEqualityComponentProps>) {
+        this.booleanEqualityComponent = booleanEqualityComponent;
+        return this;
+    }
+
+    withNumberEqualityComponent(numberEqualityComponent: React.ComponentType<NumberEqualityComponentProps>) {
+        this.numberEqualityComponent = numberEqualityComponent;
+        return this;
+    }
+
+    withNumberCountComponent(numberCountComponent: React.ComponentType<NumberCountComponentProps>) {
+        this.numberCountComponent = numberCountComponent;
+        return this;
+    }
+
+    withNumberRangeComponent(numberRangeComponent: React.ComponentType<NumberRangeComponentProps>) {
+        this.numberRangeComponent = numberRangeComponent;
+        return this;
+    }
+
+    withStringEqualityComponent(stringEqualityComponent: React.ComponentType<StringEqualityComponentProps>) {
+        this.stringEqualityComponent = stringEqualityComponent;
+        return this;
+    }
+
+    withOtherEqualityComponent(otherEqualityComponent: React.ComponentType<OtherEqualityComponentProps<D[keyof D]>>) {
+        this.otherEqualityComponent = otherEqualityComponent;
+        return this;
+    }
+
     withGroupByValueComponent(groupByValueComponent: React.ComponentType<GroupByValueComponentProps<D, keyof D>>) {
         this.groupByValueComponent = groupByValueComponent;
+        return this;
+    }
+
+    withValues(values: Aggregates<D>) {
+        this.values = values;
+        return this;
+    }
+
+    withValue(value: AggregateDescription<D, keyof D>) {
+        this.values = [...this.values, value];
+        return this;
+    }
+
+    withAnyValueComponent(anyValueComponent: React.ComponentType<AnyAggregateComponentProps>) {
+        this.anyValueComponent = anyValueComponent;
+        return this;
+    }
+
+    withBooleanValueComponent(booleanValueComponent: React.ComponentType<BooleanAggregateComponentProps>) {
+        this.booleanValueComponent = booleanValueComponent;
+        return this;
+    }
+
+    withNumberValueComponent(numberValueComponent: React.ComponentType<NumberAggregateComponentProps>) {
+        this.numberValueComponent = numberValueComponent;
+        return this;
+    }
+
+    withOtherValueComponent(otherValueComponent: React.ComponentType<OtherAggregateComponentProps<D[keyof D]>>) {
+        this.otherValueComponent = otherValueComponent;
+        return this;
+    }
+
+    withStringValueComponent(stringValueComponent: React.ComponentType<StringAggregateComponentProps>) {
+        this.stringValueComponent = stringValueComponent;
+        return this;
+    }
+
+    withValueComponent(valueComponent: React.ComponentType<AggregateComponentProps<D, keyof D>>) {
+        this.valueComponent = valueComponent;
+        return this;
+    }
+
+    withValuesComponent(valuesComponent: React.ComponentType<AggregatesComponentProps<D>>) {
+        this.valuesComponent = valuesComponent;
         return this;
     }
 
@@ -173,6 +287,7 @@ export class ConfigurationBuilder<D> {
             fields: this.fields,
             filters: this.filters,
             groupBy: this.groupBy,
+            values: this.values,
             formats: this.formats,
             fieldsComponent: providePropsComponentFactory(this.fieldsComponent, {
                 fieldComponent: this.fieldComponent
@@ -184,12 +299,21 @@ export class ConfigurationBuilder<D> {
             }),
             groupByValueComponent: providePropsComponentFactory(this.groupByValueComponent, {
                 groupByComponent: providePropsComponentFactory(this.groupByComponent, {
-                    booleanEqualityComponent: BooleanEqualityComponent,
-                    numberEqualityComponent: NumberEqualityComponent,
-                    numberCountComponent: NumberCountComponent,
-                    numberRangeComponent: NumberRangeComponent,
-                    stringEqualityComponent: StringEqualityComponent,
-                    otherEqualityComponent: OtherEqualityComponent
+                    booleanEqualityComponent: this.booleanEqualityComponent,
+                    numberEqualityComponent: this.numberEqualityComponent,
+                    numberCountComponent: this.numberCountComponent,
+                    numberRangeComponent: this.numberRangeComponent,
+                    stringEqualityComponent: this.stringEqualityComponent,
+                    otherEqualityComponent: this.otherEqualityComponent
+                })
+            }),
+            valuesComponent: providePropsComponentFactory(this.valuesComponent, {
+                aggregateComponent: providePropsComponentFactory(this.valueComponent, {
+                    anyAggregateComponent: this.anyValueComponent,
+                    booleanAggregateComponent: this.booleanValueComponent,
+                    numberAggregateComponent: this.numberValueComponent,
+                    stringAggregateComponent: this.stringValueComponent,
+                    otherAggregateComponent: this.otherValueComponent
                 })
             })
         };
