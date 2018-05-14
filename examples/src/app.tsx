@@ -72,7 +72,7 @@ const configurationBuilder = new ConfigurationBuilder(data)
                 type: 'not',
                 filter: {
                     type: 'equals',
-                    value: 'GET'
+                    value: 'PUT'
                 }
             },
             right: {
@@ -84,12 +84,17 @@ const configurationBuilder = new ConfigurationBuilder(data)
             }
         }
     })
-    .withGroupByField({
-        name: 'time',
-        groupBy: {
-            type: 'number-range',
-            range: 30
+    .withValue({
+        id: 'method',
+        name: 'method',
+        aggregate: {
+            type: 'string-join',
+            joiner: ', '
         }
+    })
+    .withGroupByField('time', {
+        type: 'number-count',
+        count: 30
     });
 
 type AppState = Configuration<Data>;
@@ -107,6 +112,8 @@ export class App extends React.Component<{}, AppState> {
             <this.state.groupByValueComponent groupByValue={this.state.groupBy} />
             <h3>Values</h3>
             <this.state.valuesComponent values={this.state.values} />
+            <h3>Table</h3>
+            <this.state.tableComponent data={this.state.data} filters={this.state.filters} groupByValue={this.state.groupBy} values={this.state.values} />
         </React.Fragment>;
     }
 }

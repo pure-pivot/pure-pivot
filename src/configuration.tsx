@@ -30,6 +30,7 @@ import { BooleanAggregateComponentProps, BooleanAggregateComponent } from './val
 import { NumberAggregateComponentProps, NumberAggregateComponent } from './values/components/number-aggregate-component';
 import { OtherAggregateComponentProps, OtherAggregateComponent } from './values/components/other-aggregate-component';
 import { inferValues } from './values/infer-values';
+import { TableProps, TableProvidedProps, Table } from './table/table';
 
 export interface Configuration<D> {
     data: D[];
@@ -42,6 +43,7 @@ export interface Configuration<D> {
     filtersComponent: React.ComponentType<Pick<FiltersComponentProps<D>, Exclude<keyof FiltersComponentProps<D>, FiltersComponentProvidedProps>>>;
     groupByValueComponent: React.ComponentType<Pick<GroupByValueComponentProps<D, keyof D>, Exclude<keyof GroupByValueComponentProps<D, keyof D>, GroupByValueComponentProvidedProps>>>;
     valuesComponent: React.ComponentType<Pick<AggregatesComponentProps<D>, Exclude<keyof AggregatesComponentProps<D>, AggregatesComponentProvidedProps>>>;
+    tableComponent: React.ComponentType<Pick<TableProps<D>, Exclude<keyof TableProps<D>, TableProvidedProps>>>;
 }
 
 export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
@@ -78,8 +80,9 @@ export class ConfigurationBuilder<D> {
     private stringValueComponent: React.ComponentType<StringAggregateComponentProps>;
     private valueComponent: React.ComponentType<AggregateComponentProps<D, keyof D>>;
     private valuesComponent: React.ComponentType<AggregatesComponentProps<D>>;
+    private tableComponent: React.ComponentType<TableProps<D>>;
 
-    constructor(data: { [Key in keyof D]: D[Key] }[]) {
+    constructor(data: D[]) {
         this.data = data;
         this.fields = inferFields(data);
         this.filters = [];
@@ -109,11 +112,7 @@ export class ConfigurationBuilder<D> {
         this.stringValueComponent = StringAggregateComponent;
         this.valueComponent = AggregateComponent;
         this.valuesComponent = AggregatesComponent;
-    }
-
-    withData(data: D[]) {
-        this.data = data;
-        return this;
+        this.tableComponent = Table;
     }
 
     withField<F extends keyof D>(name: F, field: Fields<D>[F]) {
@@ -171,9 +170,13 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
-    withGroupByField(groupByDescription: Pick<GroupByDescription<D, keyof D>, Exclude<keyof GroupByDescription<D, keyof D>, 'type'>>) {
-        const typeDescription: { type: 'description' } = { type: 'description' };
-        this.groupBy = Object.assign({}, groupByDescription, typeDescription);
+    withGroupByField<F extends keyof D>(name: F, groupBy: GroupBy<D[F]>) {
+        // TypeScript is not helping here, force cast
+        this.groupBy = {
+            type: 'description',
+            name,
+            groupBy
+        } as any as GroupByValue<D, keyof D>;
         return this;
     }
 
@@ -217,8 +220,9 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
-    withValue(value: AggregateDescription<D, keyof D>) {
-        this.values = [...this.values, value];
+    withValue<F extends keyof D>(value: AggregateDescription<D, F>) {
+        // TypeScript is not helping here, force cast
+        this.values = [...this.values, value as any as AggregateDescription<D, keyof D>];
         return this;
     }
 
@@ -315,7 +319,8 @@ export class ConfigurationBuilder<D> {
                     stringAggregateComponent: this.stringValueComponent,
                     otherAggregateComponent: this.otherValueComponent
                 })
-            })
+            }),
+            tableComponent: this.tableComponent
         };
     }
 }
