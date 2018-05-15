@@ -21,14 +21,14 @@ import { BooleanEqualityComponent, BooleanEqualityComponentProps } from './group
 import { NumberCountComponent, NumberCountComponentProps } from './group-by/components/number-count-component';
 import { NumberRangeComponent, NumberRangeComponentProps } from './group-by/components/number-range-component';
 import { OtherEqualityComponent, OtherEqualityComponentProps } from './group-by/components/other-equality-component';
-import { Aggregates, Aggregate, AggregateDescription } from './values/model';
-import { AggregatesComponentProps, AggregatesComponentProvidedProps, AggregatesComponent } from './values/aggregates-component';
-import { AggregateComponentProps, AggregateComponent } from './values/aggregate-component';
-import { AnyAggregateComponentProps, AnyAggregateComponent } from './values/components/any-aggregate-component';
-import { StringAggregateComponentProps, StringAggregateComponent } from './values/components/string-aggregate-component';
-import { BooleanAggregateComponentProps, BooleanAggregateComponent } from './values/components/boolean-aggregate-component';
-import { NumberAggregateComponentProps, NumberAggregateComponent } from './values/components/number-aggregate-component';
-import { OtherAggregateComponentProps, OtherAggregateComponent } from './values/components/other-aggregate-component';
+import { Values, Value, ValueDescription } from './values/model';
+import { ValuesComponentProps, ValuesComponentProvidedProps, ValuesComponent } from './values/values-component';
+import { ValueComponentProps, ValueComponent } from './values/value-component';
+import { AnyValueComponentProps, AnyValueComponent } from './values/components/any-value-component';
+import { StringValueComponentProps, StringValueComponent } from './values/components/string-value-component';
+import { BooleanValueComponentProps, BooleanValueComponent } from './values/components/boolean-value-component';
+import { NumberValueComponentProps, NumberValueComponent } from './values/components/number-value-component';
+import { OtherValueComponentProps, OtherValueComponent } from './values/components/other-value-component';
 import { inferValues } from './values/infer-values';
 import { TableProps, TableProvidedProps, Table } from './table/table';
 
@@ -37,12 +37,12 @@ export interface Configuration<D> {
     fields: Fields<D>;
     filters: Filters<D>;
     groupBy: GroupByValue<D, keyof D>;
-    values: Aggregates<D>;
+    values: Values<D>;
     formats: Formats<D>;
     fieldsComponent: React.ComponentType<Pick<FieldsComponentProps<D>, Exclude<keyof FieldsComponentProps<D>, FieldsComponentProvidedProps>>>;
     filtersComponent: React.ComponentType<Pick<FiltersComponentProps<D>, Exclude<keyof FiltersComponentProps<D>, FiltersComponentProvidedProps>>>;
     groupByValueComponent: React.ComponentType<Pick<GroupByValueComponentProps<D, keyof D>, Exclude<keyof GroupByValueComponentProps<D, keyof D>, GroupByValueComponentProvidedProps>>>;
-    valuesComponent: React.ComponentType<Pick<AggregatesComponentProps<D>, Exclude<keyof AggregatesComponentProps<D>, AggregatesComponentProvidedProps>>>;
+    valuesComponent: React.ComponentType<Pick<ValuesComponentProps<D>, Exclude<keyof ValuesComponentProps<D>, ValuesComponentProvidedProps>>>;
     tableComponent: React.ComponentType<Pick<TableProps<D>, Exclude<keyof TableProps<D>, TableProvidedProps>>>;
 }
 
@@ -55,7 +55,7 @@ export class ConfigurationBuilder<D> {
     private fields: Fields<D>;
     private filters: Filters<D>;
     private groupBy: GroupByValue<D, keyof D>;
-    private values: Aggregates<D>;
+    private values: Values<D>;
     private formats: Formats<D>;
     private fieldComponent: React.ComponentType<FieldComponentProps<D[keyof D]>>;
     private fieldsComponent: React.ComponentType<FieldsComponentProps<D>>;
@@ -73,13 +73,13 @@ export class ConfigurationBuilder<D> {
     private stringEqualityComponent: React.ComponentType<StringEqualityComponentProps>;
     private otherEqualityComponent: React.ComponentType<OtherEqualityComponentProps<D[keyof D]>>;
     private groupByValueComponent: React.ComponentType<GroupByValueComponentProps<D, keyof D>>;
-    private anyValueComponent: React.ComponentType<AnyAggregateComponentProps>;
-    private booleanValueComponent: React.ComponentType<BooleanAggregateComponentProps>;
-    private numberValueComponent: React.ComponentType<NumberAggregateComponentProps>;
-    private otherValueComponent: React.ComponentType<OtherAggregateComponentProps<D[keyof D]>>;
-    private stringValueComponent: React.ComponentType<StringAggregateComponentProps>;
-    private valueComponent: React.ComponentType<AggregateComponentProps<D, keyof D>>;
-    private valuesComponent: React.ComponentType<AggregatesComponentProps<D>>;
+    private anyValueComponent: React.ComponentType<AnyValueComponentProps>;
+    private booleanValueComponent: React.ComponentType<BooleanValueComponentProps>;
+    private numberValueComponent: React.ComponentType<NumberValueComponentProps>;
+    private otherValueComponent: React.ComponentType<OtherValueComponentProps<D[keyof D]>>;
+    private stringValueComponent: React.ComponentType<StringValueComponentProps>;
+    private valueComponent: React.ComponentType<ValueComponentProps<D, keyof D>>;
+    private valuesComponent: React.ComponentType<ValuesComponentProps<D>>;
     private tableComponent: React.ComponentType<TableProps<D>>;
 
     constructor(data: D[]) {
@@ -105,13 +105,13 @@ export class ConfigurationBuilder<D> {
         this.stringEqualityComponent = StringEqualityComponent;
         this.otherEqualityComponent = OtherEqualityComponent;
         this.groupByValueComponent = GroupByValueComponent;
-        this.anyValueComponent = AnyAggregateComponent;
-        this.booleanValueComponent = BooleanAggregateComponent;
-        this.numberValueComponent = NumberAggregateComponent;
-        this.otherValueComponent = OtherAggregateComponent;
-        this.stringValueComponent = StringAggregateComponent;
-        this.valueComponent = AggregateComponent;
-        this.valuesComponent = AggregatesComponent;
+        this.anyValueComponent = AnyValueComponent;
+        this.booleanValueComponent = BooleanValueComponent;
+        this.numberValueComponent = NumberValueComponent;
+        this.otherValueComponent = OtherValueComponent;
+        this.stringValueComponent = StringValueComponent;
+        this.valueComponent = ValueComponent;
+        this.valuesComponent = ValuesComponent;
         this.tableComponent = Table;
     }
 
@@ -215,48 +215,48 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
-    withValues(values: Aggregates<D>) {
+    withValues(values: Values<D>) {
         this.values = values;
         return this;
     }
 
-    withValue<F extends keyof D>(value: AggregateDescription<D, F>) {
+    withValue<F extends keyof D>(value: ValueDescription<D, F>) {
         // TypeScript is not helping here, force cast
-        this.values = [...this.values, value as any as AggregateDescription<D, keyof D>];
+        this.values = [...this.values, value as any as ValueDescription<D, keyof D>];
         return this;
     }
 
-    withAnyValueComponent(anyValueComponent: React.ComponentType<AnyAggregateComponentProps>) {
+    withAnyValueComponent(anyValueComponent: React.ComponentType<AnyValueComponentProps>) {
         this.anyValueComponent = anyValueComponent;
         return this;
     }
 
-    withBooleanValueComponent(booleanValueComponent: React.ComponentType<BooleanAggregateComponentProps>) {
+    withBooleanValueComponent(booleanValueComponent: React.ComponentType<BooleanValueComponentProps>) {
         this.booleanValueComponent = booleanValueComponent;
         return this;
     }
 
-    withNumberValueComponent(numberValueComponent: React.ComponentType<NumberAggregateComponentProps>) {
+    withNumberValueComponent(numberValueComponent: React.ComponentType<NumberValueComponentProps>) {
         this.numberValueComponent = numberValueComponent;
         return this;
     }
 
-    withOtherValueComponent(otherValueComponent: React.ComponentType<OtherAggregateComponentProps<D[keyof D]>>) {
+    withOtherValueComponent(otherValueComponent: React.ComponentType<OtherValueComponentProps<D[keyof D]>>) {
         this.otherValueComponent = otherValueComponent;
         return this;
     }
 
-    withStringValueComponent(stringValueComponent: React.ComponentType<StringAggregateComponentProps>) {
+    withStringValueComponent(stringValueComponent: React.ComponentType<StringValueComponentProps>) {
         this.stringValueComponent = stringValueComponent;
         return this;
     }
 
-    withValueComponent(valueComponent: React.ComponentType<AggregateComponentProps<D, keyof D>>) {
+    withValueComponent(valueComponent: React.ComponentType<ValueComponentProps<D, keyof D>>) {
         this.valueComponent = valueComponent;
         return this;
     }
 
-    withValuesComponent(valuesComponent: React.ComponentType<AggregatesComponentProps<D>>) {
+    withValuesComponent(valuesComponent: React.ComponentType<ValuesComponentProps<D>>) {
         this.valuesComponent = valuesComponent;
         return this;
     }
@@ -312,12 +312,12 @@ export class ConfigurationBuilder<D> {
                 })
             }),
             valuesComponent: providePropsComponentFactory(this.valuesComponent, {
-                aggregateComponent: providePropsComponentFactory(this.valueComponent, {
-                    anyAggregateComponent: this.anyValueComponent,
-                    booleanAggregateComponent: this.booleanValueComponent,
-                    numberAggregateComponent: this.numberValueComponent,
-                    stringAggregateComponent: this.stringValueComponent,
-                    otherAggregateComponent: this.otherValueComponent
+                valueComponent: providePropsComponentFactory(this.valueComponent, {
+                    anyValueComponent: this.anyValueComponent,
+                    booleanValueComponent: this.booleanValueComponent,
+                    numberValueComponent: this.numberValueComponent,
+                    stringValueComponent: this.stringValueComponent,
+                    otherValueComponent: this.otherValueComponent
                 })
             }),
             tableComponent: this.tableComponent

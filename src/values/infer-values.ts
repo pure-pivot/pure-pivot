@@ -1,18 +1,18 @@
-import { Aggregate, Aggregates, AnyAggregate } from './model';
+import { Value, Values, AnyValue } from './model';
 import { ObjectKeys } from '../util/keys';
 import { Fields } from '../fields/model';
 
-export function inferValues<D>(fields: Fields<D>): Aggregates<D> {
-    const aggregates: Aggregates<D> = [];
+export function inferValues<D>(fields: Fields<D>): Values<D> {
+    const values: Values<D> = [];
 
     let counter = 0;
     for (const key of ObjectKeys(fields)) {
-        aggregates.push({
+        values.push({
             id: (counter++).toString(),
             name: key,
-            aggregate: { type: 'count' }
+            value: { type: 'count' }
         });
     }
 
-    return aggregates;
+    return values;
 }

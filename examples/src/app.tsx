@@ -87,7 +87,7 @@ const configurationBuilder = new ConfigurationBuilder(data)
     .withValue({
         id: 'method',
         name: 'method',
-        aggregate: {
+        value: {
             type: 'string-join',
             joiner: ', '
         }
@@ -113,7 +113,13 @@ export class App extends React.Component<{}, AppState> {
             <h3>Values</h3>
             <this.state.valuesComponent values={this.state.values} />
             <h3>Table</h3>
-            <this.state.tableComponent data={this.state.data} filters={this.state.filters} groupByValue={this.state.groupBy} values={this.state.values} />
+            <this.state.tableComponent
+                data={this.state.data}
+                filters={this.state.filters}
+                groupByValue={this.state.groupBy}
+                values={this.state.values}
+                formats={this.state.formats}
+            />
         </React.Fragment>;
     }
 }

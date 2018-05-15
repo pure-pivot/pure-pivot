@@ -1,79 +1,79 @@
-export interface CountAggregate {
+export interface CountValue {
     type: 'count';
 }
 
-export type AnyAggregate = CountAggregate;
+export type AnyValue = CountValue;
 
-export function isAnyAggregate(object: Aggregate<any> | AnyAggregate): object is AnyAggregate {
+export function isAnyValue(object: Value<any> | AnyValue): object is AnyValue {
     return object.type === 'count';
 }
 
-export interface BooleanOrAggregate {
+export interface BooleanOrValue {
     type: 'boolean-or';
 }
 
-export interface BooleanAndAggregate {
+export interface BooleanAndValue {
     type: 'boolean-and';
 }
 
-export type BooleanAggregate = BooleanOrAggregate | BooleanAndAggregate;
+export type BooleanValue = BooleanOrValue | BooleanAndValue;
 
-export function isBooleanAggregate(object: Aggregate<any>): object is BooleanAggregate {
+export function isBooleanValue(object: Value<any>): object is BooleanValue {
     return object.type === 'boolean-or' || object.type === 'boolean-and';
 }
 
-export interface NumberMaximumAggregate {
+export interface NumberMaximumValue {
     type: 'number-maximum';
 }
 
-export interface NumberMinimumAggregate {
+export interface NumberMinimumValue {
     type: 'number-minimum';
 }
 
-export interface NumberAverageAggregate {
+export interface NumberAverageValue {
     type: 'number-average';
 }
 
-export interface NumberSumAggregate {
+export interface NumberSumValue {
     type: 'number-sum';
 }
 
-export type NumberAggregate = NumberMaximumAggregate | NumberMinimumAggregate | NumberAverageAggregate | NumberSumAggregate;
+export type NumberValue = NumberMaximumValue | NumberMinimumValue | NumberAverageValue | NumberSumValue;
 
-export function isNumberAggregate(object: Aggregate<any>): object is NumberAggregate {
+export function isNumberValue(object: Value<any>): object is NumberValue {
     return object.type === 'number-maximum' || object.type === 'number-minimum' || object.type === 'number-average' || object.type === 'number-sum';
 }
 
-export interface StringJoinAggregate {
+export interface StringJoinValue {
     type: 'string-join';
     joiner: string;
 }
 
-export type StringAggregate = StringJoinAggregate;
+export type StringValue = StringJoinValue;
 
-export function isStringAggregate(object: Aggregate<any>): object is StringAggregate {
+export function isStringValue(object: Value<any>): object is StringValue {
     return object.type === 'string-join';
 }
 
-export interface OtherAggregate<T> {
+export interface OtherValue<T> {
     type: 'other';
     reducer: (values: T[]) => T;
 }
 
-export function isOtherAggregate(object: Aggregate<any>): object is OtherAggregate<any> {
+export function isOtherValue(object: Value<any>): object is OtherValue<any> {
     return object.type === 'other';
 }
 
-export type Aggregate<T> =
-    T extends boolean ? BooleanAggregate :
-    T extends number ? NumberAggregate :
-    T extends string ? StringAggregate :
-    OtherAggregate<T>;
+export type Value<T> =
+    T extends boolean ? BooleanValue :
+    T extends number ? NumberValue :
+    T extends string ? StringValue :
+    OtherValue<T>;
 
-export interface AggregateDescription<D, F extends keyof D> {
+export interface ValueDescription<D, F extends keyof D> {
     id: string;
     name: F;
-    aggregate: Aggregate<D[F]> | AnyAggregate;
+    value: Value<D[F]> | AnyValue;
 }
 
-export type Aggregates<D> = AggregateDescription<D, keyof D>[];
+export type Values<D> = ValueDescription<D, keyof D>[];
