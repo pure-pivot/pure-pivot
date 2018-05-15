@@ -21,7 +21,7 @@ export type TableProvidedProps = never;
 export class Table<D> extends React.Component<TableProps<D>, never> {
     render() {
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
-        const groupedData = applyGroupByValue(this.props.groupByValue, filteredData);
+        const groupedData = applyGroupByValue(this.props.groupByValue, filteredData, this.props.formats);
         const singlePartition = groupedData.length <= 1;
 
         const labels: { id: string, name: string }[] = this.props.values.map((valueDescription) => {
@@ -32,20 +32,38 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         });
 
         const labeledGroups = groupedData.map((group) => {
-            return this.props.values.map((valueDescription) => {
-                return applyValue(
-                    valueDescription.value,
-                    group.map((row) => row[valueDescription.name]),
-                    (value) => applyFormat(value, this.props.formats[valueDescription.name])
-                );
-            });
+            return {
+                label: group.label,
+                data: this.props.values.map((valueDescription) => {
+                    return applyValue(
+                        valueDescription.value,
+                        group.data.map((row) => row[valueDescription.name]),
+                        (value) => applyFormat(value, this.props.formats[valueDescription.name])
+                    );
+                })
+            };
         });
 
         return <React.Fragment>
             <table>
                 <thead>
-                    <tr></tr>
+                    <tr>
+                        <th></th>
+                        {labeledGroups.map((group, index) => {
+                            return <th key={index}>{group.label}</th>;
+                        })}
+                    </tr>
                 </thead>
+                <tbody>
+                    {labels.map((label, labelIndex) => {
+                        return <tr key={labelIndex}>
+                            <td>{label.name}</td>
+                            {labeledGroups.map((group, groupIndex) => {
+                                return <td key={groupIndex}>{group.data[labelIndex]}</td>;
+                            })}
+                        </tr>;
+                    })}
+                </tbody>
             </table>
             <pre>
                 {JSON.stringify(labels, null, 2)}
