@@ -4,8 +4,8 @@ import { applyFiltersToAll } from '../filters/apply-filter';
 import { Formats } from '../formats/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
-import { applyGroups } from '../groups/apply-groups';
-import { extractLabels } from '../groups/extra-labels';
+import { applyGroups, Grouping } from '../groups/apply-groups';
+import { extractLabels, countLabels } from '../groups/extract-labels';
 
 export interface TableProps<D> {
     data: D[];
@@ -17,11 +17,19 @@ export interface TableProps<D> {
 
 export type TableProvidedProps = never;
 
-type Grouping<T> = T[] | NestedGrouping<T>;
-
-interface NestedGrouping<T> extends Array<Grouping<T>> { }
-
 export class Table<D> extends React.Component<TableProps<D>, never> {
+    // renderGroupingLabelsRecursive(grouping: Grouping<D>): React.ReactNode[][] {
+    //     if (grouping.type === 'nested') {
+    //         grouping.data.map((nestedGrouping) => {
+    //             this.renderGroupingLabelsRecursive(nestedGrouping.data);
+
+    //             <th>{nestedGrouping.label}</th>;
+    //         });
+    //     } else {
+    //         return [];
+    //     }
+    // }
+
     render() {
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
         const groupedData = applyGroups(this.props.groups, filteredData);
@@ -29,6 +37,9 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         // TODO: it probably makes more sense only to show the available labels per sub-grouping
         // e.g.: if there are no "POST" requests to "/ldap/verify", then don't show that sub-group.
         const extractedLabels = extractLabels(this.props.groups.length, groupedData);
+
+        // TODO: labels on the same level must be in the same array
+        const labelsCounted = countLabels(groupedData);
 
         const labels: { id: string, label: string }[] = this.props.values.map((valueDescription) => {
             return {
@@ -63,6 +74,9 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
             </table>
             <pre>
                 {JSON.stringify(labels, null, 2)}
+            </pre>
+            <pre>
+                {JSON.stringify(labelsCounted, null, 2)}
             </pre>
             <pre>
                 {JSON.stringify(extractedLabels, null, 2)}
