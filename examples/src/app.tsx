@@ -44,7 +44,7 @@ export class App extends React.Component<{}, AppState> {
     state: AppState = { status: 'loading' };
 
     componentDidMount() {
-        fetch(`http://build.test-cancun.com:8111/app/rest/builds/?guest=1&locator=count:${12},buildType:(id:CancunProduction_HealthCheck)`)
+        fetch(`http://build.test-cancun.com:8111/app/rest/builds/?guest=1&locator=count:${2},buildType:(id:CancunProduction_HealthCheck)`)
             .then((response) => {
                 if (response.status === 200) {
                     return response.text();
@@ -94,11 +94,11 @@ export class App extends React.Component<{}, AppState> {
 
     buildConfiguration(data: Data[]): Configuration<Data> {
         return new ConfigurationBuilder(data)
-            .withFormat('time', (value: number) => {
-                const date = new Date(value);
-                return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-            })
-            .withFormat('statusCode', (statusCode: number) => 200 <= statusCode && statusCode < 300 ? 'OK' : 'NOT OK')
+            // .withFormat('time', (value: number) => {
+            //     const date = new Date(value);
+            //     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+            // })
+            // .withFormat('statusCode', (statusCode: number) => 200 <= statusCode && statusCode < 300 ? 'OK' : 'NOT OK')
             // .withFieldsComponent((props) =>
             //     <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
             //         <h4>Field</h4>
@@ -160,10 +160,41 @@ export class App extends React.Component<{}, AppState> {
                     }
                 }
             })
-            .withGroupByField('time', {
-                type: 'number-count',
-                count: 10
-            })
+            // .withGroupByField('time', {
+            //     type: 'number-count',
+            //     count: 10
+            // })
+            .withGroups([{
+                id: 'method',
+                label: 'method',
+                grouper: (data) => {
+                    const byMethod: { [Key: string]: Data[] } = {};
+
+                    for (const row of data) {
+                        if (!byMethod[row.method]) {
+                            byMethod[row.method] = [];
+                        }
+                        byMethod[row.method].push(row);
+                    }
+
+                    return Object.keys(byMethod).map((key) => ({ label: key, data: byMethod[key] }));
+                }
+            }, {
+                id: 'url',
+                label: 'url',
+                grouper: (data) => {
+                    const byUrl: { [Key: string]: Data[] } = {};
+
+                    for (const row of data) {
+                        if (!byUrl[row.url]) {
+                            byUrl[row.url] = [];
+                        }
+                        byUrl[row.url].push(row);
+                    }
+
+                    return Object.keys(byUrl).map((key) => ({ label: key, data: byUrl[key] }));
+                }
+            }])
             .build();
     }
 
@@ -178,19 +209,19 @@ export class App extends React.Component<{}, AppState> {
             </pre>;
         } else {
             return <React.Fragment>
-                <h3>Fields</h3>
-                <this.state.result.fieldsComponent fields={this.state.result.fields} />
+                {/* <h3>Fields</h3>
+                <this.state.result.fieldsComponent fields={this.state.result.fields} /> */}
                 <h3>Filters</h3>
                 <this.state.result.filtersComponent filters={this.state.result.filters} />
-                <h3>Group by</h3>
+                {/* <h3>Group by</h3>
                 <this.state.result.groupByValueComponent groupByValue={this.state.result.groupBy} />
                 <h3>Values</h3>
-                <this.state.result.valuesComponent values={this.state.result.values} />
+                <this.state.result.valuesComponent values={this.state.result.values} /> */}
                 <h3>Table</h3>
                 <this.state.result.tableComponent
                     data={this.state.result.data}
                     filters={this.state.result.filters}
-                    groupByValue={this.state.result.groupBy}
+                    groups={this.state.result.groups}
                     values={this.state.result.values}
                     formats={this.state.result.formats}
                 />

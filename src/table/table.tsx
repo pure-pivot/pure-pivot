@@ -4,6 +4,8 @@ import { applyFiltersToAll } from '../filters/apply-filter';
 import { Formats } from '../formats/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
+import { applyGroups } from '../groups/apply-groups';
+import { extractLabels } from '../groups/extra-labels';
 
 export interface TableProps<D> {
     data: D[];
@@ -15,14 +17,15 @@ export interface TableProps<D> {
 
 export type TableProvidedProps = never;
 
+type Grouping<T> = T[] | NestedGrouping<T>;
+
+interface NestedGrouping<T> extends Array<Grouping<T>> { }
+
 export class Table<D> extends React.Component<TableProps<D>, never> {
     render() {
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
-
-        const group1 = this.props.groups[0](filteredData);
-        const group2 = group1.map((group) => this.props.groups[1](group));
-
-        const groupedData = this.props.groups.reduce((result, grouper) => grouper(result), filteredData);
+        const groupedData = applyGroups(this.props.groups, filteredData);
+        const extractedLabels = extractLabels(this.props.groups.length, groupedData);
 
         const labels: { id: string, label: string }[] = this.props.values.map((valueDescription) => {
             return {
@@ -31,26 +34,20 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
             };
         });
 
-        const labeledGroups = groupedData.map((group) => {
-            return {
-                label: this.props.formats.groupFormatter(group),
-                data: this.props.values.map((valueDescription) => {
-                    return valueDescription.reducer(group.map((row) => row[valueDescription.name]));
-                })
-            };
-        });
+        if (groupedData.type === 'leaf') {
+            // groupedData.data
+        }
 
         return <React.Fragment>
             <table>
                 <thead>
-                    <tr>
-                        <th></th>
-                        {labeledGroups.map((group, index) => {
-                            return <th key={index}>{group.label}</th>;
-                        })}
-                    </tr>
+                    {this.props.groups.map((grouper) =>
+                        <tr key={grouper.id}>
+                            <th>{grouper.label}</th>
+                        </tr>
+                    )}
                 </thead>
-                <tbody>
+                {/* <tbody>
                     {labels.map((label, labelIndex) => {
                         return <tr key={label.id}>
                             <td>{label.label}</td>
@@ -59,13 +56,16 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                             })}
                         </tr>;
                     })}
-                </tbody>
+                </tbody> */}
             </table>
             <pre>
                 {JSON.stringify(labels, null, 2)}
             </pre>
             <pre>
-                {JSON.stringify(labeledGroups, null, 2)}
+                {JSON.stringify(extractedLabels, null, 2)}
+            </pre>
+            <pre>
+                {JSON.stringify(groupedData, null, 2)}
             </pre>
         </React.Fragment>;
     }
