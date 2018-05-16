@@ -9,12 +9,12 @@ export interface UnaryFilterNot<T> {
     filter: Filter<T>;
 }
 
-export interface LeafFilterEquals<T> {
+export interface NullaryFilterEquals<T> {
     type: 'equals';
     value: T;
 }
 
-export type Filter<T> = BinaryFilterBooleanAnd<T> | LeafFilterEquals<T> | UnaryFilterNot<T>;
+export type Filter<T> = BinaryFilterBooleanAnd<T> | NullaryFilterEquals<T> | UnaryFilterNot<T>;
 
 export interface FilterDescription<D, F extends keyof D> {
     id: string;

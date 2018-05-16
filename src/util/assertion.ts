@@ -10,6 +10,10 @@ export function isString(object: any): object is string {
     return typeof object === 'string';
 }
 
+export function isArrayOf<T>(object: any, predicate: (object: any) => object is T): object is T[] {
+    return Array.isArray(object) && object.every((item) => predicate(item));
+}
+
 export function assertOrThrow<T>(object: any, assertion: (object: any) => object is T): T {
     if (assertion(object)) {
         return object;

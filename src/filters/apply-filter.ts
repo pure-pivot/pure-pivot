@@ -1,4 +1,4 @@
-import { Filter, BinaryFilterBooleanAnd, UnaryFilterNot, LeafFilterEquals, FilterDescription, Filters } from './model';
+import { Filter, BinaryFilterBooleanAnd, UnaryFilterNot, NullaryFilterEquals, FilterDescription, Filters } from './model';
 import { EqualsFilterComponent } from './components/equals-filter-component';
 
 export function applyAndFilter<T>(filter: BinaryFilterBooleanAnd<T>, data: T): boolean {
@@ -9,7 +9,7 @@ export function applyNotFilter<T>(filter: UnaryFilterNot<T>, data: T): boolean {
     return !applyFilter(filter.filter, data);
 }
 
-export function applyEqualsFilter<T>(filter: LeafFilterEquals<T>, data: T): boolean {
+export function applyEqualsFilter<T>(filter: NullaryFilterEquals<T>, data: T): boolean {
     return filter.value === data;
 }
 

@@ -1,18 +1,15 @@
 import * as React from 'react';
 import { Filters } from '../filters/model';
 import { applyFiltersToAll } from '../filters/apply-filter';
-import { GroupByValue } from '../group-by/model';
-import { applyGroupByValue } from '../group-by/apply-group-by';
-import { Values } from '../values/model';
-import { applyValue } from '../values/apply-value';
 import { Formats } from '../formats/model';
-import { applyFormat } from '../formats/apply-format';
+import { ValueReducers } from '../values/model';
+import { Groups } from '../groups/model';
 
 export interface TableProps<D> {
     data: D[];
     filters: Filters<D>;
-    groupByValue: GroupByValue<D, keyof D>;
-    values: Values<D>;
+    groups: Groups<D>;
+    values: ValueReducers<D>;
     formats: Formats<D>;
 }
 
@@ -21,25 +18,24 @@ export type TableProvidedProps = never;
 export class Table<D> extends React.Component<TableProps<D>, never> {
     render() {
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
-        const groupedData = applyGroupByValue(this.props.groupByValue, filteredData, this.props.formats);
-        const singlePartition = groupedData.length <= 1;
 
-        const labels: { id: string, name: string }[] = this.props.values.map((valueDescription) => {
+        const group1 = this.props.groups[0](filteredData);
+        const group2 = group1.map((group) => this.props.groups[1](group));
+
+        const groupedData = this.props.groups.reduce((result, grouper) => grouper(result), filteredData);
+
+        const labels: { id: string, label: string }[] = this.props.values.map((valueDescription) => {
             return {
                 id: valueDescription.id,
-                name: `${valueDescription.name} (${valueDescription.value.type})`
+                label: valueDescription.label
             };
         });
 
         const labeledGroups = groupedData.map((group) => {
             return {
-                label: group.label,
+                label: this.props.formats.groupFormatter(group),
                 data: this.props.values.map((valueDescription) => {
-                    return applyValue(
-                        valueDescription.value,
-                        group.data.map((row) => row[valueDescription.name]),
-                        (value) => applyFormat(value, this.props.formats[valueDescription.name])
-                    );
+                    return valueDescription.reducer(group.map((row) => row[valueDescription.name]));
                 })
             };
         });
@@ -56,10 +52,10 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                 </thead>
                 <tbody>
                     {labels.map((label, labelIndex) => {
-                        return <tr key={labelIndex}>
-                            <td>{label.name}</td>
+                        return <tr key={label.id}>
+                            <td>{label.label}</td>
                             {labeledGroups.map((group, groupIndex) => {
-                                return <td key={groupIndex}>{group.data[labelIndex]}</td>;
+                                return <td key={groupIndex}>{group.label}</td>;
                             })}
                         </tr>;
                     })}

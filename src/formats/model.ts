@@ -1,17 +1,10 @@
-export type BooleanFormat = ((value: boolean) => string) | 'yes-no';
+export type FormattedData<D> = { [Key in keyof D]: string };
 
-export type NumberFormat = ((value: number) => string) | 'number' | 'date' | 'time' | 'date-time';
+export type ValueFormatter<D> = (row: D) => FormattedData<D>;
 
-export type StringFormat = ((value: string) => string) | 'text';
+export type GroupFormatter<D> = (data: D[]) => FormattedData<D>;
 
-export type OtherFormat<T> = 'empty' | ((value: T) => string);
-
-export type AnyFormat = BooleanFormat | NumberFormat | StringFormat | OtherFormat<any>;
-
-export type Format<T> =
-    T extends boolean ? BooleanFormat :
-    T extends number ? NumberFormat :
-    T extends string ? StringFormat :
-    OtherFormat<T>;
-
-export type Formats<D> = { [Key in keyof D]: Format<D[Key]> };
+export interface Formats<D> {
+    valueFormatter: ValueFormatter<D>;
+    groupFormatter: GroupFormatter<D>;
+}

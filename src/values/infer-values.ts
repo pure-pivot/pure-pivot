@@ -1,8 +1,18 @@
-import { Value, Values, AnyValue } from './model';
 import { ObjectKeys } from '../util/keys';
-import { Fields } from '../fields/model';
+import { ValueReducers } from './model';
+import { isArrayOf, isBoolean } from '../util/assertion';
 
-export function inferValues<D>(fields: Fields<D>): Values<D> {
+export function defaultValueReducer<T>(values: T[]): T {
+    if (values.length >= 1) {
+        if (isArrayOf(values, isBoolean)) {
+
+        }
+    } else {
+        throw new Error('Default value reducer cannot handle empty arrays.');
+    }
+}
+
+export function inferValues<D>(): ValueReducers<D> {
     const values: Values<D> = [];
 
     let counter = 0;

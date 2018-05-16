@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { LeafFilterEquals } from '../model';
+import { NullaryFilterEquals } from '../model';
 
 export interface EqualsFilterComponentProps<T> {
-    filter: LeafFilterEquals<T>;
+    filter: NullaryFilterEquals<T>;
 }
 
 export class EqualsFilterComponent<T> extends React.Component<EqualsFilterComponentProps<T>, never> {

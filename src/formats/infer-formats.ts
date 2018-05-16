@@ -1,26 +1,48 @@
-import { Formats, Format, AnyFormat } from './model';
+import { Formats, FormattedData } from './model';
 import { ObjectKeys } from '../util/keys';
-import { Fields } from '../fields/model';
 
-export function inferFormats<D>(fields: Fields<D>): Formats<D> {
-    const formats: Formats<D> = {} as Formats<D>;
+export function defaultValueFormatter(value: any): string {
+    if (typeof value === 'boolean') {
+        return value ? 'Yes' : 'No';
+    } else if (typeof value === 'number') {
+        return value.toString();
+    } else if (typeof value === 'string') {
+        return value;
+    } else {
+        return '';
+    }
+}
 
-    for (const key of ObjectKeys(fields)) {
-        switch (fields[key]) {
-            case 'boolean':
-                formats[key] = 'yes-no' as Format<D[keyof D]>;
-                break;
-            case 'number':
-                formats[key] = 'number' as Format<D[keyof D]>;
-                break;
-            case 'string':
-                formats[key] = 'text' as Format<D[keyof D]>;
-                break;
-            case 'other':
-                formats[key] = 'empty' as Format<D[keyof D]>;
-                break;
+export function defaultRowFormatter<D>(row: D): FormattedData<D> {
+    const result = {} as FormattedData<D>;
+    for (const key of ObjectKeys(row)) {
+        result[key] = defaultValueFormatter(row[key]);
+    }
+    return result;
+}
+
+export function defaultGroupFormatter<D>(data: D[]): FormattedData<D> {
+    const flatValues = {} as { [Key in keyof D]: D[Key][] };
+    for (const row of data) {
+        for (const key of ObjectKeys(row)) {
+            if (!flatValues[key]) {
+                flatValues[key] = [];
+            }
+            flatValues[key].push(row[key]);
         }
     }
 
-    return formats;
+    const result = {} as FormattedData<D>;
+    for (const key of ObjectKeys(flatValues)) {
+        result[key] = flatValues[key].join(', ');
+    }
+
+    return result;
+}
+
+export function inferFormats(): Formats<any> {
+    return {
+        valueFormatter: defaultRowFormatter,
+        groupFormatter: defaultGroupFormatter
+    };
 }

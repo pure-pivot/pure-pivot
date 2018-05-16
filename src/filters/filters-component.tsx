@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Filters, Filter, FilterDescription } from './model';
-import { Fields } from '../fields/model';
 import { FilterDescriptionComponentProps, FilterDescriptionComponentProvidedProps } from './filter-description-component';
 
 export interface FiltersComponentProps<D> {
