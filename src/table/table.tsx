@@ -25,6 +25,9 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     render() {
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
         const groupedData = applyGroups(this.props.groups, filteredData);
+
+        // TODO: it probably makes more sense only to show the available labels per sub-grouping
+        // e.g.: if there are no "POST" requests to "/ldap/verify", then don't show that sub-group.
         const extractedLabels = extractLabels(this.props.groups.length, groupedData);
 
         const labels: { id: string, label: string }[] = this.props.values.map((valueDescription) => {
