@@ -31,15 +31,14 @@ export function applyGroups<T>(groups: Groups<T>, data: T[]): CombinedGrouping {
         factors: []
     };
 
-    for (let i = 0; i < data.length; i++) {
-        combinedGrouping.indices[i] = 0;
-    }
-
     let multiplier = 1;
     for (let i = groups.length - 1; i >= 0; i--) {
         const group = groups[i];
         const groupedData = group.grouper(data);
         for (let j = 0; j < data.length; j++) {
+            if (combinedGrouping.indices[j] === undefined) {
+                combinedGrouping.indices[j] = 0;
+            }
             combinedGrouping.indices[j] += multiplier * groupedData.groupIndices[j];
         }
         combinedGrouping.labels[i] = groupedData.groupLabels;
@@ -52,21 +51,24 @@ export function applyGroups<T>(groups: Groups<T>, data: T[]): CombinedGrouping {
     return combinedGrouping;
 }
 
-export function countUniqueLabels(combinedGrouping: CombinedGrouping, uniqueIndices: number[][]): number[][] {
-    const result: number[][] = [];
+export function countUniqueLabels(combinedGrouping: CombinedGrouping, uniqueIndices: number[][]): { count: number, label: string }[][] {
+    const result: { count: number, label: string }[][] = [];
 
     for (let i = 0; i < combinedGrouping.labels.length; i++) {
-        result[i] = [1];
+        result[i] = [];
     }
 
-    for (let i = 1; i < uniqueIndices.length; i++) {
-        let changed = false;
+    for (let i = 0; i < uniqueIndices.length; i++) {
+        let changed = i === 0;
         for (let j = 0; j < combinedGrouping.labels.length; j++) {
             if (changed || uniqueIndices[i - 1][j] !== uniqueIndices[i][j]) {
-                result[j].push(1);
+                result[j].push({
+                    count: 1,
+                    label: combinedGrouping.labels[j][uniqueIndices[i][j]]
+                });
                 changed = true;
             } else {
-                result[j][result[j].length - 1] += 1;
+                result[j][result[j].length - 1].count += 1;
             }
         }
     }

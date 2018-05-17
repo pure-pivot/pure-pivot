@@ -209,7 +209,7 @@ export class App extends React.Component<{}, AppState> {
                     };
                 }
             })
-            .withSelection({
+            .withGroup({
                 id: 'url-first',
                 label: 'url-first',
                 grouper: (data) => {

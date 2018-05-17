@@ -23,24 +23,13 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     render() {
         const start = window.performance.now();
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
-        console.log(`${window.performance.now() - start} ms`);
         const groups = applyGroups(this.props.groups, filteredData);
-        console.log(`${window.performance.now() - start} ms`);
         const selections = applyGroups(this.props.selections, filteredData);
-        console.log(`${window.performance.now() - start} ms`);
 
-        // const sortedIndices = groups.indices.slice().sort((a, b) => {
-        //     let index = 0;
-        //     while (a[index] === b[index] && index < a.length - 1) {
-        //         index += 1;
-        //     }
-        //     return a[index] - b[index];
-        // });
-        // console.log(`${window.performance.now() - start} ms`);
-        // console.log(sortedIndices);
+        const uniqueGroupsEncoded = Array.from(new Set(groups.indices))
+            .sort((a, b) => a - b);
 
-        const uniqueGroups = Array.from(new Set(groups.indices))
-            .sort((a, b) => a - b)
+        const uniqueGroups = uniqueGroupsEncoded
             .map((group) => {
                 const indices: number[] = [];
                 for (const factor of groups.factors) {
@@ -51,62 +40,57 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                 indices.push(group);
                 return indices;
             });
-        console.log(`${window.performance.now() - start} ms`);
 
-        const uniqueLabelCount = countUniqueLabels(groups, uniqueGroups);
-        console.log(`${window.performance.now() - start} ms`);
+        const groupUniqueLabelCount = countUniqueLabels(groups, uniqueGroups);
 
-        // const selectionData = applyGroups(this.props.selections, filteredData);
-        // const selectionLabelsCounts = countLabels(selectionData);
-        // const groupedData = applyGroups(this.props.groups, filteredData);
-        // const groupedLabelsCounts = countLabels(groupedData);
+        const uniqueSelectionsEncoded = Array.from(new Set(selections.indices))
+            .sort((a, b) => a - b);
 
-        // const rowsCount = selectionLabelsCounts[selectionLabelsCounts.length - 1].length;
-        // const columnsCount = groupedLabelsCounts[groupedLabelsCounts.length - 1].length;
-        // const values: string[][] = [];
-        // for (let i = 0; i < rowsCount; i++) {
-        //     values[i] = [];
-        //     for (let j = 0; j < columnsCount; j++) {
-        //         values[i][j] = '';
-        //     }
-        // }
+        const uniqueSelections = uniqueSelectionsEncoded
+            .map((selection) => {
+                const indices: number[] = [];
+                for (const factor of selections.factors) {
+                    const index = Math.floor(selection / factor);
+                    indices.push(index);
+                    selection -= index * factor;
+                }
+                indices.push(selection);
+                return indices;
+            });
 
         return <React.Fragment>
             <table>
                 <thead>
                     {this.props.groups.map((grouper, index) =>
                         <tr key={grouper.id}>
-                            <th>{grouper.label}</th>
-                            {/* {groupedLabelsCounts[index].map((labelCount, index) => <th key={index} colSpan={labelCount.count}>{labelCount.label}</th>)} */}
-                            {uniqueLabelCount[index]}
+                            <th scope="row">{grouper.label}</th>
+                            {groupUniqueLabelCount[index].map((labelCount, index) =>
+                                <th key={index} scope="col" colSpan={labelCount.count}>
+                                    {labelCount.label}
+                                </th>
+                            )}
                         </tr>
                     )}
                 </thead>
                 <tbody>
-                    {/* <tr>
-                        <td>Values</td>
-                        {this.renderGroupingRecursive(groupedData, { index: 0 })}
-                    </tr> */}
+                    {uniqueSelectionsEncoded.map((selectionEncoded, selectionIndex) =>
+                        <tr key={selectionIndex}>
+                            <th scope="row">{uniqueSelections[selectionIndex].map((label, labelIndex) => selections.labels[labelIndex][label]).join(' / ')}</th>
+                            {uniqueGroupsEncoded.map((groupEncoded, groupIndex) =>
+                                <td key={groupIndex}>
+                                    {filteredData
+                                        .filter((data, dataIndex) =>
+                                            groups.indices[dataIndex] === groupEncoded
+                                            && selections.indices[dataIndex] === selectionEncoded
+                                        )
+                                        .length
+                                    }
+                                </td>
+                            )}
+                        </tr>
+                    )}
                 </tbody>
             </table>
-            <pre>
-                {JSON.stringify(groups, null, 2)}
-            </pre>
-            <pre>
-                {JSON.stringify(selections, null, 2)}
-            </pre>
-            {/* <pre>
-                {JSON.stringify(selectionLabelsCounts, null, 2)}
-            </pre>
-            <pre>
-                {JSON.stringify(selectionData, null, 2)}
-            </pre>
-            <pre>
-                {JSON.stringify(groupedLabelsCounts, null, 2)}
-            </pre>
-            <pre>
-                {JSON.stringify(groupedData, null, 2)}
-            </pre> */}
         </React.Fragment>;
     }
 }
