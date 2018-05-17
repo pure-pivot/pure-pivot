@@ -5,12 +5,14 @@ import { Formats } from '../formats/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
 import { applyGroups, Grouping } from '../groups/apply-groups';
-import { extractLabels, countLabels } from '../groups/extract-labels';
+import { countLabels } from '../groups/count-labels';
+import { Selections } from '../selections/model';
 
 export interface TableProps<D> {
     data: D[];
     filters: Filters<D>;
     groups: Groups<D>;
+    selections: Selections<D>;
     values: ValueReducers<D>;
     formats: Formats<D>;
 }
@@ -18,38 +20,50 @@ export interface TableProps<D> {
 export type TableProvidedProps = never;
 
 export class Table<D> extends React.Component<TableProps<D>, never> {
-    // renderGroupingLabelsRecursive(grouping: Grouping<D>): React.ReactNode[][] {
-    //     if (grouping.type === 'nested') {
-    //         grouping.data.map((nestedGrouping) => {
-    //             this.renderGroupingLabelsRecursive(nestedGrouping.data);
-
-    //             <th>{nestedGrouping.label}</th>;
-    //         });
+    // renderGroupingRecursive(groupedData: Grouping<D>, boxedIndex: { index: number }): any {
+    //     if (groupedData.type === 'nested') {
+    //         return groupedData.data.map((nestedGrouping) => this.renderGroupingRecursive(nestedGrouping.data, boxedIndex));
     //     } else {
-    //         return [];
+    //         return <td key={boxedIndex.index++}>
+    //             {groupedData.data.length}
+    //         </td>;
+    //     }
+    // }
+
+    // recursiveFillValues(rowGrouping: Grouping<D>, columnGrouping: Grouping<D>, values: string[][]) {
+
+    // }
+
+    // recursiveGroupIndices(data: D[], groups: Groups<D>, dataGroupIndices: number[], groupLabels: string[]) {
+    //     const [head, ...tail] = groups;
+    //     for (const group of head.grouper(data)) {
+    //         group.
     //     }
     // }
 
     render() {
+        const start = window.performance.now();
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
-        const groupedData = applyGroups(this.props.groups, filteredData);
+        console.log(`${window.performance.now() - start} ms`);
+        const groups = applyGroups(this.props.groups, filteredData);
+        console.log(`${window.performance.now() - start} ms`);
+        const selections = applyGroups(this.props.selections, filteredData);
+        console.log(`${window.performance.now() - start} ms`);
 
-        // TODO: it probably makes more sense only to show the available labels per sub-grouping
-        // e.g.: if there are no "POST" requests to "/ldap/verify", then don't show that sub-group.
-        const extractedLabels = extractLabels(this.props.groups.length, groupedData);
+        // const selectionData = applyGroups(this.props.selections, filteredData);
+        // const selectionLabelsCounts = countLabels(selectionData);
+        // const groupedData = applyGroups(this.props.groups, filteredData);
+        // const groupedLabelsCounts = countLabels(groupedData);
 
-        const labelsCounted = countLabels(groupedData);
-
-        const labels: { id: string, label: string }[] = this.props.values.map((valueDescription) => {
-            return {
-                id: valueDescription.id,
-                label: valueDescription.label
-            };
-        });
-
-        if (groupedData.type === 'leaf') {
-            // groupedData.data
-        }
+        // const rowsCount = selectionLabelsCounts[selectionLabelsCounts.length - 1].length;
+        // const columnsCount = groupedLabelsCounts[groupedLabelsCounts.length - 1].length;
+        // const values: string[][] = [];
+        // for (let i = 0; i < rowsCount; i++) {
+        //     values[i] = [];
+        //     for (let j = 0; j < columnsCount; j++) {
+        //         values[i][j] = '';
+        //     }
+        // }
 
         return <React.Fragment>
             <table>
@@ -57,24 +71,35 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                     {this.props.groups.map((grouper, index) =>
                         <tr key={grouper.id}>
                             <th>{grouper.label}</th>
-                            {labelsCounted[index].map((labelCount, index) => <th key={index} colSpan={labelCount.count}>{labelCount.label}</th>)}
+                            {/* {groupedLabelsCounts[index].map((labelCount, index) => <th key={index} colSpan={labelCount.count}>{labelCount.label}</th>)} */}
                         </tr>
                     )}
                 </thead>
-                {/* <tbody>
-                    {labels.map((label, labelIndex) => {
-                        return <tr key={label.id}>
-                            <td>{label.label}</td>
-                            {labeledGroups.map((group, groupIndex) => {
-                                return <td key={groupIndex}>{group.label}</td>;
-                            })}
-                        </tr>;
-                    })}
-                </tbody> */}
+                <tbody>
+                    {/* <tr>
+                        <td>Values</td>
+                        {this.renderGroupingRecursive(groupedData, { index: 0 })}
+                    </tr> */}
+                </tbody>
             </table>
             <pre>
-                {JSON.stringify(groupedData, null, 2)}
+                {JSON.stringify(groups, null, 2)}
             </pre>
+            <pre>
+                {JSON.stringify(selections, null, 2)}
+            </pre>
+            {/* <pre>
+                {JSON.stringify(selectionLabelsCounts, null, 2)}
+            </pre>
+            <pre>
+                {JSON.stringify(selectionData, null, 2)}
+            </pre>
+            <pre>
+                {JSON.stringify(groupedLabelsCounts, null, 2)}
+            </pre>
+            <pre>
+                {JSON.stringify(groupedData, null, 2)}
+            </pre> */}
         </React.Fragment>;
     }
 }

@@ -57,11 +57,12 @@ export class App extends React.Component<{}, AppState> {
             .then((data) => {
                 const parser = new DOMParser();
                 const DOM = parser.parseFromString(data, 'text/xml');
-                const builds = DOM.querySelectorAll('builds > build');
+                const builds = ['95029', '95029']; // DOM.querySelectorAll('builds > build');
                 let promise: Promise<any[]> = Promise.resolve([]);
 
                 for (const build of builds) {
-                    const id = build.getAttribute('id');
+                    // const id = build.getAttribute('id');
+                    const id = build;
                     promise = promise.then((result) => {
                         return fetch(`http://build.test-cancun.com:8111/app/rest/builds/id:${id}/artifacts/content/health.json?guest=1`)
                             .then((response) => response.json())
@@ -93,7 +94,7 @@ export class App extends React.Component<{}, AppState> {
     }
 
     buildConfiguration(data: Data[]): Configuration<Data> {
-        return new ConfigurationBuilder(data)
+        return new ConfigurationBuilder<Data>(data)
             // .withFormat('time', (value: number) => {
             //     const date = new Date(value);
             //     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
@@ -139,77 +140,121 @@ export class App extends React.Component<{}, AppState> {
             //         <div style={{ border: '1px solid black', padding: '2px' }}><props.filterComponent filter={props.filter.right} /></div>
             //     </div>
             // )
-            .withFilter({
-                id: '0',
-                name: 'method',
-                filter: {
-                    type: 'and',
-                    left: {
-                        type: 'not',
-                        filter: {
-                            type: 'equals',
-                            value: 'HEAD'
-                        }
-                    },
-                    right: {
-                        type: 'not',
-                        filter: {
-                            type: 'equals',
-                            value: 'OPTIONS'
-                        }
-                    }
-                }
-            })
+            // .withFilter({
+            //     id: '0',
+            //     name: 'method',
+            //     filter: {
+            //         type: 'and',
+            //         left: {
+            //             type: 'not',
+            //             filter: {
+            //                 type: 'equals',
+            //                 value: 'HEAD'
+            //             }
+            //         },
+            //         right: {
+            //             type: 'not',
+            //             filter: {
+            //                 type: 'equals',
+            //                 value: 'OPTIONS'
+            //             }
+            //         }
+            //     }
+            // })
             // .withGroupByField('time', {
             //     type: 'number-count',
             //     count: 10
             // })
-            .withGroups([{
-                id: 'url',
-                label: 'url',
-                grouper: (data) => {
-                    const byUrl: { [Key: string]: Data[] } = {};
-
-                    for (const row of data) {
-                        if (!byUrl[row.url]) {
-                            byUrl[row.url] = [];
-                        }
-                        byUrl[row.url].push(row);
-                    }
-
-                    return Object.keys(byUrl).map((key) => ({ label: key, data: byUrl[key] }));
-                }
-            }, {
+            .withGroup({
                 id: 'method',
                 label: 'method',
                 grouper: (data) => {
-                    const byMethod: { [Key: string]: Data[] } = {};
+                    const byMethod: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
 
                     for (const row of data) {
-                        if (!byMethod[row.method]) {
-                            byMethod[row.method] = [];
+                        if (byMethod[row.method] === undefined) {
+                            byMethod[row.method] = labels.length;
+                            labels.push(row.method);
                         }
-                        byMethod[row.method].push(row);
+                        dataIndices.push(byMethod[row.method]);
                     }
 
-                    return Object.keys(byMethod).map((key) => ({ label: key, data: byMethod[key] }));
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
                 }
-            }, {
+            })
+            .withGroup({
                 id: 'statusCode',
                 label: 'statusCode',
                 grouper: (data) => {
-                    const byStatusCode: { [Key: string]: Data[] } = {};
+                    const byStatusCode: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
 
                     for (const row of data) {
-                        if (!byStatusCode[row.statusCode]) {
-                            byStatusCode[row.statusCode] = [];
+                        if (byStatusCode[row.statusCode] === undefined) {
+                            byStatusCode[row.statusCode] = labels.length;
+                            labels.push(row.statusCode.toString());
                         }
-                        byStatusCode[row.statusCode].push(row);
+                        dataIndices.push(byStatusCode[row.statusCode]);
                     }
 
-                    return Object.keys(byStatusCode).map((key) => ({ label: key, data: byStatusCode[key] }));
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
                 }
-            }])
+            })
+            .withSelection({
+                id: 'url-first',
+                label: 'url-first',
+                grouper: (data) => {
+                    const byUrlFirst: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
+
+                    for (const row of data) {
+                        const urlFirst = row.url.split('/')[1];
+                        if (byUrlFirst[urlFirst] === undefined) {
+                            byUrlFirst[urlFirst] = labels.length;
+                            labels.push(urlFirst);
+                        }
+                        dataIndices.push(byUrlFirst[urlFirst]);
+                    }
+
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
+                }
+            })
+            .withSelection({
+                id: 'url-second',
+                label: 'url-second',
+                grouper: (data) => {
+                    const byUrlSecond: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
+
+                    for (const row of data) {
+                        const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
+                        if (byUrlSecond[urlSecond] === undefined) {
+                            byUrlSecond[urlSecond] = labels.length;
+                            labels.push(urlSecond);
+                        }
+                        dataIndices.push(byUrlSecond[urlSecond]);
+                    }
+
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
+                }
+            })
             .build();
     }
 
@@ -226,8 +271,8 @@ export class App extends React.Component<{}, AppState> {
             return <React.Fragment>
                 {/* <h3>Fields</h3>
                 <this.state.result.fieldsComponent fields={this.state.result.fields} /> */}
-                <h3>Filters</h3>
-                <this.state.result.filtersComponent filters={this.state.result.filters} />
+                {/* <h3>Filters</h3>
+                <this.state.result.filtersComponent filters={this.state.result.filters} /> */}
                 {/* <h3>Group by</h3>
                 <this.state.result.groupByValueComponent groupByValue={this.state.result.groupBy} />
                 <h3>Values</h3>
@@ -237,6 +282,7 @@ export class App extends React.Component<{}, AppState> {
                     data={this.state.result.data}
                     filters={this.state.result.filters}
                     groups={this.state.result.groups}
+                    selections={this.state.result.selections}
                     values={this.state.result.values}
                     formats={this.state.result.formats}
                 />

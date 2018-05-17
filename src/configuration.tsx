@@ -11,13 +11,16 @@ import { EqualsFilterComponent, EqualsFilterComponentProps } from './filters/com
 // import { inferValues } from './values/infer-values';
 import { TableProps, TableProvidedProps, Table } from './table/table';
 import { ValueReducers } from './values/model';
-import { Groups } from './groups/model';
+import { Groups, Grouper } from './groups/model';
 import { inferGroups } from './groups/infer-grouper';
+import { Selections } from './selections/model';
+import { inferSelections } from './selections/infer-selections';
 
 export interface Configuration<D> {
     data: D[];
     filters: Filters<D>;
     groups: Groups<D>;
+    selections: Selections<D>;
     values: ValueReducers<D>;
     formats: Formats<D>;
     filtersComponent: React.ComponentType<Pick<FiltersComponentProps<D>, Exclude<keyof FiltersComponentProps<D>, FiltersComponentProvidedProps>>>;
@@ -32,6 +35,7 @@ export class ConfigurationBuilder<D> {
     private data: D[];
     private filters: Filters<D>;
     private groups: Groups<D>;
+    private selections: Selections<D>;
     private values: ValueReducers<D>;
     private formats: Formats<D>;
     private filterComponent: React.ComponentType<FilterComponentProps<D[keyof D]>>;
@@ -46,6 +50,7 @@ export class ConfigurationBuilder<D> {
         this.data = data;
         this.filters = [];
         this.groups = inferGroups();
+        this.selections = inferSelections();
         this.values = [];
         this.formats = inferFormats();
         this.filterComponent = FilterComponent;
@@ -102,6 +107,21 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
+    withGroup(group: Grouper<D>) {
+        this.groups = [...this.groups, group];
+        return this;
+    }
+
+    withSelections(selections: Selections<D>) {
+        this.selections = selections;
+        return this;
+    }
+
+    withSelection(selection: Grouper<D>) {
+        this.selections = [...this.selections, selection];
+        return this;
+    }
+
     build(): Configuration<D> {
         const filterComponentProvidedProps: { [Key: string]: React.ComponentType<any> } = {
             andFilterComponent: this.andFilterComponent,
@@ -121,6 +141,7 @@ export class ConfigurationBuilder<D> {
             data: this.data,
             filters: this.filters,
             groups: this.groups,
+            selections: this.selections,
             values: this.values,
             formats: this.formats,
             filtersComponent: providePropsComponentFactory(this.filtersComponent, {
