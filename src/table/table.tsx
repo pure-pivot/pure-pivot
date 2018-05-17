@@ -4,7 +4,7 @@ import { applyFiltersToAll } from '../filters/apply-filter';
 import { Formats } from '../formats/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
-import { applyGroups, Grouping } from '../groups/apply-groups';
+import { applyGroups, Grouping, CombinedGrouping, countUniqueLabels } from '../groups/apply-groups';
 import { countLabels } from '../groups/count-labels';
 import { Selections } from '../selections/model';
 
@@ -20,27 +20,6 @@ export interface TableProps<D> {
 export type TableProvidedProps = never;
 
 export class Table<D> extends React.Component<TableProps<D>, never> {
-    // renderGroupingRecursive(groupedData: Grouping<D>, boxedIndex: { index: number }): any {
-    //     if (groupedData.type === 'nested') {
-    //         return groupedData.data.map((nestedGrouping) => this.renderGroupingRecursive(nestedGrouping.data, boxedIndex));
-    //     } else {
-    //         return <td key={boxedIndex.index++}>
-    //             {groupedData.data.length}
-    //         </td>;
-    //     }
-    // }
-
-    // recursiveFillValues(rowGrouping: Grouping<D>, columnGrouping: Grouping<D>, values: string[][]) {
-
-    // }
-
-    // recursiveGroupIndices(data: D[], groups: Groups<D>, dataGroupIndices: number[], groupLabels: string[]) {
-    //     const [head, ...tail] = groups;
-    //     for (const group of head.grouper(data)) {
-    //         group.
-    //     }
-    // }
-
     render() {
         const start = window.performance.now();
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
@@ -48,6 +27,33 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const groups = applyGroups(this.props.groups, filteredData);
         console.log(`${window.performance.now() - start} ms`);
         const selections = applyGroups(this.props.selections, filteredData);
+        console.log(`${window.performance.now() - start} ms`);
+
+        // const sortedIndices = groups.indices.slice().sort((a, b) => {
+        //     let index = 0;
+        //     while (a[index] === b[index] && index < a.length - 1) {
+        //         index += 1;
+        //     }
+        //     return a[index] - b[index];
+        // });
+        // console.log(`${window.performance.now() - start} ms`);
+        // console.log(sortedIndices);
+
+        const uniqueGroups = Array.from(new Set(groups.indices))
+            .sort((a, b) => a - b)
+            .map((group) => {
+                const indices: number[] = [];
+                for (const factor of groups.factors) {
+                    const index = Math.floor(group / factor);
+                    indices.push(index);
+                    group -= index * factor;
+                }
+                indices.push(group);
+                return indices;
+            });
+        console.log(`${window.performance.now() - start} ms`);
+
+        const uniqueLabelCount = countUniqueLabels(groups, uniqueGroups);
         console.log(`${window.performance.now() - start} ms`);
 
         // const selectionData = applyGroups(this.props.selections, filteredData);
@@ -72,6 +78,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                         <tr key={grouper.id}>
                             <th>{grouper.label}</th>
                             {/* {groupedLabelsCounts[index].map((labelCount, index) => <th key={index} colSpan={labelCount.count}>{labelCount.label}</th>)} */}
+                            {uniqueLabelCount[index]}
                         </tr>
                     )}
                 </thead>
