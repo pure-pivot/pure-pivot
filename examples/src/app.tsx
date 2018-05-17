@@ -148,14 +148,14 @@ export class App extends React.Component<{}, AppState> {
                         type: 'not',
                         filter: {
                             type: 'equals',
-                            value: 'PUT'
+                            value: 'HEAD'
                         }
                     },
                     right: {
                         type: 'not',
                         filter: {
                             type: 'equals',
-                            value: 'PUT'
+                            value: 'OPTIONS'
                         }
                     }
                 }
@@ -165,6 +165,21 @@ export class App extends React.Component<{}, AppState> {
             //     count: 10
             // })
             .withGroups([{
+                id: 'url',
+                label: 'url',
+                grouper: (data) => {
+                    const byUrl: { [Key: string]: Data[] } = {};
+
+                    for (const row of data) {
+                        if (!byUrl[row.url]) {
+                            byUrl[row.url] = [];
+                        }
+                        byUrl[row.url].push(row);
+                    }
+
+                    return Object.keys(byUrl).map((key) => ({ label: key, data: byUrl[key] }));
+                }
+            }, {
                 id: 'method',
                 label: 'method',
                 grouper: (data) => {
@@ -180,19 +195,19 @@ export class App extends React.Component<{}, AppState> {
                     return Object.keys(byMethod).map((key) => ({ label: key, data: byMethod[key] }));
                 }
             }, {
-                id: 'url',
-                label: 'url',
+                id: 'statusCode',
+                label: 'statusCode',
                 grouper: (data) => {
-                    const byUrl: { [Key: string]: Data[] } = {};
+                    const byStatusCode: { [Key: string]: Data[] } = {};
 
                     for (const row of data) {
-                        if (!byUrl[row.url]) {
-                            byUrl[row.url] = [];
+                        if (!byStatusCode[row.statusCode]) {
+                            byStatusCode[row.statusCode] = [];
                         }
-                        byUrl[row.url].push(row);
+                        byStatusCode[row.statusCode].push(row);
                     }
 
-                    return Object.keys(byUrl).map((key) => ({ label: key, data: byUrl[key] }));
+                    return Object.keys(byStatusCode).map((key) => ({ label: key, data: byStatusCode[key] }));
                 }
             }])
             .build();

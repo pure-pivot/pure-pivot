@@ -38,7 +38,6 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         // e.g.: if there are no "POST" requests to "/ldap/verify", then don't show that sub-group.
         const extractedLabels = extractLabels(this.props.groups.length, groupedData);
 
-        // TODO: labels on the same level must be in the same array
         const labelsCounted = countLabels(groupedData);
 
         const labels: { id: string, label: string }[] = this.props.values.map((valueDescription) => {
@@ -55,9 +54,10 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         return <React.Fragment>
             <table>
                 <thead>
-                    {this.props.groups.map((grouper) =>
+                    {this.props.groups.map((grouper, index) =>
                         <tr key={grouper.id}>
                             <th>{grouper.label}</th>
+                            {labelsCounted[index].map((labelCount, index) => <th key={index} colSpan={labelCount.count}>{labelCount.label}</th>)}
                         </tr>
                     )}
                 </thead>
@@ -72,15 +72,6 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                     })}
                 </tbody> */}
             </table>
-            <pre>
-                {JSON.stringify(labels, null, 2)}
-            </pre>
-            <pre>
-                {JSON.stringify(labelsCounted, null, 2)}
-            </pre>
-            <pre>
-                {JSON.stringify(extractedLabels, null, 2)}
-            </pre>
             <pre>
                 {JSON.stringify(groupedData, null, 2)}
             </pre>
