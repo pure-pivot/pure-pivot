@@ -161,6 +161,17 @@ export class App extends React.Component<{}, AppState> {
             //         }
             //     }
             // })
+            .withFilter({
+                id: '0',
+                name: 'url',
+                filter: {
+                    type: 'not',
+                    filter: {
+                        type: 'equals',
+                        value: '/'
+                    }
+                }
+            })
             // .withGroupByField('time', {
             //     type: 'number-count',
             //     count: 10

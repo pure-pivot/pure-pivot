@@ -30,17 +30,40 @@ const measure = {
     }
 };
 
+export interface Heading {
+    label: string;
+    count: number;
+}
+
+export interface LabeledGroupByLevel {
+    id: string;
+    label: string;
+    headings: Heading[];
+}
+
 export class Table<D> extends React.Component<TableProps<D>, never> {
-    // renderRowHeadings(labelsRecursive: GroupLabelsRecursive): React.ReactNode[] {
-    //     return labelsRecursive.map((labels, labelsIndex) =>
-    //         <React.Fragment key={labelsIndex}>
-    //             <tr>
-    //                 <th scope="row">{labels.label}</th>
-    //             </tr>
-    //             {this.renderRowHeadings(labels.nested)}
-    //         </React.Fragment>
-    //     );
-    // }
+    renderRowHeadings(rows: LabeledGroupByLevel[], start: number = 0, count: number = Number.POSITIVE_INFINITY) {
+        if (rows.length >= 1) {
+            const [head, ...tail] = rows;
+            const result: React.ReactNode[] = [];
+            const end = Math.min(head.headings.length, start + count);
+            let totalCount = 0;
+
+            for (let i = start; i < end; i++) {
+                result.push(
+                    <React.Fragment key={i}>
+                        <tr>
+                            <th scope="row">{head.headings[i].label}</th>
+                        </tr>
+                        {this.renderRowHeadings(tail, totalCount, head.headings[i].count)}
+                    </React.Fragment>
+                );
+                totalCount += head.headings[i].count;
+            }
+
+            return result;
+        }
+    }
 
     render() {
         measure.start();
@@ -62,17 +85,19 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const uniqueSelectionsLabelCount = selections.getUniqueIndexLabelCounts();
         measure.log();
 
-        const columns = this.props.groups.map((group, groupIndex) => ({
+        const columns: LabeledGroupByLevel[] = this.props.groups.map((group, groupIndex) => ({
             id: group.id,
             label: group.label,
-            headings: uniqueGroupLabelCount[groupIndex].map((labelAndCount) => ({ label: labelAndCount.label, columnCount: labelAndCount.count }))
+            headings: uniqueGroupLabelCount[groupIndex]
         }));
 
-        const rows = this.props.selections.map((selection, selectionIndex) => ({
+        const rows: LabeledGroupByLevel[] = this.props.selections.map((selection, selectionIndex) => ({
             id: selection.id,
             label: selection.label,
-            headings: uniqueSelectionsLabelCount[selectionIndex].map((labelAndCount) => ({ label: labelAndCount.label, rowCount: labelAndCount.count }))
+            headings: uniqueSelectionsLabelCount[selectionIndex]
         }));
+
+        console.log(rows);
 
         return <React.Fragment>
             <table>
@@ -81,7 +106,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                         <tr key={column.id}>
                             <th scope="row">{column.label}</th>
                             {column.headings.map((heading, index) =>
-                                <th key={index} scope="col" colSpan={heading.columnCount}>
+                                <th key={index} scope="col" colSpan={heading.count}>
                                     {heading.label}
                                 </th>
                             )}
@@ -89,11 +114,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                     )}
                 </thead>
                 <tbody>
-                    {rows[rows.length - 1].headings.map((heading, index) =>
-                        <tr key={index}>
-                            <th scope="row">{heading.label}</th>
-                        </tr>
-                    )}
+                    {this.renderRowHeadings(rows)}
                 </tbody>
             </table>
         </React.Fragment>;
