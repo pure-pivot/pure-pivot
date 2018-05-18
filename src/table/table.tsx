@@ -42,23 +42,20 @@ export interface LabeledGroupByLevel {
 }
 
 export class Table<D> extends React.Component<TableProps<D>, never> {
-    renderRowHeadings(rows: LabeledGroupByLevel[], start: number = 0, count: number = Number.POSITIVE_INFINITY) {
-        if (rows.length >= 1) {
-            const [head, ...tail] = rows;
+    renderRowHeadings(rows: LabeledGroupByLevel[], groupIndex: number = 0, count: number = Number.POSITIVE_INFINITY, runningIndices: number[] = rows.map(() => 0)) {
+        if (groupIndex < rows.length) {
             const result: React.ReactNode[] = [];
-            const end = Math.min(head.headings.length, start + count);
-            let totalCount = 0;
 
-            for (let i = start; i < end; i++) {
+            for (let i = runningIndices[groupIndex], totalCount = 0; i < rows[groupIndex].headings.length && totalCount < count; i++ , runningIndices[groupIndex]++) {
                 result.push(
                     <React.Fragment key={i}>
                         <tr>
-                            <th scope="row">{head.headings[i].label}</th>
+                            <th scope="row">{'-'.repeat(groupIndex + 1)} {rows[groupIndex].headings[i].label}</th>
                         </tr>
-                        {this.renderRowHeadings(tail, totalCount, head.headings[i].count)}
+                        {this.renderRowHeadings(rows, groupIndex + 1, rows[groupIndex].headings[i].count, runningIndices)}
                     </React.Fragment>
                 );
-                totalCount += head.headings[i].count;
+                totalCount += rows[groupIndex].headings[i].count;
             }
 
             return result;
