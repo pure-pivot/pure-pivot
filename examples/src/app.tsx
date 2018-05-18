@@ -167,7 +167,7 @@ export class App extends React.Component<{}, AppState> {
             // })
             .withGroup({
                 id: 'method',
-                label: 'method',
+                label: 'Method',
                 grouper: (data) => {
                     const byMethod: { [Key: string]: number } = {};
                     const labels: string[] = [];
@@ -189,7 +189,7 @@ export class App extends React.Component<{}, AppState> {
             })
             .withGroup({
                 id: 'statusCode',
-                label: 'statusCode',
+                label: 'Status code',
                 grouper: (data) => {
                     const byStatusCode: { [Key: string]: number } = {};
                     const labels: string[] = [];
@@ -209,9 +209,9 @@ export class App extends React.Component<{}, AppState> {
                     };
                 }
             })
-            .withGroup({
+            .withSelection({
                 id: 'url-first',
-                label: 'url-first',
+                label: 'URL 1st',
                 grouper: (data) => {
                     const byUrlFirst: { [Key: string]: number } = {};
                     const labels: string[] = [];
@@ -234,7 +234,7 @@ export class App extends React.Component<{}, AppState> {
             })
             .withSelection({
                 id: 'url-second',
-                label: 'url-second',
+                label: 'URL 2nd',
                 grouper: (data) => {
                     const byUrlSecond: { [Key: string]: number } = {};
                     const labels: string[] = [];

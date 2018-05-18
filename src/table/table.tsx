@@ -4,8 +4,7 @@ import { applyFiltersToAll } from '../filters/apply-filter';
 import { Formats } from '../formats/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
-import { applyGroups, Grouping, CombinedGrouping, countUniqueLabels } from '../groups/apply-groups';
-import { countLabels } from '../groups/count-labels';
+import { Grouping } from '../groups/grouping';
 import { Selections } from '../selections/model';
 
 export interface TableProps<D> {
@@ -19,74 +18,80 @@ export interface TableProps<D> {
 
 export type TableProvidedProps = never;
 
+const measure = {
+    startTime: 0,
+    start: () => {
+        measure.startTime = window.performance.now();
+    },
+    log: () => {
+        const end = window.performance.now();
+        console.log(`${end - measure.startTime} ms`);
+        measure.startTime = end;
+    }
+};
+
 export class Table<D> extends React.Component<TableProps<D>, never> {
+    // renderRowHeadings(labelsRecursive: GroupLabelsRecursive): React.ReactNode[] {
+    //     return labelsRecursive.map((labels, labelsIndex) =>
+    //         <React.Fragment key={labelsIndex}>
+    //             <tr>
+    //                 <th scope="row">{labels.label}</th>
+    //             </tr>
+    //             {this.renderRowHeadings(labels.nested)}
+    //         </React.Fragment>
+    //     );
+    // }
+
     render() {
-        const start = window.performance.now();
+        measure.start();
+
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
-        const groups = applyGroups(this.props.groups, filteredData);
-        const selections = applyGroups(this.props.selections, filteredData);
+        measure.log();
+        const groups = new Grouping(this.props.groups, filteredData);
+        measure.log();
+        const selections = new Grouping(this.props.selections, filteredData);
+        measure.log();
 
-        const uniqueGroupsEncoded = Array.from(new Set(groups.indices))
-            .sort((a, b) => a - b);
+        const uniqueGroupIndices = groups.getUniqueIndices();
+        measure.log();
+        const uniqueGroupLabelCount = groups.getUniqueIndexLabelCounts();
+        measure.log();
 
-        const uniqueGroups = uniqueGroupsEncoded
-            .map((group) => {
-                const indices: number[] = [];
-                for (const factor of groups.factors) {
-                    const index = Math.floor(group / factor);
-                    indices.push(index);
-                    group -= index * factor;
-                }
-                indices.push(group);
-                return indices;
-            });
+        const uniqueSelectionIndices = selections.getUniqueIndices();
+        measure.log();
+        const uniqueSelectionsLabelCount = selections.getUniqueIndexLabelCounts();
+        measure.log();
 
-        const groupUniqueLabelCount = countUniqueLabels(groups, uniqueGroups);
+        const columns = this.props.groups.map((group, groupIndex) => ({
+            id: group.id,
+            label: group.label,
+            headings: uniqueGroupLabelCount[groupIndex].map((labelAndCount) => ({ label: labelAndCount.label, columnCount: labelAndCount.count }))
+        }));
 
-        const uniqueSelectionsEncoded = Array.from(new Set(selections.indices))
-            .sort((a, b) => a - b);
-
-        const uniqueSelections = uniqueSelectionsEncoded
-            .map((selection) => {
-                const indices: number[] = [];
-                for (const factor of selections.factors) {
-                    const index = Math.floor(selection / factor);
-                    indices.push(index);
-                    selection -= index * factor;
-                }
-                indices.push(selection);
-                return indices;
-            });
+        const rows = this.props.selections.map((selection, selectionIndex) => ({
+            id: selection.id,
+            label: selection.label,
+            headings: uniqueSelectionsLabelCount[selectionIndex].map((labelAndCount) => ({ label: labelAndCount.label, rowCount: labelAndCount.count }))
+        }));
 
         return <React.Fragment>
             <table>
                 <thead>
-                    {this.props.groups.map((grouper, index) =>
-                        <tr key={grouper.id}>
-                            <th scope="row">{grouper.label}</th>
-                            {groupUniqueLabelCount[index].map((labelCount, index) =>
-                                <th key={index} scope="col" colSpan={labelCount.count}>
-                                    {labelCount.label}
+                    {columns.map((column) =>
+                        <tr key={column.id}>
+                            <th scope="row">{column.label}</th>
+                            {column.headings.map((heading, index) =>
+                                <th key={index} scope="col" colSpan={heading.columnCount}>
+                                    {heading.label}
                                 </th>
                             )}
                         </tr>
                     )}
                 </thead>
                 <tbody>
-                    {uniqueSelectionsEncoded.map((selectionEncoded, selectionIndex) =>
-                        <tr key={selectionIndex}>
-                            <th scope="row">{uniqueSelections[selectionIndex].map((label, labelIndex) => selections.labels[labelIndex][label]).join(' / ')}</th>
-                            {uniqueGroupsEncoded.map((groupEncoded, groupIndex) =>
-                                <td key={groupIndex}>
-                                    {filteredData
-                                        .filter((data, dataIndex) =>
-                                            groups.indices[dataIndex] === groupEncoded
-                                            && selections.indices[dataIndex] === selectionEncoded
-                                        )
-                                        .length
-                                    }
-                                </td>
-                            )}
+                    {rows[rows.length - 1].headings.map((heading, index) =>
+                        <tr key={index}>
+                            <th scope="row">{heading.label}</th>
                         </tr>
                     )}
                 </tbody>
