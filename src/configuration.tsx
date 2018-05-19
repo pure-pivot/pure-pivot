@@ -16,12 +16,8 @@ export interface Configuration<D> {
     tableComponent: React.ComponentType<Pick<TableProps<D>, Exclude<keyof TableProps<D>, TableProvidedProps>>>;
 }
 
-export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
-    return (props: Pick<P, Exclude<keyof P, keyof U>>) => <Component {...providedProps} {...props} />;
-}
-
 export interface ConfigurationBuilder<D> {
-    withPlugin: <C extends ConfigurationBuilder<D>>(plugin: Plugin<D, this, C>) => C;
+    withPlugin: <C extends this>(plugin: Plugin<D, this, C>) => C;
     withFilters: (filters: Filters<D>) => this;
     withFilter: (filter: Filter<D>) => this;
     withValues: (values: ValueReducers<D>) => this;
@@ -33,43 +29,18 @@ export interface ConfigurationBuilder<D> {
     build: () => Configuration<D>;
 }
 
+export type Plugin<D, CB1 extends ConfigurationBuilder<D>, CB2 extends CB1> = (configurationBuilder: CB1) => CB2;
+
+export function providePropsComponentFactory<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
+    return (props: Pick<P, Exclude<keyof P, keyof U>>) => <Component {...providedProps} {...props} />;
+}
+
 interface ConfigurationBuilderProperties<D> {
     filters: Filters<D>;
     groups: Groups<D>;
     selections: Selections<D>;
     values: ValueReducers<D>;
     tableComponent: React.ComponentType<TableProps<D>>;
-}
-
-export type Plugin<D, CB1 extends ConfigurationBuilder<D>, CB2 extends ConfigurationBuilder<D>> = (configurationBuilder: CB1) => CB2;
-
-export type Honk<C> = () => (C & Honkable<C>);
-
-export interface Honkable<C> {
-    honk: Honk<C>;
-}
-
-export function applyPlugin<D, CB1 extends ConfigurationBuilder<D>, CB2 extends ConfigurationBuilder<D>>(configurationBuilder: CB1, plugin: Plugin<D, CB1, CB2>) {
-    const newConfigurationBuilder = Object.assign({}, plugin(configurationBuilder), {
-        withPlugin: <CB3 extends ConfigurationBuilder<D>>(plugin: Plugin<D, CB2, CB3>) => applyPlugin(newConfigurationBuilder, plugin)
-    });
-    return newConfigurationBuilder;
-}
-
-export function logStuffPlugin<CB1 extends ConfigurationBuilder<any>>(configurationBuilder: CB1): CB1 & Honkable<CB1> {
-    const builder: CB1 & Honkable<CB1> = Object.assign({}, configurationBuilder, {
-        withGroup: (group: Grouper<any>) => {
-            console.log(group);
-            configurationBuilder.withGroup(group);
-            return builder;
-        },
-        honk: () => {
-            console.log('Tooooot!');
-            return builder;
-        }
-    });
-
-    return builder;
 }
 
 export function configurationBuilder<D>(data: D[]): ConfigurationBuilder<D> {
@@ -81,9 +52,10 @@ export function configurationBuilder<D>(data: D[]): ConfigurationBuilder<D> {
         tableComponent: Table
     };
 
-    const builder: ConfigurationBuilder<D> = {
+    let builder: ConfigurationBuilder<D> = {
         withPlugin: (plugin) => {
-            return applyPlugin(builder, plugin);
+            builder = plugin(builder);
+            return builder as any;
         },
         withFilter: (filter) => {
             properties.filters = [...properties.filters, filter];

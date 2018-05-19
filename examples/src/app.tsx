@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { ConfigurationBuilder, Configuration, configurationBuilder, logStuffPlugin } from '../../lib/es6/configuration';
+import { ConfigurationBuilder, Configuration, configurationBuilder } from '../../lib/es6/configuration';
+import { defaultGrouping } from '../../lib/es6/plugins/default-grouping';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -95,12 +96,9 @@ export class App extends React.Component<{}, AppState> {
 
     buildConfiguration(data: Data[]): Configuration<Data> {
         return configurationBuilder<Data>(data)
-            .withPlugin(logStuffPlugin)
-            .withPlugin(logStuffPlugin)
-            .withPlugin(logStuffPlugin)
-            .withPlugin(logStuffPlugin)
-            .honk()
-            .honk()
+            .withPlugin(defaultGrouping)
+            .withPlugin(defaultGrouping)
+            .withPlugin(defaultGrouping)
             // .withFormat('time', (value: number) => {
             //     const date = new Date(value);
             //     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
