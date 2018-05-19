@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Filters } from '../filters/model';
 import { applyFiltersToAll } from '../filters/apply-filter';
-import { Formats } from '../formats/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
 import { Selections } from '../selections/model';
@@ -13,19 +12,20 @@ export interface TableProps<D> {
     groups: Groups<D>;
     selections: Selections<D>;
     values: ValueReducers<D>;
-    formats: Formats<D>;
 }
 
 export type TableProvidedProps = never;
 
 export class Table<D> extends React.Component<TableProps<D>, never> {
     renderRowData(columns: D[][]) {
-        return columns.map((data, index) => {
-            return <td key={index}>{data.length}</td>;
-        });
+        return columns.map((data, index) =>
+            this.props.values.map((valueDescription) =>
+                <td key={`${valueDescription.id}-${index}`}>{valueDescription.reducer(data)}</td>
+            )
+        );
     }
 
-    renderRowHeadings(values: D[][][], rowsLabelsByGroup: GroupLabels[], groupIndex: number = 0, count: number = Number.POSITIVE_INFINITY, runningIndices: number[] = rowsLabelsByGroup.map(() => 0)) {
+    renderRows(dataByRowAndColumn: D[][][], rowsLabelsByGroup: GroupLabels[], groupIndex: number = 0, count: number = Number.POSITIVE_INFINITY, runningIndices: number[] = rowsLabelsByGroup.map(() => 0)) {
         if (groupIndex < rowsLabelsByGroup.length) {
             const result: React.ReactNode[] = [];
 
@@ -34,9 +34,9 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                     <React.Fragment key={i}>
                         <tr>
                             <th scope="row">{'-'.repeat(groupIndex + 1)} {rowsLabelsByGroup[groupIndex].headings[i].label}</th>
-                            {groupIndex === rowsLabelsByGroup.length - 1 && this.renderRowData(values[i])}
+                            {groupIndex === rowsLabelsByGroup.length - 1 && this.renderRowData(dataByRowAndColumn[i])}
                         </tr>
-                        {this.renderRowHeadings(values, rowsLabelsByGroup, groupIndex + 1, rowsLabelsByGroup[groupIndex].headings[i].count, runningIndices)}
+                        {this.renderRows(dataByRowAndColumn, rowsLabelsByGroup, groupIndex + 1, rowsLabelsByGroup[groupIndex].headings[i].count, runningIndices)}
                     </React.Fragment>
                 );
                 totalCount += rowsLabelsByGroup[groupIndex].headings[i].count;
@@ -46,30 +46,46 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         }
     }
 
+    renderColumnHeadings(columnsLabelsByGroup: GroupLabels[]) {
+        if (columnsLabelsByGroup.length >= 1) {
+            return <React.Fragment>
+                {columnsLabelsByGroup.map((columnGroup) =>
+                    <tr key={columnGroup.id}>
+                        <th scope="row">{columnGroup.label}</th>
+                        {columnGroup.headings.map((heading, index) =>
+                            <th key={index} scope="col" colSpan={heading.count * this.props.values.length}>
+                                {heading.label}
+                            </th>
+                        )}
+                    </tr>
+                )}
+                <tr>
+                    <th scope="row">Values</th>
+                    {columnsLabelsByGroup[columnsLabelsByGroup.length - 1].headings.map((heading, index) =>
+                        this.props.values.map((valueDescription) =>
+                            <th key={`${valueDescription.id}-${index}`} scope="col">{valueDescription.label}</th>
+                        )
+                    )}
+                </tr>
+            </React.Fragment>;
+        }
+    }
+
     render() {
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
 
         const indicesByRows = rows.groupDataIndices();
-        const values = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));
+        const dataByRowAndColumn = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));
 
         return <React.Fragment>
             <table>
                 <thead>
-                    {columns.labelsByGroup.map((columnGroup) =>
-                        <tr key={columnGroup.id}>
-                            <th scope="row">{columnGroup.label}</th>
-                            {columnGroup.headings.map((heading, index) =>
-                                <th key={index} scope="col" colSpan={heading.count}>
-                                    {heading.label}
-                                </th>
-                            )}
-                        </tr>
-                    )}
+                    {this.renderColumnHeadings(columns.labelsByGroup)}
                 </thead>
                 <tbody>
-                    {this.renderRowHeadings(values, rows.labelsByGroup)}
+                    {this.renderRows(dataByRowAndColumn, rows.labelsByGroup)}
                 </tbody>
             </table>
         </React.Fragment>;

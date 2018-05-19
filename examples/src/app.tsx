@@ -295,7 +295,6 @@ export class App extends React.Component<{}, AppState> {
                     groups={this.state.result.groups}
                     selections={this.state.result.selections}
                     values={this.state.result.values}
-                    formats={this.state.result.formats}
                 />
             </React.Fragment>;
         }

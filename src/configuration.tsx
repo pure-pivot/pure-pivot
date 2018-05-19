@@ -1,20 +1,18 @@
 import * as React from 'react';
 import { Filters, FilterDescription } from './filters/model';
 import { FiltersComponentProps, FiltersComponent, FiltersComponentProvidedProps } from './filters/filters-component';
-import { Formats, GroupFormatter } from './formats/model';
-import { inferFormats } from './formats/infer-formats';
 import { FilterDescriptionComponentProps, FilterDescriptionComponent } from './filters/filter-description-component';
 import { FilterComponentProps, FilterComponent } from './filters/components/filter-component';
 import { AndFilterComponentProps, AndFilterComponent } from './filters/components/and-filter-component';
 import { NotFilterComponent, NotFilterComponentProps } from './filters/components/not-filter-components';
 import { EqualsFilterComponent, EqualsFilterComponentProps } from './filters/components/equals-filter-component';
-// import { inferValues } from './values/infer-values';
 import { TableProps, TableProvidedProps, Table } from './table/table';
 import { ValueReducers } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { inferGroups } from './groups/infer-grouper';
 import { Selections } from './selections/model';
 import { inferSelections } from './selections/infer-selections';
+import { inferValues } from './values/infer-values';
 
 export interface Configuration<D> {
     data: D[];
@@ -22,7 +20,6 @@ export interface Configuration<D> {
     groups: Groups<D>;
     selections: Selections<D>;
     values: ValueReducers<D>;
-    formats: Formats<D>;
     filtersComponent: React.ComponentType<Pick<FiltersComponentProps<D>, Exclude<keyof FiltersComponentProps<D>, FiltersComponentProvidedProps>>>;
     tableComponent: React.ComponentType<Pick<TableProps<D>, Exclude<keyof TableProps<D>, TableProvidedProps>>>;
 }
@@ -37,7 +34,6 @@ export class ConfigurationBuilder<D> {
     private groups: Groups<D>;
     private selections: Selections<D>;
     private values: ValueReducers<D>;
-    private formats: Formats<D>;
     private filterComponent: React.ComponentType<FilterComponentProps<D[keyof D]>>;
     private andFilterComponent: React.ComponentType<AndFilterComponentProps<D[keyof D]>>;
     private notFilterComponent: React.ComponentType<NotFilterComponentProps<D[keyof D]>>;
@@ -51,8 +47,7 @@ export class ConfigurationBuilder<D> {
         this.filters = [];
         this.groups = inferGroups();
         this.selections = inferSelections();
-        this.values = [];
-        this.formats = inferFormats();
+        this.values = inferValues();
         this.filterComponent = FilterComponent;
         this.andFilterComponent = AndFilterComponent;
         this.notFilterComponent = NotFilterComponent;
@@ -97,11 +92,6 @@ export class ConfigurationBuilder<D> {
         return this;
     }
 
-    withFormats(formats: Formats<D>) {
-        this.formats = formats;
-        return this;
-    }
-
     withGroups(groups: Groups<D>) {
         this.groups = groups;
         return this;
@@ -143,7 +133,6 @@ export class ConfigurationBuilder<D> {
             groups: this.groups,
             selections: this.selections,
             values: this.values,
-            formats: this.formats,
             filtersComponent: providePropsComponentFactory(this.filtersComponent, {
                 filterDescriptionComponent: providePropsComponentFactory(this.filterDescriptionComponent, {
                     filterComponent: specificFilterComponentProvidedProps.filterComponent

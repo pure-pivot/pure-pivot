@@ -1,10 +1,9 @@
-export type ValueReducer<D, F extends keyof D> = (values: D[F][]) => D[F];
+export type ValueReducer<D> = (values: D[]) => string;
 
-export interface ValueReducerDescription<D, F extends keyof D> {
+export interface ValueReducerDescription<D> {
     id: string;
-    name: F;
-    reducer: ValueReducer<D, F>;
     label: string;
+    reducer: ValueReducer<D>;
 }
 
-export type ValueReducers<D> = ValueReducerDescription<D, keyof D>[];
+export type ValueReducers<D> = ValueReducerDescription<D>[];
