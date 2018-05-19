@@ -72,12 +72,15 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     }
 
     render() {
+        const start = window.performance.now();
         const filteredData = applyFilters(this.props.filters, this.props.data);
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
 
         const indicesByRows = rows.groupDataIndices();
         const dataByRowAndColumn = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));
+
+        console.log(`${window.performance.now() - start} ms`);
 
         return <React.Fragment>
             <table>
