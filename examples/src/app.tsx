@@ -266,6 +266,11 @@ export class App extends React.Component<{}, AppState> {
                     };
                 }
             })
+            .withValue({
+                id: 'average-duration',
+                label: 'Avg. duration',
+                reducer: (values) => (values.reduce((sum, data) => sum + data.duration, 0) / values.length).toString()
+            })
             .build();
     }
 

@@ -7,9 +7,5 @@ export function inferValues<D>(): ValueReducers<D> {
         id: 'pure-pivot-default-count-reducer',
         label: 'Count',
         reducer: (values) => values.length.toString()
-    }, {
-        id: 'test',
-        label: 'Just one',
-        reducer: () => '1'
     }];
 }

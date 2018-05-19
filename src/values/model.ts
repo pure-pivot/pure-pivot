@@ -1,3 +1,4 @@
+// TODO: consider return type of React.ReactNode instead of string?
 export type ValueReducer<D> = (values: D[]) => string;
 
 export interface ValueReducerDescription<D> {

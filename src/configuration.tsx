@@ -7,7 +7,7 @@ import { AndFilterComponentProps, AndFilterComponent } from './filters/component
 import { NotFilterComponent, NotFilterComponentProps } from './filters/components/not-filter-components';
 import { EqualsFilterComponent, EqualsFilterComponentProps } from './filters/components/equals-filter-component';
 import { TableProps, TableProvidedProps, Table } from './table/table';
-import { ValueReducers } from './values/model';
+import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { inferGroups } from './groups/infer-grouper';
 import { Selections } from './selections/model';
@@ -89,6 +89,11 @@ export class ConfigurationBuilder<D> {
 
     withValues(values: ValueReducers<D>) {
         this.values = values;
+        return this;
+    }
+
+    withValue(value: ValueReducerDescription<D>) {
+        this.values = [...this.values, value];
         return this;
     }
 
