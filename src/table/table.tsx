@@ -4,8 +4,8 @@ import { applyFiltersToAll } from '../filters/apply-filter';
 import { Formats } from '../formats/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
-import { Grouping } from '../groups/grouping';
 import { Selections } from '../selections/model';
+import { applyGrouping, GroupLabels } from '../groups/apply-grouping';
 
 export interface TableProps<D> {
     data: D[];
@@ -18,44 +18,28 @@ export interface TableProps<D> {
 
 export type TableProvidedProps = never;
 
-const measure = {
-    startTime: 0,
-    start: () => {
-        measure.startTime = window.performance.now();
-    },
-    log: () => {
-        const end = window.performance.now();
-        console.log(`${end - measure.startTime} ms`);
-        measure.startTime = end;
-    }
-};
-
-export interface Heading {
-    label: string;
-    count: number;
-}
-
-export interface LabeledGroupByLevel {
-    id: string;
-    label: string;
-    headings: Heading[];
-}
-
 export class Table<D> extends React.Component<TableProps<D>, never> {
-    renderRowHeadings(rows: LabeledGroupByLevel[], groupIndex: number = 0, count: number = Number.POSITIVE_INFINITY, runningIndices: number[] = rows.map(() => 0)) {
-        if (groupIndex < rows.length) {
+    renderRowData(columns: D[][]) {
+        return columns.map((data, index) => {
+            return <td key={index}>{data.length}</td>;
+        });
+    }
+
+    renderRowHeadings(values: D[][][], rowsLabelsByGroup: GroupLabels[], groupIndex: number = 0, count: number = Number.POSITIVE_INFINITY, runningIndices: number[] = rowsLabelsByGroup.map(() => 0)) {
+        if (groupIndex < rowsLabelsByGroup.length) {
             const result: React.ReactNode[] = [];
 
-            for (let i = runningIndices[groupIndex], totalCount = 0; i < rows[groupIndex].headings.length && totalCount < count; i++ , runningIndices[groupIndex]++) {
+            for (let i = runningIndices[groupIndex], totalCount = 0; i < rowsLabelsByGroup[groupIndex].headings.length && totalCount < count; i++ , runningIndices[groupIndex]++) {
                 result.push(
                     <React.Fragment key={i}>
                         <tr>
-                            <th scope="row">{'-'.repeat(groupIndex + 1)} {rows[groupIndex].headings[i].label}</th>
+                            <th scope="row">{'-'.repeat(groupIndex + 1)} {rowsLabelsByGroup[groupIndex].headings[i].label}</th>
+                            {groupIndex === rowsLabelsByGroup.length - 1 && this.renderRowData(values[i])}
                         </tr>
-                        {this.renderRowHeadings(rows, groupIndex + 1, rows[groupIndex].headings[i].count, runningIndices)}
+                        {this.renderRowHeadings(values, rowsLabelsByGroup, groupIndex + 1, rowsLabelsByGroup[groupIndex].headings[i].count, runningIndices)}
                     </React.Fragment>
                 );
-                totalCount += rows[groupIndex].headings[i].count;
+                totalCount += rowsLabelsByGroup[groupIndex].headings[i].count;
             }
 
             return result;
@@ -63,46 +47,20 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     }
 
     render() {
-        measure.start();
-
         const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
-        measure.log();
-        const groups = new Grouping(this.props.groups, filteredData);
-        measure.log();
-        const selections = new Grouping(this.props.selections, filteredData);
-        measure.log();
+        const columns = applyGrouping(this.props.groups, filteredData);
+        const rows = applyGrouping(this.props.selections, filteredData);
 
-        const uniqueGroupIndices = groups.getUniqueIndices();
-        measure.log();
-        const uniqueGroupLabelCount = groups.getUniqueIndexLabelCounts();
-        measure.log();
-
-        const uniqueSelectionIndices = selections.getUniqueIndices();
-        measure.log();
-        const uniqueSelectionsLabelCount = selections.getUniqueIndexLabelCounts();
-        measure.log();
-
-        const columns: LabeledGroupByLevel[] = this.props.groups.map((group, groupIndex) => ({
-            id: group.id,
-            label: group.label,
-            headings: uniqueGroupLabelCount[groupIndex]
-        }));
-
-        const rows: LabeledGroupByLevel[] = this.props.selections.map((selection, selectionIndex) => ({
-            id: selection.id,
-            label: selection.label,
-            headings: uniqueSelectionsLabelCount[selectionIndex]
-        }));
-
-        console.log(rows);
+        const indicesByRows = rows.groupDataIndices();
+        const values = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));
 
         return <React.Fragment>
             <table>
                 <thead>
-                    {columns.map((column) =>
-                        <tr key={column.id}>
-                            <th scope="row">{column.label}</th>
-                            {column.headings.map((heading, index) =>
+                    {columns.labelsByGroup.map((columnGroup) =>
+                        <tr key={columnGroup.id}>
+                            <th scope="row">{columnGroup.label}</th>
+                            {columnGroup.headings.map((heading, index) =>
                                 <th key={index} scope="col" colSpan={heading.count}>
                                     {heading.label}
                                 </th>
@@ -111,7 +69,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                     )}
                 </thead>
                 <tbody>
-                    {this.renderRowHeadings(rows)}
+                    {this.renderRowHeadings(values, rows.labelsByGroup)}
                 </tbody>
             </table>
         </React.Fragment>;
