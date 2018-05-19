@@ -161,17 +161,17 @@ export class App extends React.Component<{}, AppState> {
             //         }
             //     }
             // })
-            .withFilter({
-                id: '0',
-                name: 'url',
-                filter: {
-                    type: 'not',
-                    filter: {
-                        type: 'equals',
-                        value: '/'
-                    }
-                }
-            })
+            // .withFilter({
+            //     id: '0',
+            //     name: 'url',
+            //     filter: {
+            //         type: 'not',
+            //         filter: {
+            //             type: 'equals',
+            //             value: '/'
+            //         }
+            //     }
+            // })
             // .withGroupByField('time', {
             //     type: 'number-count',
             //     count: 10
@@ -269,7 +269,7 @@ export class App extends React.Component<{}, AppState> {
             .withValue({
                 id: 'average-duration',
                 label: 'Avg. duration',
-                reducer: (values) => (values.reduce((sum, data) => sum + data.duration, 0) / values.length).toString()
+                reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
             })
             .build();
     }

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { Filters } from '../filters/model';
-import { applyFiltersToAll } from '../filters/apply-filter';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
 import { Selections } from '../selections/model';
 import { applyGrouping, GroupLabels } from '../groups/apply-grouping';
+import { applyFilters } from '../filters/apply-filter';
 
 export interface TableProps<D> {
     data: D[];
@@ -72,7 +72,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     }
 
     render() {
-        const filteredData = applyFiltersToAll(this.props.filters, this.props.data);
+        const filteredData = applyFilters(this.props.filters, this.props.data);
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
 
