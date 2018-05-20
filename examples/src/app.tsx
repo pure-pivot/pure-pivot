@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { ConfigurationBuilder, Configuration, configurationBuilder } from '../../lib/es6/configuration';
-import { defaultGrouping } from '../../lib/es6/plugins/default-grouping';
+import { ConfigurationBuilder, Configuration } from '../../lib/es6/configuration';
+import { MyCoolPlugin } from '../../lib/es6/plugins/cool-plugin';
+import { MyNicePlugin } from '../../lib/es6/plugins/nice-plugin';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -95,10 +96,22 @@ export class App extends React.Component<{}, AppState> {
     }
 
     buildConfiguration(data: Data[]): Configuration<Data> {
-        return configurationBuilder<Data>(data)
-            .withPlugin(defaultGrouping)
-            .withPlugin(defaultGrouping)
-            .withPlugin(defaultGrouping)
+        return new ConfigurationBuilder<Data>(data)
+            .withPlugin<MyCoolPlugin<Data>>(MyCoolPlugin)
+            .withPlugin<MyNicePlugin<Data>>(MyNicePlugin)
+            .withPlugin<MyNicePlugin<Data>>(MyNicePlugin)
+            .honk()
+            .pwap()
+            .pwap()
+            .honk()
+            .withPlugin<MyCoolPlugin<Data>>(MyCoolPlugin)
+            // .withPlugin(defaultGroups)
+            // .withPlugin(defaultGroups)
+            // .withPlugin(defaultGroups)
+            // .withPlugin(defaultSelections)
+            // .pwap()
+            // .honk()
+            // .pwap()
             // .withFormat('time', (value: number) => {
             //     const date = new Date(value);
             //     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
@@ -180,6 +193,7 @@ export class App extends React.Component<{}, AppState> {
             //     type: 'number-count',
             //     count: 10
             // })
+            .withFilter((data) => data)
             .withGroup({
                 id: 'method',
                 label: 'Method',
