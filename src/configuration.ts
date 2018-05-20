@@ -155,7 +155,7 @@ export class ConfigurationBuilder<D> {
         this.tableComponent = Table;
     }
 
-    withPlugin<CBClass>(plugin: { new(previous: ConfigurationBuilder<D>): CBClass }): this & CBClass {
+    withPlugin<CB2, CB1 extends ConfigurationBuilder<D> = ConfigurationBuilder<D>>(plugin: { new(previous: CB1): CB2 }): this & CB2 {
         const that = this;
         const constructor = function (this: any) {
             plugin.call(this, that);
