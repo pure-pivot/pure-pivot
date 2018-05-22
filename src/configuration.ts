@@ -155,22 +155,56 @@ export class ConfigurationBuilder<D> {
         this.tableComponent = Table;
     }
 
-    withPlugin<CB2, CB1 extends ConfigurationBuilder<D> = ConfigurationBuilder<D>>(plugin: { new(previous: CB1): CB2 }): this & CB2 {
-        const that = this;
-        const constructor = function (this: any) {
-            plugin.call(this, that);
-        } as any;
-        Object.setPrototypeOf(constructor.prototype, Object.assign(this.constructor.prototype, this));
+    withPlugin<CB2 extends ConfigurationBuilder<D>>(plugin: { new(data: D[]): CB2 }): this & CB2 {
+        // General hackery - not nice
+        // const instance = new plugin(this as any) as any;
 
-        for (const key of Object.getOwnPropertyNames(plugin.prototype)) {
-            if (key !== 'constructor') {
-                constructor.prototype[key] = plugin.prototype[key];
-            }
+        const instance = new plugin(this.data) as any;
+
+        // const overrideMehods = new Set(Object.getOwnPropertyNames(plugin.prototype));
+        // const thisProto = Object.getPrototypeOf(this);
+
+        for (const key of Object.getOwnPropertyNames(this)) {
+            delete instance[key];
         }
 
-        const instance = new constructor();
+        // Object.create(Object.getPrototypeOf(instance));
+        // console.log(Object.getPrototypeOf(instance));
+        // console.log(Object.assign({}, Object.getPrototypeOf(instance)));
+        // console.log(Object.assign({}, this));
+        // console.log(Object.assign({}, Object.getPrototypeOf(instance), this));
+
+        // Object.setPrototypeOf(instance, Object.assign({}, Object.getPrototypeOf(instance), this));
+
+        console.log(instance);
+
+        const newProto = Object.assign({}, Object.getPrototypeOf(Object.getPrototypeOf(instance)), this);
+        console.log(newProto);
+
+        // console.log(Object.setPrototypeOf(Object.getPrototypeOf(instance), this));
+        Object.setPrototypeOf(instance, newProto);
 
         return instance;
+
+        // const instanceProto = Object.create(plugin.prototype);
+        // const instance = Object.create(instanceProto);
+        // plugin.call(instance, this);
+
+        // const overrideMehods = new Set(Object.getOwnPropertyNames(plugin.prototype));
+        // const thisProto = Object.getPrototypeOf(this);
+
+        // console.log(overrideMehods);
+
+        // for (const key of Object.getOwnPropertyNames(thisProto)) {
+        //     if (!overrideMehods.has(key)) {
+        //         instanceProto[key] = (...args: any[]) => {
+        //             thisProto[key].apply(this, args);
+        //             return instance;
+        //         };
+        //     }
+        // }
+        // console.log(instance, plugin.prototype);
+        // return instance;
     }
 
     withFilter(filter: Filter<D>) {

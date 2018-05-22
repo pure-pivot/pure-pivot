@@ -77,6 +77,8 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
 
+        console.log(this.props.groups, this.props.selections);
+
         const indicesByRows = rows.groupDataIndices();
         const dataByRowAndColumn = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));
 
