@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ConfigurationBuilder, Configuration } from '../../lib/es6/configuration';
+import { Configuration, createConfigurationBuilder } from '../../lib/es6/configuration';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -94,7 +94,7 @@ export class App extends React.Component<{}, AppState> {
     }
 
     buildConfiguration(data: Data[]): Configuration<Data> {
-        return ConfigurationBuilder.createBuilder(data)
+        return createConfigurationBuilder(data)
             // .withPlugin<DefaultSingleGroup<Data>>(DefaultSingleGroup)
             // .withPlugin<DefaultSingleSelection<Data>>(DefaultSingleSelection)
             // .withFormat('time', (value: number) => {

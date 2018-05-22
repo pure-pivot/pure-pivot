@@ -1,6 +1,6 @@
 import { ConfigurationBuilder, Configuration } from '../configuration';
 
-export function defaultSingleSelection<D>(configurationBuilder: ConfigurationBuilder<D>) {
+export function defaultSingleSelection<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {
     return Object.assign({}, configurationBuilder, {
         build: () => {
             const result = configurationBuilder.build();

@@ -1,6 +1,6 @@
 import { ConfigurationBuilder, Configuration } from '../configuration';
 
-export function defaultSingleGroup<D>(configurationBuilder: ConfigurationBuilder<D>) {
+export function defaultSingleGroup<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {
     return Object.assign({}, configurationBuilder, {
         build: () => {
             const result = configurationBuilder.build();
