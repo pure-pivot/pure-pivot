@@ -33,7 +33,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                 result.push(
                     <React.Fragment key={i}>
                         <tr>
-                            <th scope="row">{'-'.repeat(groupIndex + 1)} {rowsLabelsByGroup[groupIndex].headings[i].label}</th>
+                            <th scope="row">{'-'.repeat(groupIndex)} {rowsLabelsByGroup[groupIndex].headings[i].label}</th>
                             {groupIndex === rowsLabelsByGroup.length - 1 && this.renderRowData(dataByRowAndColumn[i])}
                         </tr>
                         {this.renderRows(dataByRowAndColumn, rowsLabelsByGroup, groupIndex + 1, rowsLabelsByGroup[groupIndex].headings[i].count, runningIndices)}
@@ -76,8 +76,6 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const filteredData = applyFilters(this.props.filters, this.props.data);
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
-
-        console.log(this.props.groups, this.props.selections);
 
         const indicesByRows = rows.groupDataIndices();
         const dataByRowAndColumn = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));

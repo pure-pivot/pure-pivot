@@ -5,6 +5,7 @@ import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { Selections } from './selections/model';
 import { inferValues } from './values/infer-values';
+import { defaultPlugins } from './plugins/default-plugins';
 
 export interface Configuration<D> {
     data: D[];
@@ -112,40 +113,32 @@ export interface Configuration<D> {
 //     return builder;
 // }
 
-function inherits(ctor: any, superCtor: any) {
-    const constructor = function (this: any) { /**/ } as any;
-
-    ctor.super_ = superCtor;
-    ctor.prototype = Object.create(superCtor.prototype, {
-        constructor: {
-            value: ctor,
-            enumerable: false,
-            writable: true,
-            configurable: true
-        }
+export function highOrderConfigurationBuilder<D, CB1 extends ConfigurationBuilder<D>>(configurationBuilder: CB1) {
+    return Object.assign({}, configurationBuilder, {
+        honk: () => console.log('HONK')
     });
 }
 
 export class ConfigurationBuilder<D> {
-    protected data: D[];
-    protected filters: Filters<D>;
-    protected groups: Groups<D>;
-    protected selections: Selections<D>;
-    protected values: ValueReducers<D>;
-    // protected filterComponent: React.ComponentType<FilterComponentProps<D[keyof D]>>;
-    // protected andFilterComponent: React.ComponentType<AndFilterComponentProps<D[keyof D]>>;
-    // protected notFilterComponent: React.ComponentType<NotFilterComponentProps<D[keyof D]>>;
-    // protected equalsFilterComponent: React.ComponentType<EqualsFilterComponentProps<D[keyof D]>>;
-    // protected filterDescriptionComponent: React.ComponentType<FilterDescriptionComponentProps<D, keyof D>>;
-    // protected filtersComponent: React.ComponentType<FiltersComponentProps<D>>;
-    protected tableComponent: React.ComponentType<TableProps<D>>;
+    data: D[];
+    filters: Filters<D>;
+    groups: Groups<D>;
+    selections: Selections<D>;
+    values: ValueReducers<D>;
+    // filterComponent: React.ComponentType<FilterComponentProps<D[keyof D]>>;
+    // andFilterComponent: React.ComponentType<AndFilterComponentProps<D[keyof D]>>;
+    // notFilterComponent: React.ComponentType<NotFilterComponentProps<D[keyof D]>>;
+    // equalsFilterComponent: React.ComponentType<EqualsFilterComponentProps<D[keyof D]>>;
+    // filterDescriptionComponent: React.ComponentType<FilterDescriptionComponentProps<D, keyof D>>;
+    // filtersComponent: React.ComponentType<FiltersComponentProps<D>>;
+    tableComponent: React.ComponentType<TableProps<D>>;
 
     constructor(data: D[]) {
         this.data = data;
         this.filters = [];
         this.groups = [];
         this.selections = [];
-        this.values = inferValues();
+        this.values = [];
         // this.filterComponent = FilterComponent;
         // this.andFilterComponent = AndFilterComponent;
         // this.notFilterComponent = NotFilterComponent;
@@ -153,58 +146,35 @@ export class ConfigurationBuilder<D> {
         // this.filterDescriptionComponent = FilterDescriptionComponent;
         // this.filtersComponent = FiltersComponent;
         this.tableComponent = Table;
+
+        return defaultPlugins.reduce((instance, plugin) => instance.withPlugin(plugin), this);
     }
 
-    withPlugin<CB2 extends ConfigurationBuilder<D>>(plugin: { new(data: D[]): CB2 }): this & CB2 {
-        // General hackery - not nice
-        // const instance = new plugin(this as any) as any;
-
-        const instance = new plugin(this.data) as any;
-
-        // const overrideMehods = new Set(Object.getOwnPropertyNames(plugin.prototype));
-        // const thisProto = Object.getPrototypeOf(this);
-
-        for (const key of Object.getOwnPropertyNames(this)) {
-            delete instance[key];
+    withPlugin<CB2 extends Partial<ConfigurationBuilder<D>>>(plugin: { new(previous: ConfigurationBuilder<D>): CB2 }): this & CB2 {
+        // General hackery - not nice - welcome to JavaScript.
+        const instance = new plugin(this) as any;
+        const overrideMehods = new Set(Object.getOwnPropertyNames(plugin.prototype));
+        const thisProto = Object.getPrototypeOf(this);
+        const instanceProto = Object.getPrototypeOf(instance);
+        const newProto = Object.assign(
+            Object.create(Object.getPrototypeOf(instanceProto)),
+            instanceProto
+        );
+        const that = this;
+        for (const key of Object.keys(thisProto)) {
+            if (!overrideMehods.has(key)) {
+                newProto[key] = function (...args: any[]) {
+                    if (key === 'withPlugin') {
+                        return thisProto[key].apply(this, args);
+                    } else {
+                        thisProto[key].apply(that, args);
+                        return this;
+                    }
+                };
+            }
         }
-
-        // Object.create(Object.getPrototypeOf(instance));
-        // console.log(Object.getPrototypeOf(instance));
-        // console.log(Object.assign({}, Object.getPrototypeOf(instance)));
-        // console.log(Object.assign({}, this));
-        // console.log(Object.assign({}, Object.getPrototypeOf(instance), this));
-
-        // Object.setPrototypeOf(instance, Object.assign({}, Object.getPrototypeOf(instance), this));
-
-        console.log(instance);
-
-        const newProto = Object.assign({}, Object.getPrototypeOf(Object.getPrototypeOf(instance)), this);
-        console.log(newProto);
-
-        // console.log(Object.setPrototypeOf(Object.getPrototypeOf(instance), this));
         Object.setPrototypeOf(instance, newProto);
-
         return instance;
-
-        // const instanceProto = Object.create(plugin.prototype);
-        // const instance = Object.create(instanceProto);
-        // plugin.call(instance, this);
-
-        // const overrideMehods = new Set(Object.getOwnPropertyNames(plugin.prototype));
-        // const thisProto = Object.getPrototypeOf(this);
-
-        // console.log(overrideMehods);
-
-        // for (const key of Object.getOwnPropertyNames(thisProto)) {
-        //     if (!overrideMehods.has(key)) {
-        //         instanceProto[key] = (...args: any[]) => {
-        //             thisProto[key].apply(this, args);
-        //             return instance;
-        //         };
-        //     }
-        // }
-        // console.log(instance, plugin.prototype);
-        // return instance;
     }
 
     withFilter(filter: Filter<D>) {

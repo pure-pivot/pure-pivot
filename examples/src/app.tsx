@@ -1,7 +1,5 @@
 import * as React from 'react';
-import { ConfigurationBuilder, Configuration } from '../../lib/es6/configuration';
-import { DefaultSingleGroup } from '../../lib/es6/plugins/default-single-group';
-import { DefaultSingleSelection } from '../../lib/es6/plugins/default-single-selection';
+import { ConfigurationBuilder, Configuration, highOrderConfigurationBuilder } from '../../lib/es6/configuration';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -96,10 +94,9 @@ export class App extends React.Component<{}, AppState> {
     }
 
     buildConfiguration(data: Data[]): Configuration<Data> {
-        const foo = new ConfigurationBuilder<Data>(data)
-            .withPlugin<DefaultSingleGroup<Data>>(DefaultSingleGroup)
-            .withPlugin<DefaultSingleSelection<Data>>(DefaultSingleSelection);
-        return foo
+        return new ConfigurationBuilder<Data>(data)
+            // .withPlugin<DefaultSingleGroup<Data>>(DefaultSingleGroup)
+            // .withPlugin<DefaultSingleSelection<Data>>(DefaultSingleSelection)
             // .withFormat('time', (value: number) => {
             //     const date = new Date(value);
             //     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
@@ -272,11 +269,11 @@ export class App extends React.Component<{}, AppState> {
             //         };
             //     }
             // })
-            .withValue({
-                id: 'average-duration',
-                label: 'Avg. duration',
-                reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
-            })
+            // .withValue({
+            //     id: 'average-duration',
+            //     label: 'Avg. duration',
+            //     reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
+            // })
             .build();
     }
 

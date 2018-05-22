@@ -1,11 +1,15 @@
 import { ConfigurationBuilder, Configuration } from '../configuration';
 import { Filter } from '../filters/model';
 
-export class DefaultSingleSelection<D> extends ConfigurationBuilder<D> {
-    build(): Configuration<D> {
-        const result = super.build();
+export class DefaultSingleSelection<D> {
+    private previous: ConfigurationBuilder<D>;
 
-        console.log(result.selections);
+    constructor(previous: ConfigurationBuilder<D>) {
+        this.previous = previous;
+    }
+
+    build(): Configuration<D> {
+        const result = this.previous.build();
 
         if (result.selections.length <= 0) {
             result.selections = [{

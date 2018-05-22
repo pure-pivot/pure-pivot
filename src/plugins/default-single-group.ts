@@ -1,9 +1,15 @@
 import { ConfigurationBuilder, Configuration } from '../configuration';
 import { Filter } from '../filters/model';
 
-export class DefaultSingleGroup<D> extends ConfigurationBuilder<D> {
+export class DefaultSingleGroup<D> {
+    private previous: ConfigurationBuilder<D>;
+
+    constructor(previous: ConfigurationBuilder<D>) {
+        this.previous = previous;
+    }
+
     build(): Configuration<D> {
-        const result = super.build();
+        const result = this.previous.build();
 
         if (result.groups.length <= 0) {
             result.groups = [{
