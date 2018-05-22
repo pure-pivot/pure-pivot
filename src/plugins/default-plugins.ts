@@ -1,9 +1,9 @@
-import { DefaultSingleGroup } from './default-single-group';
-import { DefaultSingleSelection } from './default-single-selection';
-import { DefaultAllValues } from './default-all-values';
+import { defaultAllValues } from './default-all-values';
+import { defaultSingleGroup } from './default-single-group';
+import { defaultSingleSelection } from './default-single-selection';
 
 export const defaultPlugins = [
-    DefaultSingleGroup,
-    DefaultSingleSelection,
-    DefaultAllValues
+    defaultAllValues,
+    defaultSingleGroup,
+    defaultSingleSelection
 ];

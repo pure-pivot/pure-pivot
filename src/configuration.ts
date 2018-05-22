@@ -4,7 +4,6 @@ import { TableProps, TableProvidedProps, Table } from './table/table';
 import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { Selections } from './selections/model';
-import { inferValues } from './values/infer-values';
 import { defaultPlugins } from './plugins/default-plugins';
 
 export interface Configuration<D> {
@@ -113,12 +112,6 @@ export interface Configuration<D> {
 //     return builder;
 // }
 
-export function highOrderConfigurationBuilder<D, CB1 extends ConfigurationBuilder<D>>(configurationBuilder: CB1) {
-    return Object.assign({}, configurationBuilder, {
-        honk: () => console.log('HONK')
-    });
-}
-
 export class ConfigurationBuilder<D> {
     data: D[];
     filters: Filters<D>;
@@ -133,7 +126,7 @@ export class ConfigurationBuilder<D> {
     // filtersComponent: React.ComponentType<FiltersComponentProps<D>>;
     tableComponent: React.ComponentType<TableProps<D>>;
 
-    constructor(data: D[]) {
+    private constructor(data: D[]) {
         this.data = data;
         this.filters = [];
         this.groups = [];
@@ -146,35 +139,6 @@ export class ConfigurationBuilder<D> {
         // this.filterDescriptionComponent = FilterDescriptionComponent;
         // this.filtersComponent = FiltersComponent;
         this.tableComponent = Table;
-
-        return defaultPlugins.reduce((instance, plugin) => instance.withPlugin(plugin), this);
-    }
-
-    withPlugin<CB2 extends Partial<ConfigurationBuilder<D>>>(plugin: { new(previous: ConfigurationBuilder<D>): CB2 }): this & CB2 {
-        // General hackery - not nice - welcome to JavaScript.
-        const instance = new plugin(this) as any;
-        const overrideMehods = new Set(Object.getOwnPropertyNames(plugin.prototype));
-        const thisProto = Object.getPrototypeOf(this);
-        const instanceProto = Object.getPrototypeOf(instance);
-        const newProto = Object.assign(
-            Object.create(Object.getPrototypeOf(instanceProto)),
-            instanceProto
-        );
-        const that = this;
-        for (const key of Object.keys(thisProto)) {
-            if (!overrideMehods.has(key)) {
-                newProto[key] = function (...args: any[]) {
-                    if (key === 'withPlugin') {
-                        return thisProto[key].apply(this, args);
-                    } else {
-                        thisProto[key].apply(that, args);
-                        return this;
-                    }
-                };
-            }
-        }
-        Object.setPrototypeOf(instance, newProto);
-        return instance;
     }
 
     withFilter(filter: Filter<D>) {
@@ -271,5 +235,9 @@ export class ConfigurationBuilder<D> {
             // }),
             tableComponent: this.tableComponent
         };
+    }
+
+    static createBuilder<D>(data: D[]) {
+        return defaultPlugins.reduce((instance, plugin) => plugin(instance), new ConfigurationBuilder(data));
     }
 }

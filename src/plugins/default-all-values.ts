@@ -1,29 +1,22 @@
 import { ConfigurationBuilder, Configuration } from '../configuration';
-import { Filter } from '../filters/model';
 import { ObjectKeys } from '../util/keys';
 
-export class DefaultAllValues<D> {
-    private previous: ConfigurationBuilder<D>;
+export function defaultAllValues<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {
+    return Object.assign({}, configurationBuilder, {
+        build: () => {
+            const result = configurationBuilder.build();
 
-    constructor(previous: ConfigurationBuilder<D>) {
-        this.previous = previous;
-    }
+            if (result.values.length <= 0 && result.data.length >= 1) {
+                result.values = ObjectKeys(result.data[0]).map((key) => ({
+                    id: `pure-pivot-default-values-${key}`,
+                    label: key,
+                    reducer: (data: D[]) => {
+                        return data.map((row) => row[key]).join(', ');
+                    }
+                }));
+            }
 
-    build(): Configuration<D> {
-        const result = this.previous.build();
-
-        console.log(this.previous);
-
-        if (result.values.length <= 0 && this.previous.data.length >= 1) {
-            result.values = ObjectKeys(this.previous.data[0]).map((key) => ({
-                id: `pure-pivot-default-values-${key}`,
-                label: key,
-                reducer: (data: D[]) => {
-                    return data.map((row) => row[key]).join(', ');
-                }
-            }));
+            return result;
         }
-
-        return result;
-    }
+    });
 }

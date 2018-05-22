@@ -1,35 +1,30 @@
 import { ConfigurationBuilder, Configuration } from '../configuration';
-import { Filter } from '../filters/model';
 
-export class DefaultSingleGroup<D> {
-    private previous: ConfigurationBuilder<D>;
+export function defaultSingleGroup<D>(configurationBuilder: ConfigurationBuilder<D>) {
+    return Object.assign({}, configurationBuilder, {
+        build: () => {
+            const result = configurationBuilder.build();
 
-    constructor(previous: ConfigurationBuilder<D>) {
-        this.previous = previous;
-    }
+            if (result.groups.length <= 0) {
+                result.groups = [{
+                    id: 'pure-pivot-default-group',
+                    label: 'All',
+                    grouper: (data) => {
+                        const dataIndices: number[] = [];
 
-    build(): Configuration<D> {
-        const result = this.previous.build();
+                        for (const row of data) {
+                            dataIndices.push(0);
+                        }
 
-        if (result.groups.length <= 0) {
-            result.groups = [{
-                id: 'pure-pivot-default-group',
-                label: 'All',
-                grouper: (data) => {
-                    const dataIndices: number[] = [];
-
-                    for (const row of data) {
-                        dataIndices.push(0);
+                        return {
+                            groupIndices: dataIndices,
+                            groupLabels: ['all']
+                        };
                     }
+                }];
+            }
 
-                    return {
-                        groupIndices: dataIndices,
-                        groupLabels: ['all']
-                    };
-                }
-            }];
+            return result;
         }
-
-        return result;
-    }
+    });
 }
