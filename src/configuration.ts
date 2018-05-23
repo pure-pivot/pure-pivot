@@ -22,15 +22,15 @@ export interface ConfigurationBuilder<D> {
     selections: Selections<D>;
     values: ValueReducers<D>;
     tableComponent: React.ComponentType<TableProps<D>>;
-    withFilters: (filters: Filters<D>) => this;
-    withFilter: (filter: Filter<D>) => this;
-    withValues: (values: ValueReducers<D>) => this;
-    withValue: (value: ValueReducerDescription<D>) => this;
-    withGroups: (groups: Groups<D>) => this;
-    withGroup: (group: Grouper<D>) => this;
-    withSelections: (selections: Selections<D>) => this;
-    withSelection: (selection: Grouper<D>) => this;
-    build: () => Configuration<D>;
+    withFilters(filters: Filters<D>): this;
+    withFilter(filter: Filter<D>): this;
+    withValues(values: ValueReducers<D>): this;
+    withValue(value: ValueReducerDescription<D>): this;
+    withGroups(groups: Groups<D>): this;
+    withGroup(group: Grouper<D>): this;
+    withSelections(selections: Selections<D>): this;
+    withSelection(selection: Grouper<D>): this;
+    build(): Configuration<D>;
 }
 
 // export type CapabilityFunction<D, CB1 extends ConfigurationBuilder<D>, C extends { [Key: string]: any[] }, K extends keyof C>
@@ -52,39 +52,39 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
         selections: [],
         values: [],
         tableComponent: Table,
-        withFilter: (filter) => {
+        withFilter(filter) {
             builder.filters = [...builder.filters, filter];
-            return builder;
+            return this;
         },
-        withFilters: (filters) => {
+        withFilters(filters) {
             builder.filters = filters;
-            return builder;
+            return this;
         },
-        withValues: (values: ValueReducers<D>) => {
+        withValues(values: ValueReducers<D>) {
             builder.values = values;
-            return builder;
+            return this;
         },
-        withValue: (value: ValueReducerDescription<D>) => {
+        withValue(value: ValueReducerDescription<D>) {
             builder.values = [...builder.values, value];
-            return builder;
+            return this;
         },
-        withGroups: (groups: Groups<D>) => {
+        withGroups(groups: Groups<D>) {
             builder.groups = groups;
-            return builder;
+            return this;
         },
-        withGroup: (group: Grouper<D>) => {
+        withGroup(group: Grouper<D>) {
             builder.groups = [...builder.groups, group];
-            return builder;
+            return this;
         },
-        withSelections: (selections: Selections<D>) => {
+        withSelections(selections: Selections<D>) {
             builder.selections = selections;
-            return builder;
+            return this;
         },
-        withSelection: (selection: Grouper<D>) => {
+        withSelection(selection: Grouper<D>) {
             builder.selections = [...builder.selections, selection];
-            return builder;
+            return this;
         },
-        build: () => {
+        build() {
             return {
                 data,
                 filters: builder.filters,
