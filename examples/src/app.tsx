@@ -95,8 +95,6 @@ export class App extends React.Component<{}, AppState> {
 
     buildConfiguration(data: Data[]): Configuration<Data> {
         return createConfigurationBuilder(data)
-            // .withPlugin<DefaultSingleGroup<Data>>(DefaultSingleGroup)
-            // .withPlugin<DefaultSingleSelection<Data>>(DefaultSingleSelection)
             // .withFormat('time', (value: number) => {
             //     const date = new Date(value);
             //     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
@@ -179,101 +177,106 @@ export class App extends React.Component<{}, AppState> {
             //     count: 10
             // })
             .withFilter((data) => data)
-            // .withGroup({
-            //     id: 'method',
-            //     label: 'Method',
-            //     grouper: (data) => {
-            //         const byMethod: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
+            .withGroup({
+                id: 'method',
+                label: 'Method',
+                grouper: (data) => {
+                    const byMethod: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
 
-            //         for (const row of data) {
-            //             if (byMethod[row.method] === undefined) {
-            //                 byMethod[row.method] = labels.length;
-            //                 labels.push(row.method);
-            //             }
-            //             dataIndices.push(byMethod[row.method]);
-            //         }
+                    for (const row of data) {
+                        if (byMethod[row.method] === undefined) {
+                            byMethod[row.method] = labels.length;
+                            labels.push(row.method);
+                        }
+                        dataIndices.push(byMethod[row.method]);
+                    }
 
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withGroup({
-            //     id: 'statusCode',
-            //     label: 'Status code',
-            //     grouper: (data) => {
-            //         const byStatusCode: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
+                }
+            })
+            .withGroup({
+                id: 'statusCode',
+                label: 'Status code',
+                grouper: (data) => {
+                    const byStatusCode: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
 
-            //         for (const row of data) {
-            //             if (byStatusCode[row.statusCode] === undefined) {
-            //                 byStatusCode[row.statusCode] = labels.length;
-            //                 labels.push(row.statusCode.toString());
-            //             }
-            //             dataIndices.push(byStatusCode[row.statusCode]);
-            //         }
+                    for (const row of data) {
+                        if (byStatusCode[row.statusCode] === undefined) {
+                            byStatusCode[row.statusCode] = labels.length;
+                            labels.push(row.statusCode.toString());
+                        }
+                        dataIndices.push(byStatusCode[row.statusCode]);
+                    }
 
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withSelection({
-            //     id: 'url-first',
-            //     label: 'URL 1st',
-            //     grouper: (data) => {
-            //         const byUrlFirst: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
+                }
+            })
+            .withSelection({
+                id: 'url-first',
+                label: 'URL 1st',
+                grouper: (data) => {
+                    const byUrlFirst: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
 
-            //         for (const row of data) {
-            //             const urlFirst = row.url.split('/')[1];
-            //             if (byUrlFirst[urlFirst] === undefined) {
-            //                 byUrlFirst[urlFirst] = labels.length;
-            //                 labels.push(urlFirst);
-            //             }
-            //             dataIndices.push(byUrlFirst[urlFirst]);
-            //         }
+                    for (const row of data) {
+                        const urlFirst = row.url.split('/')[1];
+                        if (byUrlFirst[urlFirst] === undefined) {
+                            byUrlFirst[urlFirst] = labels.length;
+                            labels.push(urlFirst);
+                        }
+                        dataIndices.push(byUrlFirst[urlFirst]);
+                    }
 
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withSelection({
-            //     id: 'url-second',
-            //     label: 'URL 2nd',
-            //     grouper: (data) => {
-            //         const byUrlSecond: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
+                }
+            })
+            .withSelection({
+                id: 'url-second',
+                label: 'URL 2nd',
+                grouper: (data) => {
+                    const byUrlSecond: { [Key: string]: number } = {};
+                    const labels: string[] = [];
+                    const dataIndices: number[] = [];
 
-            //         for (const row of data) {
-            //             const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
-            //             if (byUrlSecond[urlSecond] === undefined) {
-            //                 byUrlSecond[urlSecond] = labels.length;
-            //                 labels.push(urlSecond);
-            //             }
-            //             dataIndices.push(byUrlSecond[urlSecond]);
-            //         }
+                    for (const row of data) {
+                        const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
+                        if (byUrlSecond[urlSecond] === undefined) {
+                            byUrlSecond[urlSecond] = labels.length;
+                            labels.push(urlSecond);
+                        }
+                        dataIndices.push(byUrlSecond[urlSecond]);
+                    }
 
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withValue({
-            //     id: 'average-duration',
-            //     label: 'Avg. duration',
-            //     reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
-            // })
+                    return {
+                        groupIndices: dataIndices,
+                        groupLabels: labels
+                    };
+                }
+            })
+            .withValue({
+                id: 'count',
+                label: 'Count',
+                reducer: (values) => values.length.toString()
+            })
+            .withValue({
+                id: 'average-duration',
+                label: 'Avg. duration',
+                reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
+            })
             .build();
     }
 
