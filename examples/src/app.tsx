@@ -277,6 +277,11 @@ export class App extends React.Component<{}, AppState> {
                 label: 'Avg. duration',
                 reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
             })
+            .withValue({
+                id: 'sum-duration',
+                label: 'Sum duration',
+                reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
+            })
             .build();
     }
 
@@ -306,6 +311,7 @@ export class App extends React.Component<{}, AppState> {
                     groups={this.state.result.groups}
                     selections={this.state.result.selections}
                     values={this.state.result.values}
+                    // hideColumnGroupHeading
                 />
             </React.Fragment>;
         }
