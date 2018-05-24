@@ -12,8 +12,14 @@ export interface GroupLabels {
 }
 
 export interface Grouping {
-    labelsByGroup: GroupLabels[];
-    groupDataIndices: (indices?: number[]) => number[][];
+    factors: number[];
+    uniqueEncodedIndices: number[];
+    encodedIndices: number[];
+    // uniqueIndices: number[][];
+    labels: string[][];
+    dataByEncodedIndex: { [EncodedIndex: number]: number[] };
+    // labelsByGroup: GroupLabels[];
+    // groupDataIndices: (indices?: number[]) => number[][];
 }
 
 export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
@@ -38,65 +44,80 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
     factors.pop();
 
     const uniqueEncodedIndices = Array.from(new Set(encodedIndices)).sort((a, b) => a - b);
-    const uniqueIndices = uniqueEncodedIndices.map((encodedIndex) => {
-        const indices: number[] = [];
-        for (const factor of factors) {
-            const index = Math.floor(encodedIndex / factor);
-            indices.push(index);
-            encodedIndex -= index * factor;
-        }
-        indices.push(encodedIndex);
-        return indices;
-    });
 
-    const unqiueIndexLabelCounts: { label: string, count: number }[][] = [];
-    for (let i = 0; i < labels.length; i++) {
-        unqiueIndexLabelCounts[i] = [];
+    const dataByEncodedIndex: { [EncodedIndex: number]: number[] } = {};
+    for (let i = 0; i < data.length; i++) {
+        if (!dataByEncodedIndex[encodedIndices[i]]) {
+            dataByEncodedIndex[encodedIndices[i]] = [];
+        }
+        dataByEncodedIndex[encodedIndices[i]].push(i);
     }
 
-    for (let i = 0; i < uniqueIndices.length; i++) {
-        let changed = i === 0;
-        for (let j = 0; j < labels.length; j++) {
-            if (changed || uniqueIndices[i - 1][j] !== uniqueIndices[i][j]) {
-                unqiueIndexLabelCounts[j].push({
-                    count: 1,
-                    label: labels[j][uniqueIndices[i][j]]
-                });
-                changed = true;
-            } else {
-                unqiueIndexLabelCounts[j][unqiueIndexLabelCounts[j].length - 1].count += 1;
-            }
-        }
-    }
+    // const uniqueIndices = uniqueEncodedIndices.map((encodedIndex) => {
+    //     const indices: number[] = [];
+    //     for (const factor of factors) {
+    //         const index = Math.floor(encodedIndex / factor);
+    //         indices.push(index);
+    //         encodedIndex -= index * factor;
+    //     }
+    //     indices.push(encodedIndex);
+    //     return indices;
+    // });
 
-    const labelsByGroup: GroupLabels[] = groups.map((group, groupIndex) => ({
-        id: group.id,
-        label: group.label,
-        headings: unqiueIndexLabelCounts[groupIndex]
-    }));
+    // const unqiueIndexLabelCounts: { label: string, count: number }[][] = [];
+    // for (let i = 0; i < labels.length; i++) {
+    //     unqiueIndexLabelCounts[i] = [];
+    // }
 
-    const groupDataIndices = (indices?: number[]): number[][] => {
-        const mapping: { [Key: number]: number[] } = {};
+    // for (let i = 0; i < uniqueIndices.length; i++) {
+    //     let changed = i === 0;
+    //     for (let j = 0; j < labels.length; j++) {
+    //         if (changed || uniqueIndices[i - 1][j] !== uniqueIndices[i][j]) {
+    //             unqiueIndexLabelCounts[j].push({
+    //                 count: 1,
+    //                 label: labels[j][uniqueIndices[i][j]]
+    //             });
+    //             changed = true;
+    //         } else {
+    //             unqiueIndexLabelCounts[j][unqiueIndexLabelCounts[j].length - 1].count += 1;
+    //         }
+    //     }
+    // }
 
-        for (const encodedIndex of uniqueEncodedIndices) {
-            mapping[encodedIndex] = [];
-        }
+    // const labelsByGroup: GroupLabels[] = groups.map((group, groupIndex) => ({
+    //     id: group.id,
+    //     label: group.label,
+    //     headings: unqiueIndexLabelCounts[groupIndex]
+    // }));
 
-        if (indices) {
-            for (const index of indices) {
-                mapping[encodedIndices[index]].push(index);
-            }
-        } else {
-            for (let i = 0; i < encodedIndices.length; i++) {
-                mapping[encodedIndices[i]].push(i);
-            }
-        }
+    // const groupDataIndices = (indices?: number[]): number[][] => {
+    //     const mapping: { [Key: number]: number[] } = {};
 
-        return uniqueEncodedIndices.map((encodedIndex) => mapping[encodedIndex]);
-    };
+    //     for (const encodedIndex of uniqueEncodedIndices) {
+    //         mapping[encodedIndex] = [];
+    //     }
+
+    //     if (indices) {
+    //         for (const index of indices) {
+    //             mapping[encodedIndices[index]].push(index);
+    //         }
+    //     } else {
+    //         for (let i = 0; i < encodedIndices.length; i++) {
+    //             mapping[encodedIndices[i]].push(i);
+    //         }
+    //     }
+
+    //     return uniqueEncodedIndices.map((encodedIndex) => mapping[encodedIndex]);
+    // };
 
     return {
-        labelsByGroup,
-        groupDataIndices
+        factors,
+        uniqueEncodedIndices,
+        encodedIndices,
+        // uniqueIndices,
+        labels,
+        dataByEncodedIndex
+        // labelsByGroup,
+        // groupDataIndices
     };
 }

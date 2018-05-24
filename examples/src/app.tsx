@@ -177,6 +177,7 @@ export class App extends React.Component<{}, AppState> {
             //     count: 10
             // })
             .withFilter((data) => data)
+            // .withFilter((data) => data.filter((row) => row.statusCode === 200))
             .withGroup({
                 id: 'method',
                 label: 'Method',
