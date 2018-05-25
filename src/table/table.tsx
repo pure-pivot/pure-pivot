@@ -3,7 +3,7 @@ import { Filters } from '../filters/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
 import { Selections } from '../selections/model';
-import { applyGrouping, GroupLabels } from '../groups/apply-grouping';
+import { applyGrouping, GroupLabels, Grouping, RecursiveGroups } from '../groups/apply-grouping';
 import { applyFilters } from '../filters/apply-filter';
 
 export interface TableProps<D> {
@@ -19,76 +19,67 @@ export interface TableProps<D> {
 export type TableProvidedProps = never;
 
 export class Table<D> extends React.Component<TableProps<D>, never> {
-    renderMultiRowData(dataByRowAndColumn: D[][][], start: number, count: number) {
-        if (dataByRowAndColumn.length >= 1) {
-            return dataByRowAndColumn[0].map((_, index) =>
-                this.props.values.map((valueDescription) => {
-                    let data: D[] = [];
-                    for (let i = start; i < start + count; i++) {
-                        data = [...data, ...dataByRowAndColumn[i][index]];
-                    }
-                    return <td key={`${valueDescription.id}-${index}`}>{valueDescription.reducer(data)}</td>;
-                })
-            );
-        }
-    }
-
-    renderRows(dataByRowAndColumn: D[][][], rowsLabelsByGroup: GroupLabels[], groupIndex: number = 0, count: number = Number.POSITIVE_INFINITY, runningIndices: number[] = rowsLabelsByGroup.map(() => 0)) {
-        if (groupIndex < rowsLabelsByGroup.length) {
+    renderColumnValueHeading(recursiveColumns: RecursiveGroups) {
+        if (!this.props.hideColumnValueHeading) {
+            const totalSubGroupCount = recursiveColumns.reduce((sum, column) => sum + column.subGroupCount, 0);
             const result: React.ReactNode[] = [];
 
-            for (let i = runningIndices[groupIndex], totalCount = 0; i < rowsLabelsByGroup[groupIndex].headings.length && totalCount < count; i++ , runningIndices[groupIndex]++) {
-                result.push(
-                    <React.Fragment key={i}>
-                        <tr>
-                            <th scope="row">{'-'.repeat(groupIndex)} {rowsLabelsByGroup[groupIndex].headings[i].label}</th>
-                            {this.renderMultiRowData(dataByRowAndColumn, runningIndices[runningIndices.length - 1], rowsLabelsByGroup[groupIndex].headings[i].count)}
-                        </tr>
-                        {this.renderRows(dataByRowAndColumn, rowsLabelsByGroup, groupIndex + 1, rowsLabelsByGroup[groupIndex].headings[i].count, runningIndices)}
-                    </React.Fragment>
-                );
-                totalCount += rowsLabelsByGroup[groupIndex].headings[i].count;
+            for (let i = 0; i < totalSubGroupCount; i++) {
+                for (const valueDescription of this.props.values) {
+                    result.push(<th key={`${valueDescription.id}-${i}`} scope="col">{valueDescription.label}</th>);
+                }
             }
-
-            return result;
-        }
-    }
-
-    renderColumnGroupHeading(columnsLabelsByGroup: GroupLabels[]) {
-        if (!this.props.hideColumnGroupHeading) {
-            return columnsLabelsByGroup.map((columnGroup) =>
-                <tr key={columnGroup.id}>
-                    <th scope="row">{columnGroup.label}</th>
-                    {columnGroup.headings.map((heading, index) =>
-                        <th key={index} scope="col" colSpan={heading.count * this.props.values.length}>
-                            {heading.label}
-                        </th>
-                    )}
-                </tr>
-            );
-        }
-    }
-
-    renderColumnValueHeading(columnsLabelsByGroup: GroupLabels[]) {
-        if (!this.props.hideColumnValueHeading) {
             return <tr>
                 <th scope="row">Values</th>
-                {columnsLabelsByGroup[columnsLabelsByGroup.length - 1].headings.map((heading, index) =>
-                    this.props.values.map((valueDescription) =>
-                        <th key={`${valueDescription.id}-${index}`} scope="col">{valueDescription.label}</th>
-                    )
-                )}
+                {result}
             </tr>;
         }
     }
 
-    renderColumnHeadings(columnsLabelsByGroup: GroupLabels[]) {
-        if (columnsLabelsByGroup.length >= 1) {
+    renderColumnGroupHeadingsRecursive(recursiveColumns: RecursiveGroups, level: number = 0): React.ReactNode {
+        if (!this.props.hideColumnGroupHeading) {
+            const childColumns = recursiveColumns.reduce<RecursiveGroups>((childColumns, column) => {
+                if (column.childGroups) {
+                    return [...childColumns, ...column.childGroups];
+                } else {
+                    return childColumns;
+                }
+            }, []);
+
             return <React.Fragment>
-                {this.renderColumnGroupHeading(columnsLabelsByGroup)}
-                {this.renderColumnValueHeading(columnsLabelsByGroup)}
+                <tr key={this.props.groups[level].id}>
+                    <th scope="row">{this.props.groups[level].label}</th>
+                    {recursiveColumns.map((column, index) =>
+                        <th key={index} scope="column" colSpan={column.subGroupCount * this.props.values.length}>
+                            {column.label}
+                        </th>
+                    )}
+                </tr>
+                {childColumns.length >= 1 && this.renderColumnGroupHeadingsRecursive(childColumns, level + 1)}
             </React.Fragment>;
         }
+    }
+
+    renderRowsRecursive(recursiveRows: RecursiveGroups, sortedIndices: number[], columns: Grouping, data: D[]): React.ReactNode {
+        return recursiveRows.map((rows, index) => {
+            const rowIndices: number[] = [];
+            for (let i = rows.dataIndexStart; i < rows.dataIndexEnd; i++) {
+                rowIndices.push(sortedIndices[i]);
+            }
+            const groupedData = columns.groupDataIndices(rowIndices);
+
+            return <React.Fragment key={index}>
+                <tr>
+                    <th scope="row">{rows.label}</th>
+                    {groupedData.map((indices, index) =>
+                        this.props.values.map((valueDescription) =>
+                            <td key={`${valueDescription.id}-${index}`}>{valueDescription.reducer(indices.map((index) => data[index]))}</td>
+                        )
+                    )}
+                </tr>
+                {rows.childGroups && this.renderRowsRecursive(rows.childGroups, sortedIndices, columns, data)}
+            </React.Fragment>;
+        });
     }
 
     render() {
@@ -104,10 +95,11 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
 
         const moo = <table>
             <thead>
-                {this.renderColumnHeadings(columns.labelsByGroup)}
+                {this.renderColumnGroupHeadingsRecursive(columns.recursiveGroups)}
+                {this.renderColumnValueHeading(columns.recursiveGroups)}
             </thead>
             <tbody>
-                {this.renderRows(dataByRowAndColumn, rows.labelsByGroup)}
+                {this.renderRowsRecursive(rows.recursiveGroups, rows.sortedIndices, columns, filteredData)}
             </tbody>
         </table>;
 

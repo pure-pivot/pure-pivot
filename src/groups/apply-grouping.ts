@@ -1,4 +1,5 @@
 import { Groups } from './model';
+import { assertOrThrow, isNumber } from '../util/assertion';
 
 export interface Heading {
     label: string;
@@ -12,68 +13,102 @@ export interface GroupLabels {
 }
 
 export interface Grouping {
-    labelsByGroup: GroupLabels[];
+    recursiveGroups: RecursiveGroups;
+    sortedIndices: number[];
     groupDataIndices: (indices?: number[]) => number[][];
 }
+
+export interface RecursiveGroup {
+    label: string;
+    dataIndexStart: number;
+    dataIndexEnd: number;
+    subGroupCount: number;
+    childGroups?: RecursiveGroups;
+}
+
+export type RecursiveGroups = RecursiveGroup[];
 
 export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
     const encodedIndices: number[] = [];
     const labels: string[][] = [];
     const factors: number[] = [];
 
+    for (let i = 0; i < data.length; i++) {
+        encodedIndices[i] = 0;
+    }
+
     let multiplier = 1;
     for (let i = groups.length - 1; i >= 0; i--) {
         const group = groups[i];
         const groupedData = group.grouper(data);
         for (let j = 0; j < data.length; j++) {
-            if (encodedIndices[j] === undefined) {
-                encodedIndices[j] = 0;
-            }
             encodedIndices[j] += multiplier * groupedData.groupIndices[j];
         }
         labels[i] = groupedData.groupLabels;
         factors[i] = multiplier;
         multiplier *= groupedData.groupLabels.length;
     }
-    factors.pop();
+    const minFactor = assertOrThrow(factors.pop(), isNumber);
+    const maxFactor = multiplier;
 
     const uniqueEncodedIndices = Array.from(new Set(encodedIndices)).sort((a, b) => a - b);
-    const uniqueIndices = uniqueEncodedIndices.map((encodedIndex) => {
-        const indices: number[] = [];
-        for (const factor of factors) {
-            const index = Math.floor(encodedIndex / factor);
-            indices.push(index);
-            encodedIndex -= index * factor;
-        }
-        indices.push(encodedIndex);
-        return indices;
-    });
 
-    const unqiueIndexLabelCounts: { label: string, count: number }[][] = [];
-    for (let i = 0; i < labels.length; i++) {
-        unqiueIndexLabelCounts[i] = [];
+    const sortedIndices: number[] = [];
+    for (let i = 0; i < data.length; i++) {
+        sortedIndices.push(i);
+    }
+    sortedIndices.sort((indexA, indexB) => encodedIndices[indexA] - encodedIndices[indexB]);
+
+    const recursiveGroups: RecursiveGroups = [];
+    const recursiveGroupsStack: RecursiveGroups[] = [recursiveGroups];
+    let previousFactor: number = maxFactor;
+    let currentFactor: number = factors[0];
+    for (let i = 0, level = 0; i < sortedIndices.length;) {
+        // Zoom out
+        while (i !== 0 && Math.floor(encodedIndices[sortedIndices[i - 1]] / previousFactor) !== Math.floor(encodedIndices[sortedIndices[i]] / previousFactor)) {
+            level -= 1;
+            previousFactor = level === 0 ? maxFactor : factors[level - 1];
+            recursiveGroupsStack.pop();
+        }
+        currentFactor = level === factors.length ? minFactor : factors[level];
+        // Zoom in
+        while (level !== groups.length - 1) {
+            const group = {
+                label: labels[level][Math.floor(encodedIndices[sortedIndices[i]] % previousFactor / currentFactor)],
+                dataIndexStart: i,
+                dataIndexEnd: 0,
+                subGroupCount: 0,
+                childGroups: []
+            };
+            recursiveGroupsStack[recursiveGroupsStack.length - 1].push(group);
+            recursiveGroupsStack.push(group.childGroups);
+            level += 1;
+        }
+        previousFactor = level === 0 ? maxFactor : factors[level - 1];
+        currentFactor = level === factors.length ? minFactor : factors[level];
+        // Count
+        const start = i;
+        while (i < sortedIndices.length && (i === start || encodedIndices[sortedIndices[i - 1]] === encodedIndices[sortedIndices[i]])) {
+            i += 1;
+        }
+        // Update
+        recursiveGroupsStack[recursiveGroupsStack.length - 1].push({
+            label: labels[level][Math.floor(encodedIndices[sortedIndices[start]] % previousFactor / currentFactor)],
+            dataIndexStart: start,
+            dataIndexEnd: i,
+            subGroupCount: 1
+        });
     }
 
-    for (let i = 0; i < uniqueIndices.length; i++) {
-        let changed = i === 0;
-        for (let j = 0; j < labels.length; j++) {
-            if (changed || uniqueIndices[i - 1][j] !== uniqueIndices[i][j]) {
-                unqiueIndexLabelCounts[j].push({
-                    count: 1,
-                    label: labels[j][uniqueIndices[i][j]]
-                });
-                changed = true;
-            } else {
-                unqiueIndexLabelCounts[j][unqiueIndexLabelCounts[j].length - 1].count += 1;
+    (function fixEndsAndCounts(recursiveGroups: RecursiveGroups) {
+        for (const recursiveGroup of recursiveGroups) {
+            if (recursiveGroup.childGroups) {
+                fixEndsAndCounts(recursiveGroup.childGroups);
+                recursiveGroup.dataIndexEnd = recursiveGroup.childGroups[recursiveGroup.childGroups.length - 1].dataIndexEnd;
+                recursiveGroup.subGroupCount = recursiveGroup.childGroups.reduce((sum, child) => sum + child.subGroupCount, 0);
             }
         }
-    }
-
-    const labelsByGroup: GroupLabels[] = groups.map((group, groupIndex) => ({
-        id: group.id,
-        label: group.label,
-        headings: unqiueIndexLabelCounts[groupIndex]
-    }));
+    })(recursiveGroups);
 
     const groupDataIndices = (indices?: number[]): number[][] => {
         const mapping: { [Key: number]: number[] } = {};
@@ -96,7 +131,8 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
     };
 
     return {
-        labelsByGroup,
+        recursiveGroups,
+        sortedIndices,
         groupDataIndices
     };
 }
