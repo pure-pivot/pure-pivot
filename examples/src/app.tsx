@@ -272,16 +272,17 @@ export class App extends React.Component<{}, AppState> {
                 label: 'Count',
                 reducer: (values) => values.length.toString()
             })
-            .withValue({
-                id: 'average-duration',
-                label: 'Avg. duration',
-                reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
-            })
-            .withValue({
-                id: 'sum-duration',
-                label: 'Sum duration',
-                reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
-            })
+            // .withValue({
+            //     id: 'average-duration',
+            //     label: 'Avg. duration',
+            //     reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
+            // })
+            // .withValue({
+            //     id: 'sum-duration',
+            //     label: 'Sum duration',
+            //     reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
+            // })
+            .withSorter((data1, data2) => data2.length - data1.length)
             .build();
     }
 
@@ -311,6 +312,7 @@ export class App extends React.Component<{}, AppState> {
                     groups={this.state.result.groups}
                     selections={this.state.result.selections}
                     values={this.state.result.values}
+                    sorting={this.state.result.sorting}
                     // hideColumnGroupHeading
                 />
             </React.Fragment>;

@@ -5,12 +5,15 @@ import { Groups } from '../groups/model';
 import { Selections } from '../selections/model';
 import { applyGrouping, GroupLabels, Grouping, RecursiveGroups } from '../groups/apply-grouping';
 import { applyFilters } from '../filters/apply-filter';
+import { Comparators } from '../sorting/model';
+import { applySorting } from '../sorting/apply-sorting';
 
 export interface TableProps<D> {
     data: D[];
     filters: Filters<D>;
     groups: Groups<D>;
     selections: Selections<D>;
+    sorting: Comparators<D>;
     values: ValueReducers<D>;
     hideColumnGroupHeading?: boolean;
     hideColumnValueHeading?: boolean;
@@ -60,26 +63,33 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         }
     }
 
-    renderRowsRecursive(recursiveRows: RecursiveGroups, sortedIndices: number[], columns: Grouping, data: D[]): React.ReactNode {
-        return recursiveRows.map((rows, index) => {
-            const rowIndices: number[] = [];
-            for (let i = rows.dataIndexStart; i < rows.dataIndexEnd; i++) {
-                rowIndices.push(sortedIndices[i]);
-            }
-            const groupedData = columns.groupDataIndices(rowIndices);
+    renderRowsRecursive(recursiveRows: RecursiveGroups, sortedIndices: number[], columns: Grouping, data: D[], level: number = 0): React.ReactNode {
+        return recursiveRows
+            .map((rows) => {
+                const rowIndices: number[] = [];
+                for (let i = rows.dataIndexStart; i < rows.dataIndexEnd; i++) {
+                    rowIndices.push(sortedIndices[i]);
+                }
+                return { ...rows, rowIndices };
+            })
+            .sort((rows1, rows2) => {
+                return applySorting(this.props.sorting, rows1.rowIndices.map((index) => data[index]), rows2.rowIndices.map((index) => data[index]));
+            })
+            .map((rows, index) => {
+                const groupedData = columns.groupDataIndices(rows.rowIndices);
 
-            return <React.Fragment key={index}>
-                <tr>
-                    <th scope="row">{rows.label}</th>
-                    {groupedData.map((indices, index) =>
-                        this.props.values.map((valueDescription) =>
-                            <td key={`${valueDescription.id}-${index}`}>{valueDescription.reducer(indices.map((index) => data[index]))}</td>
-                        )
-                    )}
-                </tr>
-                {rows.childGroups && this.renderRowsRecursive(rows.childGroups, sortedIndices, columns, data)}
-            </React.Fragment>;
-        });
+                return <React.Fragment key={index}>
+                    <tr>
+                        <th scope="row">{'>'.repeat(level)} {rows.label}</th>
+                        {groupedData.map((indices, index) =>
+                            this.props.values.map((valueDescription) =>
+                                <td key={`${valueDescription.id}-${index}`}>{valueDescription.reducer(indices.map((index) => data[index]))}</td>
+                            )
+                        )}
+                    </tr>
+                    {rows.childGroups && this.renderRowsRecursive(rows.childGroups, sortedIndices, columns, data, level + 1)}
+                </React.Fragment>;
+            });
     }
 
     render() {
@@ -92,6 +102,8 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const dataByRowAndColumn = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));
 
         console.log(`${window.performance.now() - start} ms`);
+
+        console.log(rows.recursiveGroups);
 
         const moo = <table>
             <thead>

@@ -83,9 +83,9 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
             recursiveGroupsStack[recursiveGroupsStack.length - 1].push(group);
             recursiveGroupsStack.push(group.childGroups);
             level += 1;
+            previousFactor = level === 0 ? maxFactor : factors[level - 1];
+            currentFactor = level === factors.length ? minFactor : factors[level];
         }
-        previousFactor = level === 0 ? maxFactor : factors[level - 1];
-        currentFactor = level === factors.length ? minFactor : factors[level];
         // Count
         const start = i;
         while (i < sortedIndices.length && (i === start || encodedIndices[sortedIndices[i - 1]] === encodedIndices[sortedIndices[i]])) {
