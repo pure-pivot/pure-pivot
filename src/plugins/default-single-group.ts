@@ -1,4 +1,4 @@
-import { ConfigurationBuilder, Configuration } from '../configuration';
+import { ConfigurationBuilder } from '../configuration';
 
 export function defaultSingleGroup<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {
     return Object.assign({}, configurationBuilder, {
@@ -10,11 +10,7 @@ export function defaultSingleGroup<D>(configurationBuilder: ConfigurationBuilder
                     id: 'pure-pivot-default-group',
                     label: 'All',
                     grouper: (data) => {
-                        const dataIndices: number[] = [];
-
-                        for (const row of data) {
-                            dataIndices.push(0);
-                        }
+                        const dataIndices: number[] = data.map(() => 0);
 
                         return {
                             groupIndices: dataIndices,

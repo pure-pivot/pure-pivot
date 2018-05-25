@@ -3,7 +3,7 @@ import { Filters } from '../filters/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
 import { Selections } from '../selections/model';
-import { applyGrouping, GroupLabels, Grouping, RecursiveGroups } from '../groups/apply-grouping';
+import { applyGrouping, Grouping, RecursiveGroups } from '../groups/apply-grouping';
 import { applyFilters } from '../filters/apply-filter';
 import { Comparators } from '../sorting/model';
 import { applySorting } from '../sorting/apply-sorting';
@@ -77,7 +77,6 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
             })
             .map((rows, index) => {
                 const groupedData = columns.groupDataIndices(rows.rowIndices);
-
                 return <React.Fragment key={index}>
                     <tr>
                         <th scope="row">{'>'.repeat(level)} {rows.label}</th>
@@ -98,14 +97,9 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
 
-        const indicesByRows = rows.groupDataIndices();
-        const dataByRowAndColumn = indicesByRows.map((indices) => columns.groupDataIndices(indices).map((indices) => indices.map((index) => filteredData[index])));
-
         console.log(`${window.performance.now() - start} ms`);
 
-        console.log(rows.recursiveGroups);
-
-        const moo = <table>
+        return <table>
             <thead>
                 {this.renderColumnGroupHeadingsRecursive(columns.recursiveGroups)}
                 {this.renderColumnValueHeading(columns.recursiveGroups)}
@@ -114,9 +108,5 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                 {this.renderRowsRecursive(rows.recursiveGroups, rows.sortedIndices, columns, filteredData)}
             </tbody>
         </table>;
-
-        console.log(`${window.performance.now() - start} ms`);
-
-        return moo;
     }
 }

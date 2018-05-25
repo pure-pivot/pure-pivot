@@ -1,4 +1,4 @@
-import { ConfigurationBuilder, Configuration } from '../configuration';
+import { ConfigurationBuilder } from '../configuration';
 import { ObjectKeys } from '../util/keys';
 
 export function defaultAllValues<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {

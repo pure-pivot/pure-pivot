@@ -1,17 +1,6 @@
 import { Groups } from './model';
 import { assertOrThrow, isNumber } from '../util/assertion';
 
-export interface Heading {
-    label: string;
-    count: number;
-}
-
-export interface GroupLabels {
-    id: string;
-    label: string;
-    headings: Heading[];
-}
-
 export interface Grouping {
     recursiveGroups: RecursiveGroups;
     sortedIndices: number[];
