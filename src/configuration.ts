@@ -6,6 +6,10 @@ import { Groups, Grouper } from './groups/model';
 import { Selections } from './selections/model';
 import { defaultPlugins } from './plugins/default-plugins';
 import { Comparators, Comparator } from './sorting/model';
+import { provideProps } from './util/provide-props';
+import { TableContainer, TableContainerProps } from './table/table-container';
+import { TableBody, TableBodyProps } from './table/table-body';
+import { TableHead, TableHeadProps } from './table/table-head';
 
 export interface Configuration<D> {
     data: D[];
@@ -25,6 +29,9 @@ export interface ConfigurationBuilder<D> {
     sorting: Comparators<D>;
     values: ValueReducers<D>;
     tableComponent: React.ComponentType<TableProps<D>>;
+    tableContainerComponent: React.ComponentType<TableContainerProps>;
+    tableHeadComponent: React.ComponentType<TableHeadProps>;
+    tableBodyComponent: React.ComponentType<TableBodyProps>;
     withFilters(filters: Filters<D>): this;
     withFilter(filter: Filter<D>): this;
     withValues(values: ValueReducers<D>): this;
@@ -35,6 +42,9 @@ export interface ConfigurationBuilder<D> {
     withSelection(selection: Grouper<D>): this;
     withSorter(sorter: Comparator<D>): this;
     withSorters(sorters: Comparators<D>): this;
+    withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps>): this;
+    withTableHeadComponent(tableHeadComponent: React.ComponentType<TableHeadProps>): this;
+    withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps>): this;
     build(): Configuration<D>;
 }
 
@@ -46,6 +56,9 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
         sorting: [],
         values: [],
         tableComponent: Table,
+        tableContainerComponent: TableContainer,
+        tableHeadComponent: TableHead,
+        tableBodyComponent: TableBody,
         withFilter(filter) {
             builder.filters = [...builder.filters, filter];
             return this;
@@ -86,6 +99,18 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
             builder.sorting = sorters;
             return this;
         },
+        withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps>) {
+            builder.tableContainerComponent = tableContainerComponent;
+            return this;
+        },
+        withTableHeadComponent(tableHeadComponent: React.ComponentType<TableHeadProps>) {
+            builder.tableHeadComponent = tableHeadComponent;
+            return this;
+        },
+        withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps>) {
+            builder.tableBodyComponent = tableBodyComponent;
+            return this;
+        },
         build() {
             return {
                 data,
@@ -94,7 +119,11 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
                 selections: builder.selections,
                 sorting: builder.sorting,
                 values: builder.values,
-                tableComponent: builder.tableComponent
+                tableComponent: provideProps(builder.tableComponent, {
+                    tableContainerComponent: builder.tableContainerComponent,
+                    tableHeadComponent: builder.tableHeadComponent,
+                    tableBodyComponent: builder.tableBodyComponent
+                })
             };
         }
     };

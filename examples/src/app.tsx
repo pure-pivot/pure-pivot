@@ -283,6 +283,21 @@ export class App extends React.Component<{}, AppState> {
                 reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
             })
             .withSorter((data1, data2) => data2.length - data1.length)
+            .withTableContainerComponent((props) =>
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${props.numDataColumns + 1}, 1fr)` }}>
+                    {props.children}
+                </div>
+            )
+            .withTableHeadComponent((props) =>
+                <React.Fragment>
+                    {props.children}
+                </React.Fragment>
+            )
+            .withTableBodyComponent((props) =>
+                <React.Fragment>
+                    {props.children}
+                </React.Fragment>
+            )
             .build();
     }
 
@@ -313,7 +328,7 @@ export class App extends React.Component<{}, AppState> {
                     selections={this.state.result.selections}
                     values={this.state.result.values}
                     sorting={this.state.result.sorting}
-                    // hideColumnGroupHeading
+                // hideColumnGroupHeading
                 />
             </React.Fragment>;
         }
