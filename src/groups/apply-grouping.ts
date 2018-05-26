@@ -2,7 +2,7 @@ import { Groups } from './model';
 import { assertOrThrow, isNumber } from '../util/assertion';
 
 export interface Grouping {
-    recursiveGroups: RecursiveGroups;
+    recursiveGroups: RecursiveGroup[];
     sortedIndices: number[];
     groupDataIndices: (indices?: number[]) => number[][];
 }
@@ -12,10 +12,8 @@ export interface RecursiveGroup {
     dataIndexStart: number;
     dataIndexEnd: number;
     subGroupCount: number;
-    childGroups?: RecursiveGroups;
+    childGroups?: RecursiveGroup[];
 }
-
-export type RecursiveGroups = RecursiveGroup[];
 
 export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
     const encodedIndices: number[] = [];
@@ -48,8 +46,8 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
     }
     sortedIndices.sort((indexA, indexB) => encodedIndices[indexA] - encodedIndices[indexB]);
 
-    const recursiveGroups: RecursiveGroups = [];
-    const recursiveGroupsStack: RecursiveGroups[] = [recursiveGroups];
+    const recursiveGroups: RecursiveGroup[] = [];
+    const recursiveGroupsStack: RecursiveGroup[][] = [recursiveGroups];
     let previousFactor: number = maxFactor;
     let currentFactor: number = factors[0];
     for (let i = 0, level = 0; i < sortedIndices.length;) {
@@ -89,7 +87,7 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
         });
     }
 
-    (function fixEndsAndCounts(recursiveGroups: RecursiveGroups) {
+    (function fixEndsAndCounts(recursiveGroups: RecursiveGroup[]) {
         for (const recursiveGroup of recursiveGroups) {
             if (recursiveGroup.childGroups) {
                 fixEndsAndCounts(recursiveGroup.childGroups);

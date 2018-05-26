@@ -1,8 +1,7 @@
 import * as React from 'react';
 
+/* tslint:disable-next-line:no-empty-interface */
 export interface TableContainerProps {
-    numGroupHeaderRows: number;
-    numDataColumns: number;
 }
 
 export class TableContainer extends React.Component<TableContainerProps, never> {

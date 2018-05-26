@@ -10,6 +10,11 @@ import { provideProps } from './util/provide-props';
 import { TableContainer, TableContainerProps } from './table/table-container';
 import { TableBody, TableBodyProps } from './table/table-body';
 import { TableHead, TableHeadProps } from './table/table-head';
+import { TableHeadGroupColumnsProps, TableHeadGroupColumns } from './table/table-head-group-columns';
+import { TableHeadValueColumnsProps, TableHeadValueColumns } from './table/table-head-value-columns';
+import { TableBodyRowsProps, TableBodyRows } from './table/table-body-rows';
+import { TableHeadCell, TableHeadCellProps } from './table/table-head-cell';
+import { TableBodyFirstCellProps, TableBodyFirstCell } from './table/table-body-first-cell';
 
 export interface Configuration<D> {
     data: D[];
@@ -30,8 +35,16 @@ export interface ConfigurationBuilder<D> {
     values: ValueReducers<D>;
     tableComponent: React.ComponentType<TableProps<D>>;
     tableContainerComponent: React.ComponentType<TableContainerProps>;
-    tableHeadComponent: React.ComponentType<TableHeadProps>;
-    tableBodyComponent: React.ComponentType<TableBodyProps>;
+    tableHeadComponent: React.ComponentType<TableHeadProps<D>>;
+    tableHeadGroupColumnsComponent: React.ComponentType<TableHeadGroupColumnsProps<D>>;
+    tableHeadValueColumnsComponent: React.ComponentType<TableHeadValueColumnsProps<D>>;
+    tableHeadCellComponent: React.ComponentType<TableHeadCellProps>;
+    tableHeadRowComponent: React.ReactType;
+    tableBodyComponent: React.ComponentType<TableBodyProps<D>>;
+    tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
+    tableBodyRowComponent: React.ReactType;
+    tableBodyFirstCellComponent: React.ComponentType<TableBodyFirstCellProps>;
+    tableBodyCellComponent: React.ReactType;
     withFilters(filters: Filters<D>): this;
     withFilter(filter: Filter<D>): this;
     withValues(values: ValueReducers<D>): this;
@@ -40,11 +53,11 @@ export interface ConfigurationBuilder<D> {
     withGroup(group: Grouper<D>): this;
     withSelections(selections: Selections<D>): this;
     withSelection(selection: Grouper<D>): this;
-    withSorter(sorter: Comparator<D>): this;
     withSorters(sorters: Comparators<D>): this;
+    withSorter(sorter: Comparator<D>): this;
     withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps>): this;
-    withTableHeadComponent(tableHeadComponent: React.ComponentType<TableHeadProps>): this;
-    withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps>): this;
+    withTableHeadComponent(tableHeadComponent: React.ComponentType<TableHeadProps<D>>): this;
+    withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps<D>>): this;
     build(): Configuration<D>;
 }
 
@@ -58,7 +71,15 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
         tableComponent: Table,
         tableContainerComponent: TableContainer,
         tableHeadComponent: TableHead,
+        tableHeadGroupColumnsComponent: TableHeadGroupColumns,
+        tableHeadValueColumnsComponent: TableHeadValueColumns,
+        tableHeadCellComponent: TableHeadCell,
+        tableHeadRowComponent: 'tr',
         tableBodyComponent: TableBody,
+        tableBodyRowsComponent: TableBodyRows,
+        tableBodyRowComponent: 'tr',
+        tableBodyFirstCellComponent: TableBodyFirstCell,
+        tableBodyCellComponent: 'td',
         withFilter(filter) {
             builder.filters = [...builder.filters, filter];
             return this;
@@ -91,23 +112,23 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
             builder.selections = [...builder.selections, selection];
             return this;
         },
-        withSorter(sorter: Comparator<D>) {
-            builder.sorting = [...builder.sorting, sorter];
-            return this;
-        },
         withSorters(sorters: Comparators<D>) {
             builder.sorting = sorters;
+            return this;
+        },
+        withSorter(sorter: Comparator<D>) {
+            builder.sorting = [...builder.sorting, sorter];
             return this;
         },
         withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps>) {
             builder.tableContainerComponent = tableContainerComponent;
             return this;
         },
-        withTableHeadComponent(tableHeadComponent: React.ComponentType<TableHeadProps>) {
+        withTableHeadComponent(tableHeadComponent: React.ComponentType<TableHeadProps<D>>) {
             builder.tableHeadComponent = tableHeadComponent;
             return this;
         },
-        withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps>) {
+        withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps<D>>) {
             builder.tableBodyComponent = tableBodyComponent;
             return this;
         },
@@ -121,8 +142,23 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
                 values: builder.values,
                 tableComponent: provideProps(builder.tableComponent, {
                     tableContainerComponent: builder.tableContainerComponent,
-                    tableHeadComponent: builder.tableHeadComponent,
-                    tableBodyComponent: builder.tableBodyComponent
+                    tableHeadComponent: provideProps(builder.tableHeadComponent, {
+                        tableHeadGroupColumnsComponent: provideProps(builder.tableHeadGroupColumnsComponent, {
+                            tableHeadRowComponent: builder.tableHeadRowComponent,
+                            tableHeadCellComponent: builder.tableHeadCellComponent
+                        }),
+                        tableHeadValueColumnsComponent: provideProps(builder.tableHeadValueColumnsComponent, {
+                            tableHeadRowComponent: builder.tableHeadRowComponent,
+                            tableHeadCellComponent: builder.tableHeadCellComponent
+                        })
+                    }),
+                    tableBodyComponent: provideProps(builder.tableBodyComponent, {
+                        tableBodyRowsComponent: provideProps(builder.tableBodyRowsComponent, {
+                            tableBodyRowComponent: builder.tableBodyRowComponent,
+                            tableBodyFirstCellComponent: builder.tableBodyFirstCellComponent,
+                            tableBodyCellComponent: builder.tableBodyCellComponent
+                        })
+                    })
                 })
             };
         }
