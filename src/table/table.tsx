@@ -104,12 +104,9 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     }
 
     render() {
-        const start = window.performance.now();
         const filteredData = applyFilters(this.props.filters, this.props.data);
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
-
-        console.log(`${window.performance.now() - start} ms`);
 
         const valueHeaderRow = this.createValueHeaderRow(columns);
         const groupHeaderRows = this.createGroupHeaderRows(columns.recursiveGroups);
