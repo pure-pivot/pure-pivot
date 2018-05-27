@@ -10,6 +10,7 @@ export interface TableContainerProps<D> {
     groupHeaderRows: GroupHeaderRow[];
     valueHeaderRow: ValueHeaderRow;
     columnCount: number;
+    valueCount: number;
     values: ValueReducers<D>;
     bodyRows: BodyRow<D>[];
     tableHeadComponent: React.ComponentType<Pick<TableHeadProps<D>, Exclude<keyof TableHeadProps<D>, TableHeadProvidedProps>>>;
@@ -25,11 +26,12 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, n
                 groupHeaderRows={this.props.groupHeaderRows}
                 valueHeaderRow={this.props.valueHeaderRow}
                 columnCount={this.props.columnCount}
-                valueCount={this.props.values.length}
+                valueCount={this.props.valueCount}
             />
             <this.props.tableBodyComponent
                 values={this.props.values}
                 bodyRows={this.props.bodyRows}
+                columnCount={this.props.columnCount}
             />
         </table>;
     }

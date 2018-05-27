@@ -284,16 +284,17 @@ export class App extends React.Component<{}, AppState> {
             })
             .withSorter((data1, data2) => data2.length - data1.length)
             .withTableContainerComponent((props) =>
-                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${1 + props.valueHeaderRow.labels.length}, auto)` }}>
+                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${props.columnCount}, auto)` }}>
                     <props.tableHeadComponent
                         groupHeaderRows={props.groupHeaderRows}
                         valueHeaderRow={props.valueHeaderRow}
                         columnCount={props.columnCount}
-                        valueCount={props.values.length}
+                        valueCount={props.valueCount}
                     />
                     <props.tableBodyComponent
                         values={props.values}
                         bodyRows={props.bodyRows}
+                        columnCount={props.columnCount}
                     />
                 </div>
             )

@@ -8,6 +8,7 @@ import { TableBodyRowsProps, BodyRow, TableBodyRowsProvidedProps } from './table
 export interface TableBodyProps<D> {
     values: ValueReducers<D>;
     bodyRows: BodyRow<D>[];
+    columnCount: number;
     tableBodyRowsComponent: React.ComponentType<Pick<TableBodyRowsProps<D>, Exclude<keyof TableBodyRowsProps<D>, TableBodyRowsProvidedProps>>>;
 }
 
