@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { Configuration, createConfigurationBuilder } from '../../lib/es6/configuration';
+import { createTableConfigurationBuilder } from '../../lib/es6/table/configuration';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -283,6 +284,10 @@ export class App extends React.Component<{}, AppState> {
                 reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
             })
             .withSorter((data1, data2) => data2.length - data1.length)
+            .withTableConfiguration(
+                createTableConfigurationBuilder(data)
+                    .build()
+            )
             .build();
     }
 

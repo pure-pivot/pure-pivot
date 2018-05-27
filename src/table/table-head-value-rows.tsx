@@ -5,15 +5,15 @@ import { ValueReducers } from '../values/model';
 import { TableHeadCellProps } from './table-head-cell';
 import { ValueHeaderRow, TableDescription, isValueHeaderRow } from './model';
 
-export interface TableHeadValueColumnsProps<D> {
+export interface TableHeadValueRowsProps<D> {
     tableDescription: TableDescription<D>;
     tableHeadRowComponent: React.ReactType;
     tableHeadCellComponent: React.ComponentType<TableHeadCellProps>;
 }
 
-export type TableHeadValueColumnsProvidedProps = 'tableHeadRowComponent' | 'tableHeadCellComponent';
+export type TableHeadValueRowsProvidedProps = 'tableHeadRowComponent' | 'tableHeadCellComponent';
 
-export class TableHeadValueColumns<D> extends React.Component<TableHeadValueColumnsProps<D>, never> {
+export class TableHeadValueRows<D> extends React.Component<TableHeadValueRowsProps<D>, never> {
     render() {
         return this.props.tableDescription.headRows.filter(isValueHeaderRow).map((row, index) =>
             <this.props.tableHeadRowComponent key={index}>
