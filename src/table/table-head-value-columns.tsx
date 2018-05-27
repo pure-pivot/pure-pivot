@@ -20,11 +20,11 @@ export type TableHeadValueColumnsProvidedProps = 'tableHeadRowComponent' | 'tabl
 export class TableHeadValueColumns<D> extends React.Component<TableHeadValueColumnsProps<D>, never> {
     render() {
         return <this.props.tableHeadRowComponent>
-            <this.props.tableHeadCellComponent scope="row">
+            <this.props.tableHeadCellComponent scope="row" colSpan={1}>
                 Values
             </this.props.tableHeadCellComponent>
             {this.props.row.labels.map((label, index) =>
-                <this.props.tableHeadCellComponent key={index} scope="col">
+                <this.props.tableHeadCellComponent key={index} scope="col" colSpan={1}>
                     {label}
                 </this.props.tableHeadCellComponent>
             )}

@@ -7,7 +7,7 @@ import { applyGrouping, Grouping, RecursiveGroup } from '../groups/apply-groupin
 import { applyFilters } from '../filters/apply-filter';
 import { Comparators } from '../sorting/model';
 import { applySorting } from '../sorting/apply-sorting';
-import { TableContainerProps } from './table-container';
+import { TableContainerProps, TableContainerProvidedProps } from './table-container';
 import { TableHeadProps, TableHeadProvidedProps } from './table-head';
 import { TableBodyProps, TableBodyProvidedProps } from './table-body';
 import { GroupHeaderRow } from './table-head-group-columns';
@@ -21,9 +21,7 @@ export interface TableProps<D> {
     selections: Selections<D>;
     sorting: Comparators<D>;
     values: ValueReducers<D>;
-    tableContainerComponent: React.ComponentType<TableContainerProps>;
-    tableHeadComponent: React.ComponentType<Pick<TableHeadProps<D>, Exclude<keyof TableHeadProps<D>, TableHeadProvidedProps>>>;
-    tableBodyComponent: React.ComponentType<Pick<TableBodyProps<D>, Exclude<keyof TableBodyProps<D>, TableBodyProvidedProps>>>;
+    tableContainerComponent: React.ComponentType<Pick<TableContainerProps<D>, Exclude<keyof TableContainerProps<D>, TableContainerProvidedProps>>>;
 }
 
 export type TableProvidedProps = 'tableContainerComponent' | 'tableHeadComponent' | 'tableBodyComponent';
@@ -112,16 +110,12 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const groupHeaderRows = this.createGroupHeaderRows(columns.recursiveGroups);
         const bodyRows = this.createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, filteredData);
 
-        return <this.props.tableContainerComponent>
-            <this.props.tableHeadComponent
-                groupHeaderRows={groupHeaderRows}
-                valueHeaderRow={valueHeaderRow}
-                valueColumnCount={this.props.values.length}
-            />
-            <this.props.tableBodyComponent
-                values={this.props.values}
-                bodyRows={bodyRows}
-            />
-        </this.props.tableContainerComponent>;
+        return <this.props.tableContainerComponent
+            groupHeaderRows={groupHeaderRows}
+            valueHeaderRow={valueHeaderRow}
+            valueColumnCount={this.props.values.length}
+            values={this.props.values}
+            bodyRows={bodyRows}
+        />;
     }
 }

@@ -29,7 +29,7 @@ export class TableHeadGroupColumns<D> extends React.Component<TableHeadGroupColu
     render() {
         return this.props.rows.map((row, index) =>
             <this.props.tableHeadRowComponent key={index}>
-                <this.props.tableHeadCellComponent scope="row">
+                <this.props.tableHeadCellComponent scope="row" colSpan={1}>
                     {row.label}
                 </this.props.tableHeadCellComponent>
                 {row.groups.map((rowGroup, index) =>

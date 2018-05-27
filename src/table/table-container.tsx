@@ -1,11 +1,35 @@
 import * as React from 'react';
+import { TableHeadProps, TableHeadProvidedProps } from './table-head';
+import { TableBodyProps, TableBodyProvidedProps } from './table-body';
+import { GroupHeaderRow } from './table-head-group-columns';
+import { ValueHeaderRow } from './table-head-value-columns';
+import { ValueReducers } from '../values/model';
+import { BodyRow } from './table-body-rows';
 
-/* tslint:disable-next-line:no-empty-interface */
-export interface TableContainerProps {
+export interface TableContainerProps<D> {
+    groupHeaderRows: GroupHeaderRow[];
+    valueHeaderRow: ValueHeaderRow;
+    valueColumnCount: number;
+    values: ValueReducers<D>;
+    bodyRows: BodyRow<D>[];
+    tableHeadComponent: React.ComponentType<Pick<TableHeadProps<D>, Exclude<keyof TableHeadProps<D>, TableHeadProvidedProps>>>;
+    tableBodyComponent: React.ComponentType<Pick<TableBodyProps<D>, Exclude<keyof TableBodyProps<D>, TableBodyProvidedProps>>>;
 }
 
-export class TableContainer extends React.Component<TableContainerProps, never> {
+export type TableContainerProvidedProps = 'tableHeadComponent' | 'tableBodyComponent';
+
+export class TableContainer<D> extends React.Component<TableContainerProps<D>, never> {
     render() {
-        return <table children={this.props.children} />;
+        return <table>
+            <this.props.tableHeadComponent
+                groupHeaderRows={this.props.groupHeaderRows}
+                valueHeaderRow={this.props.valueHeaderRow}
+                valueColumnCount={this.props.values.length}
+            />
+            <this.props.tableBodyComponent
+                values={this.props.values}
+                bodyRows={this.props.bodyRows}
+            />
+        </table>;
     }
 }
