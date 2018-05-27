@@ -7,14 +7,6 @@ import { Selections } from './selections/model';
 import { defaultPlugins } from './plugins/default-plugins';
 import { Comparators, Comparator } from './sorting/model';
 import { provideProps } from './util/provide-props';
-import { TableContainer, TableContainerProps } from './table/table-container';
-import { TableBody, TableBodyProps } from './table/table-body';
-import { TableHead, TableHeadProps } from './table/table-head';
-import { TableHeadGroupColumnsProps, TableHeadGroupColumns } from './table/table-head-group-columns';
-import { TableHeadValueColumnsProps, TableHeadValueColumns } from './table/table-head-value-columns';
-import { TableBodyRowsProps, TableBodyRows } from './table/table-body-rows';
-import { TableHeadCell, TableHeadCellProps } from './table/table-head-cell';
-import { TableBodyFirstCellProps, TableBodyFirstCell } from './table/table-body-first-cell';
 import { TableConfiguration, createTableConfigurationBuilder } from './table/configuration';
 
 export interface Configuration<D> {
