@@ -1,9 +1,6 @@
 import * as React from 'react';
-import { Grouping } from '../groups/apply-grouping';
-import { Groups } from '../groups/model';
-import { ValueReducers } from '../values/model';
 import { TableHeadCellProps } from './table-head-cell';
-import { ValueHeaderRow, TableDescription, isValueHeaderRow } from './model';
+import { ValueHeaderRow, TableDescription } from './model';
 
 export interface TableHeadValueRowProps<D> {
     row: ValueHeaderRow;

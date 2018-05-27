@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { TableHeadProps, TableHeadProvidedProps } from './table-head';
 import { TableBodyProps, TableBodyProvidedProps } from './table-body';
-import { ValueReducers } from '../values/model';
-import { GroupHeaderRow, ValueHeaderRow, BodyRow, TableDescription } from './model';
+import { TableDescription } from './model';
 
 export interface TableContainerProps<D> {
     tableDescription: TableDescription<D>;

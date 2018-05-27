@@ -1,11 +1,6 @@
 import * as React from 'react';
-import { Grouping, RecursiveGroup } from '../groups/apply-grouping';
-import { applySorting } from '../sorting/apply-sorting';
-import { ValueReducers } from '../values/model';
-import { Comparators } from '../sorting/model';
-import { TableHeadCellProps } from './table-head-cell';
 import { TableBodyFirstCellProps } from './table-body-first-cell';
-import { BodyRow, TableDescription } from './model';
+import { TableDescription } from './model';
 
 export interface TableBodyRowsProps<D> {
     tableDescription: TableDescription<D>;
