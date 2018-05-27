@@ -18,7 +18,7 @@ export interface GroupHeaderRow {
 
 export interface TableHeadGroupColumnsProps<D> {
     rows: GroupHeaderRow[];
-    valueColumnCount: number;
+    valueCount: number;
     tableHeadRowComponent: React.ReactType;
     tableHeadCellComponent: React.ComponentType<TableHeadCellProps>;
 }
@@ -33,7 +33,7 @@ export class TableHeadGroupColumns<D> extends React.Component<TableHeadGroupColu
                     {row.label}
                 </this.props.tableHeadCellComponent>
                 {row.groups.map((rowGroup, index) =>
-                    <this.props.tableHeadCellComponent key={index} scope="col" colSpan={rowGroup.subColumnSize * this.props.valueColumnCount}>
+                    <this.props.tableHeadCellComponent key={index} scope="col" colSpan={rowGroup.subColumnSize * this.props.valueCount}>
                         {rowGroup.label}
                     </this.props.tableHeadCellComponent>
                 )}

@@ -113,7 +113,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         return <this.props.tableContainerComponent
             groupHeaderRows={groupHeaderRows}
             valueHeaderRow={valueHeaderRow}
-            valueColumnCount={this.props.values.length}
+            columnCount={this.props.values.length + 1}
             values={this.props.values}
             bodyRows={bodyRows}
         />;

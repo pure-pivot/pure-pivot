@@ -8,7 +8,8 @@ import { TableHeadValueColumnsProps, ValueHeaderRow, TableHeadValueColumnsProvid
 export interface TableHeadProps<D> {
     groupHeaderRows: GroupHeaderRow[];
     valueHeaderRow: ValueHeaderRow;
-    valueColumnCount: number;
+    columnCount: number;
+    valueCount: number;
     tableHeadGroupColumnsComponent: React.ComponentType<Pick<TableHeadGroupColumnsProps<D>, Exclude<keyof TableHeadGroupColumnsProps<D>, TableHeadGroupColumnsProvidedProps>>>;
     tableHeadValueColumnsComponent: React.ComponentType<Pick<TableHeadValueColumnsProps<D>, Exclude<keyof TableHeadValueColumnsProps<D>, TableHeadValueColumnsProvidedProps>>>;
 }
@@ -18,7 +19,7 @@ export type TableHeadProvidedProps = 'tableHeadGroupColumnsComponent' | 'tableHe
 export class TableHead<D> extends React.Component<TableHeadProps<D>, never> {
     render() {
         return <thead>
-            <this.props.tableHeadGroupColumnsComponent rows={this.props.groupHeaderRows} valueColumnCount={this.props.valueColumnCount} />
+            <this.props.tableHeadGroupColumnsComponent rows={this.props.groupHeaderRows} valueCount={this.props.valueCount} />
             <this.props.tableHeadValueColumnsComponent row={this.props.valueHeaderRow} />
         </thead>;
     }

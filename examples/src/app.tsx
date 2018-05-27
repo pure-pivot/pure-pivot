@@ -288,7 +288,8 @@ export class App extends React.Component<{}, AppState> {
                     <props.tableHeadComponent
                         groupHeaderRows={props.groupHeaderRows}
                         valueHeaderRow={props.valueHeaderRow}
-                        valueColumnCount={props.values.length}
+                        columnCount={props.columnCount}
+                        valueCount={props.values.length}
                     />
                     <props.tableBodyComponent
                         values={props.values}
@@ -298,7 +299,7 @@ export class App extends React.Component<{}, AppState> {
             )
             .withTableHeadComponent((props) =>
                 <React.Fragment>
-                    <props.tableHeadGroupColumnsComponent rows={props.groupHeaderRows} valueColumnCount={props.valueColumnCount} />
+                    <props.tableHeadGroupColumnsComponent rows={props.groupHeaderRows} valueCount={props.valueCount} />
                     <props.tableHeadValueColumnsComponent row={props.valueHeaderRow} />
                 </React.Fragment>
             )
