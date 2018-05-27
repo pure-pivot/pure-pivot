@@ -283,51 +283,6 @@ export class App extends React.Component<{}, AppState> {
                 reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
             })
             .withSorter((data1, data2) => data2.length - data1.length)
-            .withTableContainerComponent((props) =>
-                <div style={{ display: 'grid', gridTemplateColumns: `repeat(${props.columnCount}, auto)` }}>
-                    <props.tableHeadComponent
-                        groupHeaderRows={props.groupHeaderRows}
-                        valueHeaderRow={props.valueHeaderRow}
-                        columnCount={props.columnCount}
-                        valueCount={props.valueCount}
-                    />
-                    <props.tableBodyComponent
-                        values={props.values}
-                        bodyRows={props.bodyRows}
-                        columnCount={props.columnCount}
-                    />
-                </div>
-            )
-            .withTableHeadComponent((props) =>
-                <React.Fragment>
-                    <props.tableHeadGroupColumnsComponent rows={props.groupHeaderRows} valueCount={props.valueCount} />
-                    <props.tableHeadValueColumnsComponent row={props.valueHeaderRow} />
-                </React.Fragment>
-            )
-            .withTableHeadRowComponent((props) =>
-                <React.Fragment>
-                    {props.children}
-                </React.Fragment>
-            )
-            .withTableHeadCellComponent((props) =>
-                <div style={{ gridColumnStart: `span ${props.colSpan || 1}` }}>{props.children}</div>
-            )
-            .withTableBodyComponent((props) =>
-                <React.Fragment>
-                    <props.tableBodyRowsComponent values={props.values} bodyRows={props.bodyRows} />
-                </React.Fragment>
-            )
-            .withTableBodyRowComponent((props) =>
-                <React.Fragment>
-                    {props.children}
-                </React.Fragment>
-            )
-            .withTableBodyFirstCellComponent((props) =>
-                <div>
-                    {'+'.repeat(props.level)} {props.children}
-                </div>
-            )
-            .withTableBodyCellComponent('div')
             .build();
     }
 

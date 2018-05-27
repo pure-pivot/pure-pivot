@@ -10,9 +10,7 @@ import { applySorting } from '../sorting/apply-sorting';
 import { TableContainerProps, TableContainerProvidedProps } from './table-container';
 import { TableHeadProps, TableHeadProvidedProps } from './table-head';
 import { TableBodyProps, TableBodyProvidedProps } from './table-body';
-import { GroupHeaderRow } from './table-head-group-columns';
-import { ValueHeaderRow } from './table-head-value-columns';
-import { BodyRow } from './table-body-rows';
+import { TableDescription, GroupHeaderRow, BodyRow, ValueHeaderRow } from './model';
 
 export interface TableProps<D> {
     data: D[];
@@ -110,13 +108,22 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const groupHeaderRows = this.createGroupHeaderRows(columns.recursiveGroups);
         const bodyRows = this.createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, filteredData);
 
-        return <this.props.tableContainerComponent
-            groupHeaderRows={groupHeaderRows}
-            valueHeaderRow={valueHeaderRow}
-            columnCount={valueHeaderRow.labels.length + 1}
-            valueCount={this.props.values.length}
-            values={this.props.values}
-            bodyRows={bodyRows}
-        />;
+        const tableDescription: TableDescription<D> = {
+            headColumnCount: 1,
+            bodyColumnCount: valueHeaderRow.labels.length,
+            columnCount: valueHeaderRow.labels.length + 1,
+            headRowCount: 1 + groupHeaderRows.length,
+            bodyRowCount: bodyRows.length,
+            rowCount: 1 + groupHeaderRows.length + bodyRows.length,
+            valueCount: this.props.values.length,
+            values: this.props.values,
+            headRows: [
+                ...groupHeaderRows,
+                valueHeaderRow
+            ],
+            bodyRows
+        };
+
+        return <this.props.tableContainerComponent tableDescription={tableDescription} />;
     }
 }
