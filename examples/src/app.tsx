@@ -1,6 +1,9 @@
 import * as React from 'react';
+import { Draggable } from 'react-managed-draggable';
 import { Configuration, createConfigurationBuilder } from '../../lib/es6/configuration';
 import { createTableConfigurationBuilder } from '../../lib/es6/table/configuration';
+import { TableHeadCellProps } from '../../lib/es6/table/table-head-cell';
+import { resizeTableHeadValueComponentFactory } from './resize-table-head-value-cell';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -18,7 +21,7 @@ interface WithStatusSuccess<T> {
 
 export type WithStatus<T> = WithStatusLoading | WithStatusFailed | WithStatusSuccess<T>;
 
-interface Data {
+export interface Data {
     method: 'GET' | 'POST' | 'PUT' | 'OPTIONS' | 'HEAD';
     statusCode: number;
     time: number;
@@ -39,10 +42,13 @@ function isArrayOfData(object: any): object is Data[] {
     return Array.isArray(object) && object.every((item) => isData(item));
 }
 
-type AppState = WithStatus<Configuration<Data>>;
+interface AppState {
+    configuration: WithStatus<Configuration<Data>>;
+    sizes: number[];
+}
 
 export class App extends React.Component<{}, AppState> {
-    state: AppState = { status: 'loading' };
+    state: AppState = { configuration: { status: 'loading' }, sizes: [] };
 
     componentDidMount() {
         fetch(`http://build.test-cancun.com:8111/app/rest/builds/?guest=1&locator=count:${2},buildType:(id:CancunProduction_HealthCheck)`)
@@ -86,97 +92,16 @@ export class App extends React.Component<{}, AppState> {
                     }
                 }
                 requests.sort((a, b) => a.time - b.time);
-                this.setState({ status: 'success', result: this.buildConfiguration(requests) });
+                this.setState({ configuration: { status: 'success', result: this.buildConfiguration(requests) } });
             })
             .catch((error) => {
                 console.error(error);
-                this.setState({ status: 'failed', reason: error });
+                this.setState({ configuration: { status: 'failed', reason: error } });
             });
     }
 
     buildConfiguration(data: Data[]): Configuration<Data> {
         return createConfigurationBuilder(data)
-            // .withFormat('time', (value: number) => {
-            //     const date = new Date(value);
-            //     return `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-            // })
-            // .withFormat('statusCode', (statusCode: number) => 200 <= statusCode && statusCode < 300 ? 'OK' : 'NOT OK')
-            // .withFieldsComponent((props) =>
-            //     <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
-            //         <h4>Field</h4>
-            //         <h4>Type</h4>
-            //         {(Object.keys(props.fields) as (keyof Data)[])
-            //             .map((key) =>
-            //                 <props.fieldComponent
-            //                     key={key}
-            //                     name={key}
-            //                     field={props.fields[key]}
-            //                 />
-            //             )}
-            //     </div>
-            // )
-            // .withFieldComponent((props) =>
-            //     <React.Fragment>
-            //         <div>{props.name}</div>
-            //         <div>{props.field}</div>
-            //     </React.Fragment>
-            // )
-            // .withFiltersComponent((props) =>
-            //     <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content', gridRowGap: '4px', gridColumnGap: '4px' }}>
-            //         <h4>Field (ID)</h4>
-            //         <h4>Filter</h4>
-            //         {props.filters.map((filterDescription) => <props.filterDescriptionComponent key={filterDescription.id} filterDescription={filterDescription} />)}
-            //     </div>
-            // )
-            // .withFilterDescriptionComponent((props) =>
-            //     <React.Fragment>
-            //         <div>{props.filterDescription.name} ({props.filterDescription.id})</div>
-            //         <div><props.filterComponent filter={props.filterDescription.filter} /></div>
-            //     </React.Fragment>
-            // )
-            // .withAndFilterComponent((props) =>
-            //     <div style={{ display: 'grid', gridTemplateColumns: 'max-content max-content max-content', alignItems: 'center', gridColumnGap: '8px' }}>
-            //         <div style={{ border: '1px solid black', padding: '2px' }}><props.filterComponent filter={props.filter.left} /></div>
-            //         <div>AND</div>
-            //         <div style={{ border: '1px solid black', padding: '2px' }}><props.filterComponent filter={props.filter.right} /></div>
-            //     </div>
-            // )
-            // .withFilter({
-            //     id: '0',
-            //     name: 'method',
-            //     filter: {
-            //         type: 'and',
-            //         left: {
-            //             type: 'not',
-            //             filter: {
-            //                 type: 'equals',
-            //                 value: 'HEAD'
-            //             }
-            //         },
-            //         right: {
-            //             type: 'not',
-            //             filter: {
-            //                 type: 'equals',
-            //                 value: 'OPTIONS'
-            //             }
-            //         }
-            //     }
-            // })
-            // .withFilter({
-            //     id: '0',
-            //     name: 'url',
-            //     filter: {
-            //         type: 'not',
-            //         filter: {
-            //             type: 'equals',
-            //             value: '/'
-            //         }
-            //     }
-            // })
-            // .withGroupByField('time', {
-            //     type: 'number-count',
-            //     count: 10
-            // })
             .withFilter((data) => data)
             .withGroup({
                 id: 'method',
@@ -286,19 +211,20 @@ export class App extends React.Component<{}, AppState> {
             .withSorter((data1, data2) => data2.length - data1.length)
             .withTableConfiguration(
                 createTableConfigurationBuilder(data)
+                    .withTableHeadValueCellComponent(resizeTableHeadValueComponentFactory([]))
                     .build()
             )
             .build();
     }
 
     render() {
-        if (this.state.status === 'loading') {
+        if (this.state.configuration.status === 'loading') {
             return <React.Fragment>
                 Loading...
             </React.Fragment>;
-        } else if (this.state.status === 'failed') {
+        } else if (this.state.configuration.status === 'failed') {
             return <pre>
-                {JSON.stringify(this.state.reason, null, 2)}
+                {JSON.stringify(this.state.configuration.reason, null, 2)}
             </pre>;
         } else {
             return <React.Fragment>
@@ -311,14 +237,13 @@ export class App extends React.Component<{}, AppState> {
                 <h3>Values</h3>
                 <this.state.result.valuesComponent values={this.state.result.values} /> */}
                 <h3>Table</h3>
-                <this.state.result.tableComponent
-                    data={this.state.result.data}
-                    filters={this.state.result.filters}
-                    groups={this.state.result.groups}
-                    selections={this.state.result.selections}
-                    values={this.state.result.values}
-                    sorting={this.state.result.sorting}
-                // hideColumnGroupHeading
+                <this.state.configuration.result.tableComponent
+                    data={this.state.configuration.result.data}
+                    filters={this.state.configuration.result.filters}
+                    groups={this.state.configuration.result.groups}
+                    selections={this.state.configuration.result.selections}
+                    values={this.state.configuration.result.values}
+                    sorting={this.state.configuration.result.sorting}
                 />
             </React.Fragment>;
         }

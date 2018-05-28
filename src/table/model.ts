@@ -12,12 +12,34 @@ export interface GroupHeaderRow {
     groups: GroupHeaderRowGroup[];
 }
 
-export interface ValueHeaderRow {
-    type: 'value-header-row';
-    labels: string[];
+export interface GroupDescriptor {
+    groupId: string;
+    groupIndex: number;
 }
 
-export type HeadRow = GroupHeaderRow | ValueHeaderRow;
+export interface ValueHeaderRowValue {
+    groupsDescriptors: GroupDescriptor[];
+    valueId: string;
+    label: string;
+}
+
+export interface ValueHeaderRow {
+    type: 'value-header-row';
+    values: ValueHeaderRowValue[];
+}
+
+// export interface CustomHeaderRowRendererProps<D> {
+//     tableDescription: TableDescription<D>;
+//     tableHeadRowComponent: React.ReactType;
+//     tableHeadCellComponent: React.ComponentType<TableHeadCellProps>;
+// }
+
+// export interface CustomHeaderRow<D> {
+//     type: 'custom-header-row';
+//     renderer: React.ComponentType<CustomHeaderRowRendererProps<D>>;
+// }
+
+export type HeadRow<D> = GroupHeaderRow | ValueHeaderRow; // | CustomHeaderRow<D>;
 
 export interface BodyRow<D> {
     type: 'body-row';
@@ -35,14 +57,14 @@ export interface TableDescription<D> {
     rowCount: number;
     valueCount: number;
     values: ValueReducers<D>;
-    headRows: HeadRow[];
+    headRows: HeadRow<D>[];
     bodyRows: BodyRow<D>[];
 }
 
-export function isGroupHeaderRow(headRow: HeadRow): headRow is GroupHeaderRow {
+export function isGroupHeaderRow(headRow: HeadRow<any>): headRow is GroupHeaderRow {
     return headRow.type === 'group-header-row';
 }
 
-export function isValueHeaderRow(headRow: HeadRow): headRow is ValueHeaderRow {
+export function isValueHeaderRow(headRow: HeadRow<any>): headRow is ValueHeaderRow {
     return headRow.type === 'value-header-row';
 }

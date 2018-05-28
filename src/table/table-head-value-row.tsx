@@ -1,26 +1,26 @@
 import * as React from 'react';
-import { TableHeadCellProps } from './table-head-cell';
+import { TableHeadValueCellProps } from './table-head-value-cell';
 import { ValueHeaderRow, TableDescription } from './model';
 
 export interface TableHeadValueRowProps<D> {
     row: ValueHeaderRow;
     tableDescription: TableDescription<D>;
     tableHeadRowComponent: React.ReactType;
-    tableHeadCellComponent: React.ComponentType<TableHeadCellProps>;
+    tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>;
 }
 
-export type TableHeadValueRowProvidedProps = 'tableHeadRowComponent' | 'tableHeadCellComponent';
+export type TableHeadValueRowProvidedProps = 'tableHeadRowComponent' | 'tableHeadValueCellComponent';
 
 export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps<D>, never> {
     render() {
         return <this.props.tableHeadRowComponent>
-            <this.props.tableHeadCellComponent scope="row" colSpan={1}>
+            <this.props.tableHeadValueCellComponent scope="row" colStart={0} colSpan={1} tableDescription={this.props.tableDescription}>
                 Values
-            </this.props.tableHeadCellComponent>
+            </this.props.tableHeadValueCellComponent>
             {this.props.row.labels.map((label, index) =>
-                <this.props.tableHeadCellComponent key={index} scope="col" colSpan={1}>
+                <this.props.tableHeadValueCellComponent key={index} scope="col" colStart={1 + index} colSpan={1} tableDescription={this.props.tableDescription}>
                     {label}
-                </this.props.tableHeadCellComponent>
+                </this.props.tableHeadValueCellComponent>
             )}
         </this.props.tableHeadRowComponent>;
     }

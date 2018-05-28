@@ -8,6 +8,8 @@ export interface Grouping {
 }
 
 export interface RecursiveGroup {
+    groupId: string;
+    groupIndex: number;
     label: string;
     dataIndexStart: number;
     dataIndexEnd: number;
@@ -61,6 +63,8 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
         // Zoom in
         while (level !== groups.length - 1) {
             const group = {
+                groupId: groups[level].id,
+                groupIndex: Math.floor(encodedIndices[sortedIndices[i]] % previousFactor / currentFactor),
                 label: labels[level][Math.floor(encodedIndices[sortedIndices[i]] % previousFactor / currentFactor)],
                 dataIndexStart: i,
                 dataIndexEnd: 0,
@@ -80,6 +84,8 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
         }
         // Update
         recursiveGroupsStack[recursiveGroupsStack.length - 1].push({
+            groupId: groups[level].id,
+            groupIndex: Math.floor(encodedIndices[sortedIndices[start]] % previousFactor / currentFactor),
             label: labels[level][Math.floor(encodedIndices[sortedIndices[start]] % previousFactor / currentFactor)],
             dataIndexStart: start,
             dataIndexEnd: i,

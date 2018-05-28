@@ -21,6 +21,7 @@
     "@types/react": "^16.3.13",
     "@types/react-dom": "^16.0.5",
     "html-webpack-plugin": "^3.2.0",
+    "react-managed-draggable": "^0.1.5",
     "source-map-loader": "^0.2.3",
     "ts-loader": "^4.2.0",
     "tslint": "^5.9.1",

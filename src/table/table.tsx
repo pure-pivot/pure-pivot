@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as shallowEqual from 'shallowequal';
 import { Filters } from '../filters/model';
 import { ValueReducers } from '../values/model';
 import { Groups } from '../groups/model';
@@ -10,7 +11,7 @@ import { applySorting } from '../sorting/apply-sorting';
 import { TableContainerProps, TableContainerProvidedProps } from './table-container';
 import { TableHeadProps, TableHeadProvidedProps } from './table-head';
 import { TableBodyProps, TableBodyProvidedProps } from './table-body';
-import { TableDescription, GroupHeaderRow, BodyRow, ValueHeaderRow } from './model';
+import { TableDescription, GroupHeaderRow, BodyRow, ValueHeaderRow, GroupDescriptor, ValueHeaderRowValue } from './model';
 
 export interface TableProps<D> {
     data: D[];
@@ -22,9 +23,13 @@ export interface TableProps<D> {
     tableContainerComponent: React.ComponentType<Pick<TableContainerProps<D>, Exclude<keyof TableContainerProps<D>, TableContainerProvidedProps>>>;
 }
 
-export type TableProvidedProps = 'tableContainerComponent' | 'tableHeadComponent' | 'tableBodyComponent';
+export type TableProvidedProps = 'tableContainerComponent' | 'customRows';
 
 export class Table<D> extends React.Component<TableProps<D>, never> {
+    shouldComponentUpdate(prevProps: TableProps<D>) {
+        return !shallowEqual(this.props, prevProps);
+    }
+
     createGroupHeaderRows(recursiveColumns: RecursiveGroup[], level: number = 0, accumulator: GroupHeaderRow[] = []): GroupHeaderRow[] {
         accumulator.push({
             type: 'group-header-row',
@@ -82,21 +87,40 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         return accumulator;
     }
 
-    createValueHeaderRow(columns: Grouping): ValueHeaderRow {
-        const totalSubGroupCount = columns.recursiveGroups.reduce((sum, column) => sum + column.subGroupCount, 0);
+    createValueHeaderRow(recursiveColumns: RecursiveGroup[], groupDescriptor: GroupDescriptor[] = []): ValueHeaderRowValue[] {
+        // const totalSubGroupCount = columns.recursiveGroups.reduce((sum, column) => sum + column.subGroupCount, 0);
+        const valueHeaderRowValues: ValueHeaderRowValue[] = [];
 
-        const valueHeaderRow: ValueHeaderRow = {
-            type: 'value-header-row',
-            labels: []
-        };
-
-        for (let i = 0; i < totalSubGroupCount; i++) {
-            for (const valueDescription of this.props.values) {
-                valueHeaderRow.labels.push(valueDescription.label);
+        for (const column of recursiveColumns) {
+            const columnGroupDescriptor = [...groupDescriptor, {
+                groupId: column.groupId,
+                groupIndex: column.groupIndex
+            }];
+            if (column.childGroups) {
+                const childValues = this.createValueHeaderRow(column.childGroups, columnGroupDescriptor);
+            } else {
+                for (const valueDescription of this.props.values) {
+                    valueHeaderRowValues.push({
+                        groupsDescriptors: columnGroupDescriptor,
+                        valueId: valueDescription.id,
+                        label: valueDescription.label
+                    });
+                }
             }
         }
 
-        return valueHeaderRow;
+        for (let i = 0; i < totalSubGroupCount; i++) {
+            for (const valueDescription of this.props.values) {
+                valueHeaderRowValues.values.push({
+                    groupId: ,
+                    groupIndex: ,
+                    label: valueDescription.label,
+                    valueId: valueDescription.id
+                });
+            }
+        }
+
+        return valueHeaderRowValues;
     }
 
     render() {

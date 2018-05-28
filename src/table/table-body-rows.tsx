@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as shallowEqual from 'shallowequal';
 import { TableBodyFirstCellProps } from './table-body-first-cell';
 import { TableDescription } from './model';
 
@@ -12,6 +13,10 @@ export interface TableBodyRowsProps<D> {
 export type TableBodyRowsProvidedProps = 'tableBodyRowComponent' | 'tableBodyFirstCellComponent' | 'tableBodyCellComponent';
 
 export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, never> {
+    shouldComponentUpdate(prevProps: TableBodyRowsProps<D>) {
+        return !shallowEqual(this.props, prevProps);
+    }
+
     render() {
         return this.props.tableDescription.bodyRows.map((row, index) =>
             <this.props.tableBodyRowComponent key={index}>
