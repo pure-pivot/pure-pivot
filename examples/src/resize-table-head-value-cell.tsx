@@ -14,7 +14,7 @@ export function resizeTableHeadValueComponentFactory(defaultSizes: number[]) {
         };
 
         render() {
-            console.log(this.props);
+            // console.log(this.props);
             const offset = this.state.resizing !== null && this.state.resizing.colStart === this.props.colStart ? this.state.resizing.offset : 0;
             return <th scope={this.props.scope} colSpan={this.props.colSpan} style={{ position: 'relative' }}>
                 {this.props.children}

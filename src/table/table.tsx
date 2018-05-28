@@ -11,7 +11,7 @@ import { applySorting } from '../sorting/apply-sorting';
 import { TableContainerProps, TableContainerProvidedProps } from './table-container';
 import { TableHeadProps, TableHeadProvidedProps } from './table-head';
 import { TableBodyProps, TableBodyProvidedProps } from './table-body';
-import { TableDescription, GroupHeaderRow, BodyRow, ValueHeaderRow, GroupDescriptor, ValueHeaderRowValue } from './model';
+import { TableDescription, GroupHeaderRow, BodyRow, ValueHeaderRow, GroupDescriptor, ColumnDescriptor, DataColumnDescriptor, GroupColumnDescriptor } from './model';
 
 export interface TableProps<D> {
     data: D[];
@@ -30,32 +30,36 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         return !shallowEqual(this.props, prevProps);
     }
 
-    createGroupHeaderRows(recursiveColumns: RecursiveGroup[], level: number = 0, accumulator: GroupHeaderRow[] = []): GroupHeaderRow[] {
-        accumulator.push({
-            type: 'group-header-row',
-            level,
-            label: this.props.groups[level].label,
-            groups: recursiveColumns.map((column) => {
-                return {
-                    label: column.label,
-                    subColumnSize: column.subGroupCount
-                };
-            })
-        });
+    createGroupColumnDesciptors(recursiveColumns: RecursiveGroup[], level: number = 0, groupDescriptors: GroupDescriptor[] = []): GroupColumnDescriptor[] {
+        const result: GroupColumnDescriptor[] = recursiveColumns.map((column) => ({
+            label: column.label,
+            subColumnSize: column.subGroupCount,
+            groupDescriptors
+        }));
 
-        const childColumns = recursiveColumns.reduce<RecursiveGroup[]>((childColumns, column) => {
+        for (const column of recursiveColumns) {
             if (column.childGroups) {
-                return [...childColumns, ...column.childGroups];
-            } else {
-                return childColumns;
+                const currentGroupDescriptors = [
+                    ...groupDescriptors,
+                    {
+                        groupId: column.groupId,
+                        groupIndex: column.groupIndex
+                    }
+                ];
+                const subGroups = this.createGroupColumnDesciptors(column.childGroups, level + 1, currentGroupDescriptors);
+                for (const subGroup of subGroups) {
+                    result.push(subGroup);
+                }
             }
-        }, []);
-
-        if (childColumns.length >= 1) {
-            this.createGroupHeaderRows(childColumns, level + 1, accumulator);
         }
 
-        return accumulator;
+        return result;
+    }
+
+    createGroupHeaderRows(recursiveColumns: RecursiveGroup[]): GroupHeaderRow[] {
+        for (let i = 0; i < this.props.groups.length; i++) {
+            
+        }
     }
 
     createBodyRows(recursiveRows: RecursiveGroup[], sortedIndices: number[], columns: Grouping, data: D[], level: number = 0, accumulator: BodyRow<D>[] = []): BodyRow<D>[] {
@@ -87,36 +91,32 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         return accumulator;
     }
 
-    createValueHeaderRow(recursiveColumns: RecursiveGroup[], groupDescriptor: GroupDescriptor[] = []): ValueHeaderRowValue[] {
-        // const totalSubGroupCount = columns.recursiveGroups.reduce((sum, column) => sum + column.subGroupCount, 0);
-        const valueHeaderRowValues: ValueHeaderRowValue[] = [];
+    createValueHeaderRow(recursiveColumns: RecursiveGroup[], groupDescriptors: GroupDescriptor[] = []): DataColumnDescriptor[] {
+        const valueHeaderRowValues: DataColumnDescriptor[] = [];
+        let sum: number = 0;
 
         for (const column of recursiveColumns) {
-            const columnGroupDescriptor = [...groupDescriptor, {
-                groupId: column.groupId,
-                groupIndex: column.groupIndex
-            }];
+            const childGroupDescriptors = [
+                ...groupDescriptors,
+                {
+                    groupId: column.groupId,
+                    groupIndex: column.groupIndex
+                }
+            ];
             if (column.childGroups) {
-                const childValues = this.createValueHeaderRow(column.childGroups, columnGroupDescriptor);
+                for (const childValueHeaderRowValues of this.createValueHeaderRow(column.childGroups, childGroupDescriptors)) {
+                    valueHeaderRowValues.push(childValueHeaderRowValues);
+                    sum += 1;
+                }
             } else {
                 for (const valueDescription of this.props.values) {
                     valueHeaderRowValues.push({
-                        groupsDescriptors: columnGroupDescriptor,
+                        type: 'data-column',
+                        groupDescriptors: childGroupDescriptors,
                         valueId: valueDescription.id,
                         label: valueDescription.label
                     });
                 }
-            }
-        }
-
-        for (let i = 0; i < totalSubGroupCount; i++) {
-            for (const valueDescription of this.props.values) {
-                valueHeaderRowValues.values.push({
-                    groupId: ,
-                    groupIndex: ,
-                    label: valueDescription.label,
-                    valueId: valueDescription.id
-                });
             }
         }
 
@@ -128,14 +128,17 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
 
-        const valueHeaderRow = this.createValueHeaderRow(columns);
+        const valueHeaderRow: ValueHeaderRow = {
+            type: 'value-header-row',
+            columns: this.createValueHeaderRow(columns.recursiveGroups)
+        };
         const groupHeaderRows = this.createGroupHeaderRows(columns.recursiveGroups);
         const bodyRows = this.createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, filteredData);
 
         const tableDescription: TableDescription<D> = {
             headColumnCount: 1,
-            bodyColumnCount: valueHeaderRow.labels.length,
-            columnCount: valueHeaderRow.labels.length + 1,
+            bodyColumnCount: valueHeaderRow.columns.length,
+            columnCount: valueHeaderRow.columns.length + 1,
             headRowCount: 1 + groupHeaderRows.length,
             bodyRowCount: bodyRows.length,
             rowCount: 1 + groupHeaderRows.length + bodyRows.length,

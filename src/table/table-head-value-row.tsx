@@ -14,12 +14,25 @@ export type TableHeadValueRowProvidedProps = 'tableHeadRowComponent' | 'tableHea
 export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps<D>, never> {
     render() {
         return <this.props.tableHeadRowComponent>
-            <this.props.tableHeadValueCellComponent scope="row" colStart={0} colSpan={1} tableDescription={this.props.tableDescription}>
+            <this.props.tableHeadValueCellComponent
+                scope="row"
+                colStart={0}
+                colSpan={1}
+                column={{ type: 'head-column' }}
+                tableDescription={this.props.tableDescription}
+            >
                 Values
             </this.props.tableHeadValueCellComponent>
-            {this.props.row.labels.map((label, index) =>
-                <this.props.tableHeadValueCellComponent key={index} scope="col" colStart={1 + index} colSpan={1} tableDescription={this.props.tableDescription}>
-                    {label}
+            {this.props.row.columns.map((value, index) =>
+                <this.props.tableHeadValueCellComponent
+                    key={`${value.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-${value.valueId}`}
+                    scope="col"
+                    colStart={1 + index}
+                    colSpan={1}
+                    column={value}
+                    tableDescription={this.props.tableDescription}
+                >
+                    {value.label}
                 </this.props.tableHeadValueCellComponent>
             )}
         </this.props.tableHeadRowComponent>;

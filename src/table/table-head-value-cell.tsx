@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { TableDescription } from './model';
+import { TableDescription, ColumnDescriptor } from './model';
 
 export interface TableHeadValueCellProps<D> {
     scope: 'row' | 'col';
     colStart: number;
     colSpan: number;
+    column: ColumnDescriptor;
     tableDescription: TableDescription<D>;
 }
 

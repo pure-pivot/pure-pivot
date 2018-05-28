@@ -1,15 +1,16 @@
 import { ValueReducers } from '../values/model';
 
-export interface GroupHeaderRowGroup {
+export interface GroupColumnDescriptor {
     label: string;
     subColumnSize: number;
+    groupDescriptors: GroupDescriptor[];
 }
 
 export interface GroupHeaderRow {
     type: 'group-header-row';
     level: number;
     label: string;
-    groups: GroupHeaderRowGroup[];
+    groups: GroupColumnDescriptor[];
 }
 
 export interface GroupDescriptor {
@@ -17,15 +18,22 @@ export interface GroupDescriptor {
     groupIndex: number;
 }
 
-export interface ValueHeaderRowValue {
-    groupsDescriptors: GroupDescriptor[];
+export interface DataColumnDescriptor {
+    type: 'data-column';
+    groupDescriptors: GroupDescriptor[];
     valueId: string;
     label: string;
 }
 
+export interface HeadColumnDescriptor {
+    type: 'head-column';
+}
+
+export type ColumnDescriptor = DataColumnDescriptor |  HeadColumnDescriptor | GroupColumnDescriptor;
+
 export interface ValueHeaderRow {
     type: 'value-header-row';
-    values: ValueHeaderRowValue[];
+    columns: DataColumnDescriptor[];
 }
 
 // export interface CustomHeaderRowRendererProps<D> {
