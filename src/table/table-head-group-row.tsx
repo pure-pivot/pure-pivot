@@ -23,15 +23,18 @@ export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps
                 scope="row"
                 colStart={0}
                 colSpan={1}
+                id={`head-row-${this.props.row.groupId}-head-column`}
                 row={this.props.row}
                 column={{ type: 'head-column' }}
                 tableDescription={this.props.tableDescription}
             >
                 {this.props.row.groupLabel}
             </this.props.tableHeadGroupCellComponent>
-            {this.props.row.groups.map((column, index) =>
-                <this.props.tableHeadGroupCellComponent
-                    key={`${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}`}
+            {this.props.row.groups.map((column, index) => {
+                const id = `head-row-${this.props.row.groupId}-${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}`;
+                return <this.props.tableHeadGroupCellComponent
+                    key={id}
+                    id={id}
                     scope="col"
                     colStart={sums[index]}
                     colSpan={column.subColumnSize * this.props.tableDescription.valueCount}
@@ -40,8 +43,8 @@ export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps
                     tableDescription={this.props.tableDescription}
                 >
                     {column.label}
-                </this.props.tableHeadGroupCellComponent>
-            )}
+                </this.props.tableHeadGroupCellComponent>;
+            })}
         </this.props.tableHeadRowComponent>;
     }
 }

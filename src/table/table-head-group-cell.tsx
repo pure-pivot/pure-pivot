@@ -5,6 +5,7 @@ export interface TableHeadGroupCellProps<D> {
     scope: 'row' | 'col';
     colStart: number;
     colSpan: number;
+    id: string;
     row: GroupHeaderRow;
     column: ColumnDescriptor<D>;
     tableDescription: TableDescription<D>;
@@ -12,7 +13,7 @@ export interface TableHeadGroupCellProps<D> {
 
 export class TableHeadGroupCell<D> extends React.Component<TableHeadGroupCellProps<D>, never> {
     render() {
-        const { colStart, tableDescription, row, column, ...other } = this.props;
+        const { colStart, tableDescription, id, row, column, ...other } = this.props;
         return <th {...other} />;
     }
 }

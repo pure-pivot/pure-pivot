@@ -2,6 +2,7 @@ import * as React from 'react';
 import { ColumnDescriptor, BodyRow } from './model';
 
 export interface TableBodyCellProps<D> {
+    id: string;
     row: BodyRow<D>;
     column: ColumnDescriptor<D>;
 }
