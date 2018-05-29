@@ -63,11 +63,3 @@ export interface TableDescription<D> {
     headRows: HeadRow<D>[];
     bodyRows: BodyRow<D>[];
 }
-
-// export function isGroupHeaderRow(headRow: HeadRow<any>): headRow is GroupHeaderRow {
-//     return headRow.type === 'group-header-row';
-// }
-
-// export function isValueHeaderRow(headRow: HeadRow<any>): headRow is ValueHeaderRow<any> {
-//     return headRow.type === 'value-header-row';
-// }

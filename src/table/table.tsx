@@ -135,6 +135,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     }
 
     render() {
+        const start = window.performance.now();
         const filteredData = applyFilters(this.props.filters, this.props.data);
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
@@ -143,15 +144,12 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
 
         const valueHeaderRow: ValueHeaderRow<D> = this.createValueHeaderRow(columnDescriptors.dataColumns);
         const groupHeaderRows = this.createGroupHeaderRows(columnDescriptors.groupColumns);
-
-        console.log(columnDescriptors);
-
         const bodyRows = this.createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData);
 
         const tableDescription: TableDescription<D> = {
             headColumnCount: 1,
             bodyColumnCount: valueHeaderRow.columns.length,
-            columnCount: valueHeaderRow.columns.length + 1,
+            columnCount: 1 + valueHeaderRow.columns.length,
             headRowCount: 1 + groupHeaderRows.length,
             bodyRowCount: bodyRows.length,
             rowCount: 1 + groupHeaderRows.length + bodyRows.length,

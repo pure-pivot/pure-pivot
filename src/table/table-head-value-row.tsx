@@ -17,7 +17,6 @@ export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps
             <this.props.tableHeadValueCellComponent
                 scope="row"
                 colStart={0}
-                colSpan={1}
                 row={this.props.row}
                 column={{ type: 'head-column' }}
                 tableDescription={this.props.tableDescription}
@@ -29,7 +28,6 @@ export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps
                     key={`${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-${column.valueDescription.id}`}
                     scope="col"
                     colStart={1 + index}
-                    colSpan={1}
                     row={this.props.row}
                     column={column}
                     tableDescription={this.props.tableDescription}

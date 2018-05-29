@@ -4,7 +4,6 @@ import { TableDescription, ColumnDescriptor, ValueHeaderRow } from './model';
 export interface TableHeadValueCellProps<D> {
     scope: 'row' | 'col';
     colStart: number;
-    colSpan: number;
     row: ValueHeaderRow<D>;
     column: ColumnDescriptor<D>;
     tableDescription: TableDescription<D>;
