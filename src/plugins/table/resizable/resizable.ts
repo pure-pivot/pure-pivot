@@ -1,6 +1,6 @@
 import { TableConfigurationBuilder } from '../../../table/configuration';
 import { Sizes } from './model';
-import { resizableHoc } from './resizable-head-value-cell';
+import { resizableHoc } from './resizable-hoc';
 
 export interface ResizableTableConfigurationBuilder<D> extends TableConfigurationBuilder<D> {
     initialSizes: Sizes;
@@ -16,6 +16,7 @@ export function resizable<D>(tableConfigurationBuilder: TableConfigurationBuilde
             return this;
         },
         build() {
+            tableConfigurationBuilder.tableHeadGroupCellComponent = resizableHoc(this.initialSizes)(this.tableHeadGroupCellComponent);
             tableConfigurationBuilder.tableHeadValueCellComponent = resizableHoc(this.initialSizes)(this.tableHeadValueCellComponent);
             return tableConfigurationBuilder.build();
         }

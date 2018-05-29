@@ -101,9 +101,13 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                 rowIndices.push(sortedIndices[i]);
             }
             return { ...rows, rowData: rowIndices.map((index) => data[index]) };
-        }).sort((rows1, rows2) => {
-            return applySorting(this.props.sorting, rows1.rowData, rows2.rowData);
         });
+
+        if (this.props.sorting.length >= 1) {
+            rowsWithData.sort((rows1, rows2) => {
+                return applySorting(this.props.sorting, rows1.rowData, rows2.rowData);
+            });
+        }
 
         for (const rows of rowsWithData) {
             const indicesByGroup = columns.groupDataIndices(rows.dataIndexStart, rows.dataIndexEnd);
