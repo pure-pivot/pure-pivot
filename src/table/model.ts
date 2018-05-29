@@ -1,6 +1,7 @@
 import { ValueReducers } from '../values/model';
 
 export interface GroupColumnDescriptor {
+    type: 'group-column';
     label: string;
     subColumnSize: number;
     groupDescriptors: GroupDescriptor[];
@@ -9,7 +10,8 @@ export interface GroupColumnDescriptor {
 export interface GroupHeaderRow {
     type: 'group-header-row';
     level: number;
-    label: string;
+    groupId: string;
+    groupLabel: string;
     groups: GroupColumnDescriptor[];
 }
 
@@ -29,23 +31,12 @@ export interface HeadColumnDescriptor {
     type: 'head-column';
 }
 
-export type ColumnDescriptor = DataColumnDescriptor |  HeadColumnDescriptor | GroupColumnDescriptor;
+export type ColumnDescriptor = DataColumnDescriptor | HeadColumnDescriptor | GroupColumnDescriptor;
 
 export interface ValueHeaderRow {
     type: 'value-header-row';
     columns: DataColumnDescriptor[];
 }
-
-// export interface CustomHeaderRowRendererProps<D> {
-//     tableDescription: TableDescription<D>;
-//     tableHeadRowComponent: React.ReactType;
-//     tableHeadCellComponent: React.ComponentType<TableHeadCellProps>;
-// }
-
-// export interface CustomHeaderRow<D> {
-//     type: 'custom-header-row';
-//     renderer: React.ComponentType<CustomHeaderRowRendererProps<D>>;
-// }
 
 export type HeadRow<D> = GroupHeaderRow | ValueHeaderRow; // | CustomHeaderRow<D>;
 

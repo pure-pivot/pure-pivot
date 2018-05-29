@@ -20,9 +20,9 @@ export class TableHeadRows<D> extends React.Component<TableHeadRowsProps<D>, nev
     render() {
         return this.props.tableDescription.headRows.map((headRow, index) => {
             if (isGroupHeaderRow(headRow)) {
-                return <this.props.tableHeadGroupRowsComponent key={index} tableDescription={this.props.tableDescription} row={headRow} />;
+                return <this.props.tableHeadGroupRowsComponent key={headRow.groupId} tableDescription={this.props.tableDescription} row={headRow} />;
             } else if (isValueHeaderRow(headRow)) {
-                return <this.props.tableHeadValueRowsComponent key={index} tableDescription={this.props.tableDescription} row={headRow} />;
+                return <this.props.tableHeadValueRowsComponent key={`value-row-${index}`} tableDescription={this.props.tableDescription} row={headRow} />;
             } else {
                 // TODO: investigate custom head rows
                 // return <headRow.renderer tableDescription={this.props.tableDescription} />;

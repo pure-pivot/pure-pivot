@@ -11,7 +11,7 @@ export interface TableHeadGroupCellProps<D> {
 
 export class TableHeadGroupCell<D> extends React.Component<TableHeadGroupCellProps<D>, never> {
     render() {
-        const { colStart, tableDescription, ...other } = this.props;
+        const { colStart, tableDescription, column, ...other } = this.props;
         return <th {...other} />;
     }
 }

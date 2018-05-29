@@ -11,7 +11,7 @@ export interface TableHeadValueCellProps<D> {
 
 export class TableHeadValueCell<D> extends React.Component<TableHeadValueCellProps<D>, never> {
     render() {
-        const { colStart, tableDescription, ...other } = this.props;
+        const { colStart, tableDescription, column, ...other } = this.props;
         return <th {...other} />;
     }
 }

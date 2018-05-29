@@ -30,36 +30,21 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         return !shallowEqual(this.props, prevProps);
     }
 
-    createGroupColumnDesciptors(recursiveColumns: RecursiveGroup[], level: number = 0, groupDescriptors: GroupDescriptor[] = []): GroupColumnDescriptor[] {
-        const result: GroupColumnDescriptor[] = recursiveColumns.map((column) => ({
-            label: column.label,
-            subColumnSize: column.subGroupCount,
-            groupDescriptors
-        }));
-
-        for (const column of recursiveColumns) {
-            if (column.childGroups) {
-                const currentGroupDescriptors = [
-                    ...groupDescriptors,
-                    {
-                        groupId: column.groupId,
-                        groupIndex: column.groupIndex
-                    }
-                ];
-                const subGroups = this.createGroupColumnDesciptors(column.childGroups, level + 1, currentGroupDescriptors);
-                for (const subGroup of subGroups) {
-                    result.push(subGroup);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    createGroupHeaderRows(recursiveColumns: RecursiveGroup[]): GroupHeaderRow[] {
+    createGroupHeaderRows(groupColumns: GroupColumnDescriptor[]): GroupHeaderRow[] {
+        const rows: GroupHeaderRow[] = [];
         for (let i = 0; i < this.props.groups.length; i++) {
-            
+            rows.push({
+                type: 'group-header-row',
+                groupId: this.props.groups[i].id,
+                groupLabel: this.props.groups[i].label,
+                level: i,
+                groups: []
+            });
         }
+        for (const column of groupColumns) {
+            rows[column.groupDescriptors.length - 1].groups.push(column);
+        }
+        return rows;
     }
 
     createBodyRows(recursiveRows: RecursiveGroup[], sortedIndices: number[], columns: Grouping, data: D[], level: number = 0, accumulator: BodyRow<D>[] = []): BodyRow<D>[] {
@@ -91,9 +76,9 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         return accumulator;
     }
 
-    createValueHeaderRow(recursiveColumns: RecursiveGroup[], groupDescriptors: GroupDescriptor[] = []): DataColumnDescriptor[] {
-        const valueHeaderRowValues: DataColumnDescriptor[] = [];
-        let sum: number = 0;
+    createColumnDescriptors(recursiveColumns: RecursiveGroup[], groupDescriptors: GroupDescriptor[] = []): { dataColumns: DataColumnDescriptor[], groupColumns: GroupColumnDescriptor[] } {
+        const dataColumns: DataColumnDescriptor[] = [];
+        const groupColumns: GroupColumnDescriptor[] = [];
 
         for (const column of recursiveColumns) {
             const childGroupDescriptors = [
@@ -103,14 +88,23 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
                     groupIndex: column.groupIndex
                 }
             ];
+            groupColumns.push({
+                type: 'group-column',
+                label: column.label,
+                subColumnSize: column.subGroupCount,
+                groupDescriptors: childGroupDescriptors
+            });
             if (column.childGroups) {
-                for (const childValueHeaderRowValues of this.createValueHeaderRow(column.childGroups, childGroupDescriptors)) {
-                    valueHeaderRowValues.push(childValueHeaderRowValues);
-                    sum += 1;
+                const childColumns = this.createColumnDescriptors(column.childGroups, childGroupDescriptors);
+                for (const childDataColumn of childColumns.dataColumns) {
+                    dataColumns.push(childDataColumn);
+                }
+                for (const childGroupColumn of childColumns.groupColumns) {
+                    groupColumns.push(childGroupColumn);
                 }
             } else {
                 for (const valueDescription of this.props.values) {
-                    valueHeaderRowValues.push({
+                    dataColumns.push({
                         type: 'data-column',
                         groupDescriptors: childGroupDescriptors,
                         valueId: valueDescription.id,
@@ -120,7 +114,7 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
             }
         }
 
-        return valueHeaderRowValues;
+        return { dataColumns, groupColumns };
     }
 
     render() {
@@ -128,11 +122,13 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
 
+        const columnDescriptors = this.createColumnDescriptors(columns.recursiveGroups);
+
         const valueHeaderRow: ValueHeaderRow = {
             type: 'value-header-row',
-            columns: this.createValueHeaderRow(columns.recursiveGroups)
+            columns: columnDescriptors.dataColumns
         };
-        const groupHeaderRows = this.createGroupHeaderRows(columns.recursiveGroups);
+        const groupHeaderRows = this.createGroupHeaderRows(columnDescriptors.groupColumns);
         const bodyRows = this.createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, filteredData);
 
         const tableDescription: TableDescription<D> = {

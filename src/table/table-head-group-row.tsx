@@ -26,11 +26,11 @@ export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps
                 column={{ type: 'head-column' }}
                 tableDescription={this.props.tableDescription}
             >
-                {this.props.row.label}
+                {this.props.row.groupLabel}
             </this.props.tableHeadGroupCellComponent>
             {this.props.row.groups.map((column, index) =>
                 <this.props.tableHeadGroupCellComponent
-                    key={index}
+                    key={`${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}`}
                     scope="col"
                     colStart={sums[index]}
                     colSpan={column.subColumnSize * this.props.tableDescription.valueCount}

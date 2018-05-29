@@ -32,7 +32,6 @@ export interface TableConfigurationBuilder<D> {
     tableBodyFirstCellComponent: React.ComponentType<TableBodyFirstCellProps>;
     tableBodyCellComponent: React.ReactType;
     withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>): this;
-    withTableHeadRowsComponent(tableHeadRowsComponent: React.ComponentType<TableHeadRowsProps<D>>): this;
     withTableHeadRowComponent(tableHeadRowComponent: React.ReactType): this;
     withTableHeadGroupCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): this;
     withTableHeadValueCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): this;
@@ -61,10 +60,6 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
         tableBodyCellComponent: 'td',
         withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
-            return this;
-        },
-        withTableHeadRowsComponent(tableHeadRowsComponent: React.ComponentType<TableHeadRowsProps<D>>) {
-            builder.tableHeadRowsComponent = tableHeadRowsComponent;
             return this;
         },
         withTableHeadRowComponent(tableHeadRowComponent: React.ReactType) {
@@ -98,7 +93,6 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
         build() {
             return {
                 tableComponent: provideProps(builder.tableComponent, {
-                    customRows: [],
                     tableContainerComponent: provideProps(builder.tableContainerComponent, {
                         tableHeadComponent: provideProps(builder.tableHeadComponent, {
                             tableHeadRowsComponent: provideProps(builder.tableHeadRowsComponent, {
