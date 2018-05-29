@@ -1,5 +1,6 @@
 import { TableConfigurationBuilder } from '../../../table/configuration';
 import { Sizes } from './model';
+import { resizableHoc } from './resizable-head-value-cell';
 
 export interface ResizableTableConfigurationBuilder<D> extends TableConfigurationBuilder<D> {
     initialSizes: Sizes;
@@ -10,18 +11,14 @@ export function resizable<D>(tableConfigurationBuilder: TableConfigurationBuilde
     const builder: ResizableTableConfigurationBuilder<D> = {
         ...tableConfigurationBuilder,
         initialSizes: {},
-        // tableHeadValueCellComponent: ResizableTableHeadValueCell,
         withInitialSizes(sizes: Sizes) {
             builder.initialSizes = sizes;
             return this;
         },
         build() {
-            return '';
+            tableConfigurationBuilder.tableHeadValueCellComponent = resizableHoc(this.initialSizes)(this.tableHeadValueCellComponent);
+            return tableConfigurationBuilder.build();
         }
-        // withTableHeadValueCellComponent(tableHeadValueCellComponent: React.ComponentType<ResizableTableHeadValueCellProps<D>>) {
-        //     builder.tableHeadValueCellComponent = tableHeadValueCellComponent;
-        //     return this;
-        // }
     };
 
     return builder;
