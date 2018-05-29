@@ -3,7 +3,7 @@ import { TableHeadValueCellProps } from './table-head-value-cell';
 import { ValueHeaderRow, TableDescription } from './model';
 
 export interface TableHeadValueRowProps<D> {
-    row: ValueHeaderRow;
+    row: ValueHeaderRow<D>;
     tableDescription: TableDescription<D>;
     tableHeadRowComponent: React.ReactType;
     tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>;
@@ -18,21 +18,23 @@ export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps
                 scope="row"
                 colStart={0}
                 colSpan={1}
+                row={this.props.row}
                 column={{ type: 'head-column' }}
                 tableDescription={this.props.tableDescription}
             >
                 Values
             </this.props.tableHeadValueCellComponent>
-            {this.props.row.columns.map((value, index) =>
+            {this.props.row.columns.map((column, index) =>
                 <this.props.tableHeadValueCellComponent
-                    key={`${value.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-${value.valueId}`}
+                    key={`${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-${column.valueDescription.id}`}
                     scope="col"
                     colStart={1 + index}
                     colSpan={1}
-                    column={value}
+                    row={this.props.row}
+                    column={column}
                     tableDescription={this.props.tableDescription}
                 >
-                    {value.label}
+                    {column.valueDescription.label}
                 </this.props.tableHeadValueCellComponent>
             )}
         </this.props.tableHeadRowComponent>;

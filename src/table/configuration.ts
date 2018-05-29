@@ -8,7 +8,7 @@ import { TableHeadValueRowProps, TableHeadValueRow } from './table-head-value-ro
 import { TableBodyRowsProps, TableBodyRows } from './table-body-rows';
 import { TableHeadGroupCell, TableHeadGroupCellProps } from './table-head-group-cell';
 import { TableHeadValueCell, TableHeadValueCellProps } from './table-head-value-cell';
-import { TableBodyFirstCellProps, TableBodyFirstCell } from './table-body-first-cell';
+import { TableBodyCellProps, TableBodyCell } from './table-body-cell';
 import { TableProps, TableProvidedProps, Table } from './table';
 import { TableHeadRowsProps, TableHeadRows } from './table-head-rows';
 
@@ -21,24 +21,22 @@ export interface TableConfigurationBuilder<D> {
     tableContainerComponent: React.ComponentType<TableContainerProps<D>>;
     tableHeadComponent: React.ComponentType<TableHeadProps<D>>;
     tableHeadRowsComponent: React.ComponentType<TableHeadRowsProps<D>>;
-    tableHeadGroupRowsComponent: React.ComponentType<TableHeadGroupRowProps<D>>;
-    tableHeadValueRowsComponent: React.ComponentType<TableHeadValueRowProps<D>>;
+    tableHeadGroupRowComponent: React.ComponentType<TableHeadGroupRowProps<D>>;
+    tableHeadValueRowComponent: React.ComponentType<TableHeadValueRowProps<D>>;
     tableHeadGroupCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>;
     tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>;
     tableHeadRowComponent: React.ReactType;
     tableBodyComponent: React.ComponentType<TableBodyProps<D>>;
     tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
     tableBodyRowComponent: React.ReactType;
-    tableBodyFirstCellComponent: React.ComponentType<TableBodyFirstCellProps>;
-    tableBodyCellComponent: React.ReactType;
+    tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
     withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>): this;
     withTableHeadRowComponent(tableHeadRowComponent: React.ReactType): this;
     withTableHeadGroupCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): this;
     withTableHeadValueCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): this;
     withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps<D>>): this;
     withTableBodyRowComponent(tableBodyRowComponent: React.ReactType): this;
-    withTableBodyFirstCellComponent(tableBodyFirstCellComponent: React.ComponentType<TableBodyFirstCellProps>): this;
-    withTableBodyCellComponent(tableBodyCellComponent: React.ReactType): this;
+    withTableBodyCellComponent(tableBodyFirstCellComponent: React.ComponentType<TableBodyCellProps<D>>): this;
     build(): TableConfiguration<D>;
 }
 
@@ -48,16 +46,15 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
         tableContainerComponent: TableContainer,
         tableHeadComponent: TableHead,
         tableHeadRowsComponent: TableHeadRows,
-        tableHeadGroupRowsComponent: TableHeadGroupRow,
-        tableHeadValueRowsComponent: TableHeadValueRow,
+        tableHeadGroupRowComponent: TableHeadGroupRow,
+        tableHeadValueRowComponent: TableHeadValueRow,
         tableHeadGroupCellComponent: TableHeadGroupCell,
         tableHeadValueCellComponent: TableHeadValueCell,
         tableHeadRowComponent: 'tr',
         tableBodyComponent: TableBody,
         tableBodyRowsComponent: TableBodyRows,
         tableBodyRowComponent: 'tr',
-        tableBodyFirstCellComponent: TableBodyFirstCell,
-        tableBodyCellComponent: 'td',
+        tableBodyCellComponent: TableBodyCell,
         withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
             return this;
@@ -82,11 +79,7 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
             builder.tableBodyRowComponent = tableBodyRowComponent;
             return this;
         },
-        withTableBodyFirstCellComponent(tableBodyFirstCellComponent: React.ComponentType<TableBodyFirstCellProps>) {
-            builder.tableBodyFirstCellComponent = tableBodyFirstCellComponent;
-            return this;
-        },
-        withTableBodyCellComponent(tableBodyCellComponent: React.ReactType) {
+        withTableBodyCellComponent(tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>) {
             builder.tableBodyCellComponent = tableBodyCellComponent;
             return this;
         },
@@ -96,11 +89,11 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
                     tableContainerComponent: provideProps(builder.tableContainerComponent, {
                         tableHeadComponent: provideProps(builder.tableHeadComponent, {
                             tableHeadRowsComponent: provideProps(builder.tableHeadRowsComponent, {
-                                tableHeadGroupRowsComponent: provideProps(builder.tableHeadGroupRowsComponent, {
+                                tableHeadGroupRowComponent: provideProps(builder.tableHeadGroupRowComponent, {
                                     tableHeadRowComponent: builder.tableHeadRowComponent,
                                     tableHeadGroupCellComponent: builder.tableHeadGroupCellComponent
                                 }),
-                                tableHeadValueRowsComponent: provideProps(builder.tableHeadValueRowsComponent, {
+                                tableHeadValueRowComponent: provideProps(builder.tableHeadValueRowComponent, {
                                     tableHeadRowComponent: builder.tableHeadRowComponent,
                                     tableHeadValueCellComponent: builder.tableHeadValueCellComponent
                                 })
@@ -109,7 +102,6 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
                         tableBodyComponent: provideProps(builder.tableBodyComponent, {
                             tableBodyRowsComponent: provideProps(builder.tableBodyRowsComponent, {
                                 tableBodyRowComponent: builder.tableBodyRowComponent,
-                                tableBodyFirstCellComponent: builder.tableBodyFirstCellComponent,
                                 tableBodyCellComponent: builder.tableBodyCellComponent
                             })
                         })

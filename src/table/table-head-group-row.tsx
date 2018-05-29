@@ -23,6 +23,7 @@ export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps
                 scope="row"
                 colStart={0}
                 colSpan={1}
+                row={this.props.row}
                 column={{ type: 'head-column' }}
                 tableDescription={this.props.tableDescription}
             >
@@ -34,6 +35,7 @@ export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps
                     scope="col"
                     colStart={sums[index]}
                     colSpan={column.subColumnSize * this.props.tableDescription.valueCount}
+                    row={this.props.row}
                     column={column}
                     tableDescription={this.props.tableDescription}
                 >

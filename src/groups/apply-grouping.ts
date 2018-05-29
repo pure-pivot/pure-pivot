@@ -4,7 +4,7 @@ import { assertOrThrow, isNumber } from '../util/assertion';
 export interface Grouping {
     recursiveGroups: RecursiveGroup[];
     sortedIndices: number[];
-    groupDataIndices: (indices?: number[]) => number[][];
+    groupDataIndices: (start: number, end: number) => number[][];
 }
 
 export interface RecursiveGroup {
@@ -103,21 +103,15 @@ export function applyGrouping<T>(groups: Groups<T>, data: T[]): Grouping {
         }
     })(recursiveGroups);
 
-    const groupDataIndices = (indices?: number[]): number[][] => {
+    const groupDataIndices = (start: number, end: number): number[][] => {
         const mapping: { [Key: number]: number[] } = {};
 
         for (const encodedIndex of uniqueEncodedIndices) {
             mapping[encodedIndex] = [];
         }
 
-        if (indices) {
-            for (const index of indices) {
-                mapping[encodedIndices[index]].push(index);
-            }
-        } else {
-            for (let i = 0; i < encodedIndices.length; i++) {
-                mapping[encodedIndices[i]].push(i);
-            }
+        for (let i = start; i < end; i++) {
+            mapping[encodedIndices[i]].push(i);
         }
 
         return uniqueEncodedIndices.map((encodedIndex) => mapping[encodedIndex]);

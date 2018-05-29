@@ -1,17 +1,18 @@
 import * as React from 'react';
-import { TableDescription, ColumnDescriptor } from './model';
+import { TableDescription, ColumnDescriptor, GroupHeaderRow } from './model';
 
 export interface TableHeadGroupCellProps<D> {
     scope: 'row' | 'col';
     colStart: number;
     colSpan: number;
-    column: ColumnDescriptor;
+    row: GroupHeaderRow;
+    column: ColumnDescriptor<D>;
     tableDescription: TableDescription<D>;
 }
 
 export class TableHeadGroupCell<D> extends React.Component<TableHeadGroupCellProps<D>, never> {
     render() {
-        const { colStart, tableDescription, column, ...other } = this.props;
+        const { colStart, tableDescription, row, column, ...other } = this.props;
         return <th {...other} />;
     }
 }

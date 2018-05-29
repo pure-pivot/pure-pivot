@@ -1,13 +1,12 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
-import { TableBodyFirstCellProps } from './table-body-first-cell';
+import { TableBodyCellProps } from './table-body-cell';
 import { TableDescription } from './model';
 
 export interface TableBodyRowsProps<D> {
     tableDescription: TableDescription<D>;
     tableBodyRowComponent: React.ReactType;
-    tableBodyFirstCellComponent: React.ComponentType<TableBodyFirstCellProps>;
-    tableBodyCellComponent: React.ReactType;
+    tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
 }
 
 export type TableBodyRowsProvidedProps = 'tableBodyRowComponent' | 'tableBodyFirstCellComponent' | 'tableBodyCellComponent';
@@ -20,15 +19,20 @@ export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, nev
     render() {
         return this.props.tableDescription.bodyRows.map((row, index) =>
             <this.props.tableBodyRowComponent key={index}>
-                <this.props.tableBodyFirstCellComponent level={row.level}>
+                <this.props.tableBodyCellComponent
+                    row={row}
+                    column={{ type: 'head-column' }}
+                >
                     {row.label}
-                </this.props.tableBodyFirstCellComponent>
-                {row.data.map((cell, index) =>
-                    this.props.tableDescription.values.map((valueDescription) =>
-                        <this.props.tableBodyCellComponent key={`${valueDescription.id}-${index}`}>
-                            {valueDescription.reducer(cell)}
-                        </this.props.tableBodyCellComponent>
-                    )
+                </this.props.tableBodyCellComponent>
+                {row.cells.map((cell) =>
+                    <this.props.tableBodyCellComponent
+                        key={`${cell.column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-${cell.column.valueDescription.id}`}
+                        row={row}
+                        column={cell.column}
+                    >
+                        {cell.column.valueDescription.reducer(cell.data)}
+                    </this.props.tableBodyCellComponent>
                 )}
             </this.props.tableBodyRowComponent>
         );
