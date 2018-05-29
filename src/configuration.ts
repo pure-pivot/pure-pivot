@@ -99,12 +99,12 @@ export function createConfigurationBuilder<D>(data: D[], plugins: ((configuratio
         build() {
             return {
                 data,
-                filters: this.filters,
-                groups: this.groups,
-                selections: this.selections,
-                sorting: this.sorting,
-                values: this.values,
-                tableComponent: this.tableConfiguration.tableComponent
+                filters: builder.filters,
+                groups: builder.groups,
+                selections: builder.selections,
+                sorting: builder.sorting,
+                values: builder.values,
+                tableComponent: builder.tableConfiguration.tableComponent
             };
         }
     };

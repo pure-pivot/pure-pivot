@@ -3,13 +3,14 @@ import * as ReactDOM from 'react-dom';
 import { Draggable } from 'react-managed-draggable/lib-es6';
 import { TableHeadValueCellProps } from '../../../table/table-head-value-cell';
 import { Sizes } from './model';
+import { TableDescription, ColumnDescriptor, GroupHeaderRow, Row } from '../../../table/model';
 
 export interface ResizableHocState {
     resizing: number | null;
     size: number | undefined;
 }
 
-export const resizableHoc = (initialSizes: Sizes) => <P extends { id: string }>(Component: React.ComponentType<P>) =>
+export const resizableHoc = <D extends {}>(initialSizes: Sizes, handleWidth: number) => <P extends { id: string }>(Component: React.ComponentType<P>) =>
     class ResizableHoc extends React.Component<P, ResizableHocState> {
         state: ResizableHocState = {
             resizing: null,
@@ -25,7 +26,7 @@ export const resizableHoc = (initialSizes: Sizes) => <P extends { id: string }>(
                 <div ref={(ref) => this.container = ref} style={{ position: 'relative', width: this.state.size }}>
                     {this.props.children}
                     <Draggable
-                        style={{ position: 'absolute', zIndex: 1, top: 0, bottom: 0, right: -10 - offset, width: 20, cursor: 'col-resize' }}
+                        style={{ position: 'absolute', zIndex: 1, top: 0, bottom: 0, right: -handleWidth / 2 - offset, width: handleWidth, cursor: 'col-resize' }}
                         onDragStart={(event, dragInformation) => {
                             this.setState({ resizing: 0 });
                         }}
@@ -39,7 +40,7 @@ export const resizableHoc = (initialSizes: Sizes) => <P extends { id: string }>(
                             }
                         }}
                     >
-                        <div style={{ position: 'absolute', top: 0, bottom: 0, left: 9, right: 9, backgroundColor: 'green' }} />
+                        <div style={{ position: 'absolute', top: 0, bottom: 0, left: handleWidth - 1, right: handleWidth - 1, backgroundColor: 'green' }} />
                     </Draggable>
                 </div>
             </Component>;

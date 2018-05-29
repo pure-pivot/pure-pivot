@@ -51,6 +51,8 @@ export interface BodyRow<D> {
     cells: BodyCell<D>[];
 }
 
+export type Row<D> = BodyRow<D> | HeadRow<D>;
+
 export interface TableDescription<D> {
     headColumnCount: number;
     bodyColumnCount: number;

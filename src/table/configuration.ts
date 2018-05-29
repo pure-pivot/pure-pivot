@@ -89,24 +89,24 @@ export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableCo
         },
         build() {
             return {
-                tableComponent: provideProps(this.tableComponent, {
-                    tableContainerComponent: provideProps(this.tableContainerComponent, {
-                        tableHeadComponent: provideProps(this.tableHeadComponent, {
-                            tableHeadRowsComponent: provideProps(this.tableHeadRowsComponent, {
-                                tableHeadGroupRowComponent: provideProps(this.tableHeadGroupRowComponent, {
-                                    tableHeadRowComponent: this.tableHeadRowComponent,
-                                    tableHeadGroupCellComponent: this.tableHeadGroupCellComponent
+                tableComponent: provideProps(builder.tableComponent, {
+                    tableContainerComponent: provideProps(builder.tableContainerComponent, {
+                        tableHeadComponent: provideProps(builder.tableHeadComponent, {
+                            tableHeadRowsComponent: provideProps(builder.tableHeadRowsComponent, {
+                                tableHeadGroupRowComponent: provideProps(builder.tableHeadGroupRowComponent, {
+                                    tableHeadRowComponent: builder.tableHeadRowComponent,
+                                    tableHeadGroupCellComponent: builder.tableHeadGroupCellComponent
                                 }),
-                                tableHeadValueRowComponent: provideProps(this.tableHeadValueRowComponent, {
-                                    tableHeadRowComponent: this.tableHeadRowComponent,
-                                    tableHeadValueCellComponent: this.tableHeadValueCellComponent
+                                tableHeadValueRowComponent: provideProps(builder.tableHeadValueRowComponent, {
+                                    tableHeadRowComponent: builder.tableHeadRowComponent,
+                                    tableHeadValueCellComponent: builder.tableHeadValueCellComponent
                                 })
                             })
                         }),
-                        tableBodyComponent: provideProps(this.tableBodyComponent, {
-                            tableBodyRowsComponent: provideProps(this.tableBodyRowsComponent, {
-                                tableBodyRowComponent: this.tableBodyRowComponent,
-                                tableBodyCellComponent: this.tableBodyCellComponent
+                        tableBodyComponent: provideProps(builder.tableBodyComponent, {
+                            tableBodyRowsComponent: provideProps(builder.tableBodyRowsComponent, {
+                                tableBodyRowComponent: builder.tableBodyRowComponent,
+                                tableBodyCellComponent: builder.tableBodyCellComponent
                             })
                         })
                     })
