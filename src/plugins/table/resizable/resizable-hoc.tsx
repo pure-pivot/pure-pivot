@@ -40,7 +40,7 @@ export const resizableHoc = <D extends {}>(initialSizes: Sizes, handleWidth: num
                             }
                         }}
                     >
-                        <div style={{ position: 'absolute', top: 0, bottom: 0, left: handleWidth - 1, right: handleWidth - 1, backgroundColor: 'green' }} />
+                        <div style={{ position: 'absolute', top: 0, bottom: 0, left: handleWidth / 2 - 1, right: handleWidth / 2 - 1, backgroundColor: 'green' }} />
                     </Draggable>
                 </div>
             </Component>;
