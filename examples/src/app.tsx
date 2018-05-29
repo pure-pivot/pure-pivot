@@ -3,7 +3,7 @@ import { Draggable } from 'react-managed-draggable';
 import { Configuration, createConfigurationBuilder } from '../../lib/es6/configuration';
 import { createTableConfigurationBuilder } from '../../lib/es6/table/configuration';
 import { TableHeadCellProps } from '../../lib/es6/table/table-head-cell';
-import { resizeTableHeadValueComponentFactory } from './resize-table-head-value-cell';
+import { resizable } from '../../lib/es6/plugins/table/resizable/resizable';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -211,7 +211,8 @@ export class App extends React.Component<{}, AppState> {
             .withSorter((data1, data2) => data2.length - data1.length)
             .withTableConfiguration(
                 createTableConfigurationBuilder(data)
-                    .withTableHeadValueCellComponent(resizeTableHeadValueComponentFactory([]))
+                    .withPlugin(resizable)
+                    .withInitialSizes({})
                     .build()
             )
             .build();

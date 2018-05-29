@@ -15,9 +15,9 @@ export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps
     render() {
         return <this.props.tableHeadRowComponent>
             <this.props.tableHeadValueCellComponent
+                id="head-row-value-head-column"
                 scope="row"
                 colStart={0}
-                id={`head-row-value-head-column`}
                 row={this.props.row}
                 column={{ type: 'head-column' }}
                 tableDescription={this.props.tableDescription}

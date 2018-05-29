@@ -1,8 +1,9 @@
 import { ConfigurationBuilder } from '../configuration';
 
 export function defaultSingleSelection<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {
-    return Object.assign({}, configurationBuilder, {
-        build: () => {
+    return {
+        ...configurationBuilder,
+        build() {
             const result = configurationBuilder.build();
 
             if (result.selections.length <= 0) {
@@ -26,5 +27,5 @@ export function defaultSingleSelection<D>(configurationBuilder: ConfigurationBui
 
             return result;
         }
-    });
+    };
 }

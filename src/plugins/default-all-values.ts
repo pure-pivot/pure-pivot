@@ -2,8 +2,9 @@ import { ConfigurationBuilder } from '../configuration';
 import { ObjectKeys } from '../util/keys';
 
 export function defaultAllValues<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {
-    return Object.assign({}, configurationBuilder, {
-        build: () => {
+    return {
+        ...configurationBuilder,
+        build() {
             const result = configurationBuilder.build();
 
             if (result.values.length <= 0 && result.data.length >= 1) {
@@ -18,5 +19,5 @@ export function defaultAllValues<D>(configurationBuilder: ConfigurationBuilder<D
 
             return result;
         }
-    });
+    };
 }

@@ -30,17 +30,18 @@ export interface TableConfigurationBuilder<D> {
     tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
     tableBodyRowComponent: React.ReactType;
     tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
-    withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>): this;
-    withTableHeadRowComponent(tableHeadRowComponent: React.ReactType): this;
-    withTableHeadGroupCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): this;
-    withTableHeadValueCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): this;
-    withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps<D>>): this;
-    withTableBodyRowComponent(tableBodyRowComponent: React.ReactType): this;
-    withTableBodyCellComponent(tableBodyFirstCellComponent: React.ComponentType<TableBodyCellProps<D>>): this;
+    withTableContainerComponent<C>(this: C, tableContainerComponent: React.ComponentType<TableContainerProps<D>>): C;
+    withTableHeadRowComponent<C>(this: C, tableHeadRowComponent: React.ReactType): C;
+    withTableHeadGroupCellComponent<C>(this: C, tableHeadCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): C;
+    withTableHeadValueCellComponent<C>(this: C, tableHeadCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): C;
+    withTableBodyComponent<C>(this: C, tableBodyComponent: React.ComponentType<TableBodyProps<D>>): C;
+    withTableBodyRowComponent<C>(this: C, tableBodyRowComponent: React.ReactType): C;
+    withTableBodyCellComponent<C>(this: C, tableBodyFirstCellComponent: React.ComponentType<TableBodyCellProps<D>>): C;
+    withPlugin<C>(plugin: (tableConfigurationBuilder: TableConfigurationBuilder<D>) => C): C;
     build(): TableConfiguration<D>;
 }
 
-export function createTableConfigurationBuilder<D>(data: D[]): TableConfigurationBuilder<D> {
+export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableConfigurationBuilder: TableConfigurationBuilder<D>) => TableConfigurationBuilder<D>)[] = []): TableConfigurationBuilder<D> {
     const builder: TableConfigurationBuilder<D> = {
         tableComponent: Table,
         tableContainerComponent: TableContainer,
@@ -83,26 +84,29 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
             builder.tableBodyCellComponent = tableBodyCellComponent;
             return this;
         },
+        withPlugin<C>(plugin: (tableConfigurationBuilder: TableConfigurationBuilder<D>) => C) {
+            return plugin(this);
+        },
         build() {
             return {
-                tableComponent: provideProps(builder.tableComponent, {
-                    tableContainerComponent: provideProps(builder.tableContainerComponent, {
-                        tableHeadComponent: provideProps(builder.tableHeadComponent, {
-                            tableHeadRowsComponent: provideProps(builder.tableHeadRowsComponent, {
-                                tableHeadGroupRowComponent: provideProps(builder.tableHeadGroupRowComponent, {
-                                    tableHeadRowComponent: builder.tableHeadRowComponent,
-                                    tableHeadGroupCellComponent: builder.tableHeadGroupCellComponent
+                tableComponent: provideProps(this.tableComponent, {
+                    tableContainerComponent: provideProps(this.tableContainerComponent, {
+                        tableHeadComponent: provideProps(this.tableHeadComponent, {
+                            tableHeadRowsComponent: provideProps(this.tableHeadRowsComponent, {
+                                tableHeadGroupRowComponent: provideProps(this.tableHeadGroupRowComponent, {
+                                    tableHeadRowComponent: this.tableHeadRowComponent,
+                                    tableHeadGroupCellComponent: this.tableHeadGroupCellComponent
                                 }),
-                                tableHeadValueRowComponent: provideProps(builder.tableHeadValueRowComponent, {
-                                    tableHeadRowComponent: builder.tableHeadRowComponent,
-                                    tableHeadValueCellComponent: builder.tableHeadValueCellComponent
+                                tableHeadValueRowComponent: provideProps(this.tableHeadValueRowComponent, {
+                                    tableHeadRowComponent: this.tableHeadRowComponent,
+                                    tableHeadValueCellComponent: this.tableHeadValueCellComponent
                                 })
                             })
                         }),
-                        tableBodyComponent: provideProps(builder.tableBodyComponent, {
-                            tableBodyRowsComponent: provideProps(builder.tableBodyRowsComponent, {
-                                tableBodyRowComponent: builder.tableBodyRowComponent,
-                                tableBodyCellComponent: builder.tableBodyCellComponent
+                        tableBodyComponent: provideProps(this.tableBodyComponent, {
+                            tableBodyRowsComponent: provideProps(this.tableBodyRowsComponent, {
+                                tableBodyRowComponent: this.tableBodyRowComponent,
+                                tableBodyCellComponent: this.tableBodyCellComponent
                             })
                         })
                     })
@@ -111,5 +115,5 @@ export function createTableConfigurationBuilder<D>(data: D[]): TableConfiguratio
         }
     };
 
-    return builder;
+    return plugins.reduce((builder, plugin) => plugin(builder), builder);
 }

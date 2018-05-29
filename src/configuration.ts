@@ -26,21 +26,22 @@ export interface ConfigurationBuilder<D> {
     sorting: Comparators<D>;
     values: ValueReducers<D>;
     tableConfiguration: TableConfiguration<D>;
-    withFilters(filters: Filters<D>): this;
-    withFilter(filter: Filter<D>): this;
-    withValues(values: ValueReducers<D>): this;
-    withValue(value: ValueReducerDescription<D>): this;
-    withGroups(groups: Groups<D>): this;
-    withGroup(group: Grouper<D>): this;
-    withSelections(selections: Selections<D>): this;
-    withSelection(selection: Grouper<D>): this;
-    withSorters(sorters: Comparators<D>): this;
-    withSorter(sorter: Comparator<D>): this;
-    withTableConfiguration(tableConfiguration: TableConfiguration<D>): this;
+    withFilters<C>(this: C, filters: Filters<D>): C;
+    withFilter<C>(this: C, filter: Filter<D>): C;
+    withValues<C>(this: C, values: ValueReducers<D>): C;
+    withValue<C>(this: C, value: ValueReducerDescription<D>): C;
+    withGroups<C>(this: C, groups: Groups<D>): C;
+    withGroup<C>(this: C, group: Grouper<D>): C;
+    withSelections<C>(this: C, selections: Selections<D>): C;
+    withSelection<C>(this: C, selection: Grouper<D>): C;
+    withSorters<C>(this: C, sorters: Comparators<D>): C;
+    withSorter<C>(this: C, sorter: Comparator<D>): C;
+    withTableConfiguration<C>(this: C, tableConfiguration: TableConfiguration<D>): C;
+    withPlugin<C>(plugin: (configurationBuilder: ConfigurationBuilder<D>) => C): C;
     build(): Configuration<D>;
 }
 
-export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D> {
+export function createConfigurationBuilder<D>(data: D[], plugins: ((configurationBuilder: ConfigurationBuilder<D>) => ConfigurationBuilder<D>)[] = defaultPlugins): ConfigurationBuilder<D> {
     const builder: ConfigurationBuilder<D> = {
         filters: [],
         groups: [],
@@ -92,6 +93,9 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
             builder.tableConfiguration = tableConfiguration;
             return this;
         },
+        withPlugin<C>(plugin: (configurationBuilder: ConfigurationBuilder<D>) => C) {
+            return plugin(this);
+        },
         build() {
             return {
                 data,
@@ -105,5 +109,5 @@ export function createConfigurationBuilder<D>(data: D[]): ConfigurationBuilder<D
         }
     };
 
-    return defaultPlugins.reduce((builder, plugin) => plugin(builder), builder);
+    return plugins.reduce((builder, plugin) => plugin(builder), builder);
 }

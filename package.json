@@ -4,13 +4,16 @@
   "description": "",
   "main": "lib/index.js",
   "peerDependencies": {
-    "react": "*"
+    "react": "*",
+    "react-dom": "*"
   },
   "devDependencies": {
     "@types/react": "^16.3.13",
+    "@types/react-dom": "^16.0.5",
     "@types/shallowequal": "^0.2.2",
     "cross-env": "^5.1.5",
     "react": "^16.3.2",
+    "react-dom": "^16.4.0",
     "rimraf": "^2.6.2",
     "rollup": "^0.58.2",
     "rollup-plugin-node-resolve": "^3.3.0",
@@ -35,6 +38,7 @@
   },
   "homepage": "https://github.com/woutervh-/pure-pivot#readme",
   "dependencies": {
+    "react-managed-draggable": "^0.1.5",
     "shallowequal": "^1.0.2"
   }
 }
