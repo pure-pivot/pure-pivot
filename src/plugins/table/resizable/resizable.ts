@@ -13,28 +13,27 @@ export interface StyledTableHeadValueCellProps<D> extends TableHeadValueCellProp
     style?: React.CSSProperties;
 }
 
-export interface ResizeTableConfigurationBuilder<D> {
+export interface ResizeTableConfigurationBuilder {
     handleWidth: number;
     initialSizes: Sizes;
     withHandleWidth<C>(this: C, handleWidth: number): C;
     withInitialSizes<C>(this: C, initialSizes: Sizes): C;
 }
 
-export const resizable = <D>() => <C extends StylableCellsTableConfigurationBuilder<D>>(tableConfigurationBuilder: C): C & ResizeTableConfigurationBuilder<D> => {
-    const builder: C & ResizeTableConfigurationBuilder<D> = Object.assign({}, tableConfigurationBuilder, {
+export const resizable = <C extends StylableCellsTableConfigurationBuilder<any>>(tableConfigurationBuilder: C): C & ResizeTableConfigurationBuilder => {
+    const builder: C & ResizeTableConfigurationBuilder = Object.assign({}, tableConfigurationBuilder, {
         handleWidth: 30,
         initialSizes: {},
-        tableHeadValueCellComponent: resizableHoc<D>({}, 30)(tableConfigurationBuilder.tableHeadValueCellComponent),
-        withHandleWidth(handleWidth: number) {
+        withHandleWidth<C>(this: C, handleWidth: number) {
             builder.handleWidth = handleWidth;
             return this;
         },
-        withInitialSizes(sizes: Sizes) {
+        withInitialSizes<C>(this: C, sizes: Sizes) {
             builder.initialSizes = sizes;
             return this;
         },
         build() {
-            tableConfigurationBuilder.withTableHeadValueCellComponent(builder.tableHeadValueCellComponent);
+            tableConfigurationBuilder.withTableHeadValueCellComponent(resizableHoc(this.initialSizes, this.handleWidth)(tableConfigurationBuilder.tableHeadValueCellComponent));
             return tableConfigurationBuilder.build();
         }
     });

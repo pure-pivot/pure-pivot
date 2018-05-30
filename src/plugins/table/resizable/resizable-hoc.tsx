@@ -10,7 +10,7 @@ export interface ResizableHocState {
     size: number | undefined;
 }
 
-export const resizableHoc = <D extends {}>(initialSizes: Sizes, handleWidth: number) => <P extends { id: string, style?: React.CSSProperties }>(Component: React.ComponentType<P>) =>
+export const resizableHoc = (initialSizes: Sizes, handleWidth: number) => <P extends { id: string, style?: React.CSSProperties }>(Component: React.ComponentType<P>) =>
     class ResizableHoc extends React.Component<P, ResizableHocState> {
         state: ResizableHocState = {
             resizing: null,

@@ -12,7 +12,7 @@ export interface TableHeadValueCellProps<D> {
 
 export class TableHeadValueCell<D> extends React.Component<TableHeadValueCellProps<D>, never> {
     render() {
-        const { colStart, tableDescription, row, column, ...other } = this.props;
+        const { colStart, tableDescription, id, row, column, ...other } = this.props;
         return <th {...other} />;
     }
 }

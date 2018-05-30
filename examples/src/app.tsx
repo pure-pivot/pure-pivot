@@ -2,9 +2,9 @@ import * as React from 'react';
 import { Draggable } from 'react-managed-draggable';
 import { Configuration, createConfigurationBuilder } from '../../lib/es6/configuration';
 import { createTableConfigurationBuilder } from '../../lib/es6/table/configuration';
-import { TableHeadCellProps } from '../../lib/es6/table/table-head-cell';
 import { resizable } from '../../lib/es6/plugins/table/resizable/resizable';
 import { stylable } from '../../lib/es6/plugins/table/stylable/stylable';
+import { gridLayout } from '../../lib/es6/plugins/table/grid-layout/grid-layout';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -212,9 +212,9 @@ export class App extends React.Component<{}, AppState> {
             // .withSorter((data1, data2) => data2.length - data1.length)
             .withTableConfiguration(
                 createTableConfigurationBuilder(data)
-                    .withPlugin(stylable)
-                    .withPlugin(resizable<Data>())
-                    // .withInitialSizes({})
+                    // .withPlugin(stylable)
+                    // .withPlugin(resizable)
+                    .withPlugin(gridLayout)
                     .build()
             )
             .build();

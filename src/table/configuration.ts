@@ -11,6 +11,7 @@ import { TableHeadValueCell, TableHeadValueCellProps } from './table-head-value-
 import { TableBodyCellProps, TableBodyCell } from './table-body-cell';
 import { TableProps, TableProvidedProps, Table } from './table';
 import { TableHeadRowsProps, TableHeadRows } from './table-head-rows';
+import { TableFootProps, TableFoot } from './table-foot';
 
 export interface TableConfiguration<D> {
     tableComponent: React.ComponentType<Pick<TableProps<D>, Exclude<keyof TableProps<D>, TableProvidedProps>>>;
@@ -30,13 +31,17 @@ export interface TableConfigurationBuilder<D> {
     tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
     tableBodyRowComponent: React.ReactType;
     tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
+    tableFootComponent: React.ComponentType<TableFootProps<D>>;
     withTableContainerComponent<C>(this: C, tableContainerComponent: React.ComponentType<TableContainerProps<D>>): C;
+    withTableHeadComponent<C>(this: C, tableHeadComponent: React.ComponentType<TableHeadProps<D>>): C;
     withTableHeadRowComponent<C>(this: C, tableHeadRowComponent: React.ReactType): C;
     withTableHeadGroupCellComponent<C>(this: C, tableHeadGroupCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): C;
     withTableHeadValueCellComponent<C>(this: C, tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): C;
     withTableBodyComponent<C>(this: C, tableBodyComponent: React.ComponentType<TableBodyProps<D>>): C;
+    withTableBodyRowsComponent<C>(this: C, tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>): C;
     withTableBodyRowComponent<C>(this: C, tableBodyRowComponent: React.ReactType): C;
-    withTableBodyCellComponent<C>(this: C, tableBodyFirstCellComponent: React.ComponentType<TableBodyCellProps<D>>): C;
+    withTableBodyCellComponent<C>(this: C, tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>): C;
+    withTableFootComponent<C>(this: C, tableFootComponent: React.ComponentType<TableFootProps<D>>): C;
     withPlugin<C>(plugin: (tableConfigurationBuilder: this) => C): C;
     build(): TableConfiguration<D>;
 }
@@ -56,8 +61,13 @@ export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableCo
         tableBodyRowsComponent: TableBodyRows,
         tableBodyRowComponent: 'tr',
         tableBodyCellComponent: TableBodyCell,
+        tableFootComponent: TableFoot,
         withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
+            return this;
+        },
+        withTableHeadComponent(tableHeadComponent: React.ComponentType<TableHeadProps<D>>) {
+            builder.tableHeadComponent = tableHeadComponent;
             return this;
         },
         withTableHeadRowComponent(tableHeadRowComponent: React.ReactType) {
@@ -76,12 +86,20 @@ export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableCo
             builder.tableBodyComponent = tableBodyComponent;
             return this;
         },
+        withTableBodyRowsComponent<C>(this: C, tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>) {
+            builder.tableBodyRowsComponent = tableBodyRowsComponent;
+            return this;
+        },
         withTableBodyRowComponent(tableBodyRowComponent: React.ReactType) {
             builder.tableBodyRowComponent = tableBodyRowComponent;
             return this;
         },
         withTableBodyCellComponent(tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>) {
             builder.tableBodyCellComponent = tableBodyCellComponent;
+            return this;
+        },
+        withTableFootComponent(tableFootComponent: React.ComponentType<TableFootProps<D>>) {
+            builder.tableFootComponent = tableFootComponent;
             return this;
         },
         withPlugin<C>(plugin: (tableConfigurationBuilder: TableConfigurationBuilder<D>) => C) {
@@ -108,7 +126,8 @@ export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableCo
                                 tableBodyRowComponent: builder.tableBodyRowComponent,
                                 tableBodyCellComponent: builder.tableBodyCellComponent
                             })
-                        })
+                        }),
+                        tableFootComponent: builder.tableFootComponent
                     })
                 })
             };
