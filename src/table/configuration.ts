@@ -32,12 +32,12 @@ export interface TableConfigurationBuilder<D> {
     tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
     withTableContainerComponent<C>(this: C, tableContainerComponent: React.ComponentType<TableContainerProps<D>>): C;
     withTableHeadRowComponent<C>(this: C, tableHeadRowComponent: React.ReactType): C;
-    withTableHeadGroupCellComponent<C>(this: C, tableHeadCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): C;
-    withTableHeadValueCellComponent<C>(this: C, tableHeadCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): C;
+    withTableHeadGroupCellComponent<C>(this: C, tableHeadGroupCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): C;
+    withTableHeadValueCellComponent<C>(this: C, tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): C;
     withTableBodyComponent<C>(this: C, tableBodyComponent: React.ComponentType<TableBodyProps<D>>): C;
     withTableBodyRowComponent<C>(this: C, tableBodyRowComponent: React.ReactType): C;
     withTableBodyCellComponent<C>(this: C, tableBodyFirstCellComponent: React.ComponentType<TableBodyCellProps<D>>): C;
-    withPlugin<C>(plugin: (tableConfigurationBuilder: TableConfigurationBuilder<D>) => C): C;
+    withPlugin<C>(plugin: (tableConfigurationBuilder: this) => C): C;
     build(): TableConfiguration<D>;
 }
 
@@ -64,12 +64,12 @@ export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableCo
             builder.tableHeadRowComponent = tableHeadRowComponent;
             return this;
         },
-        withTableHeadGroupCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>) {
-            builder.tableHeadGroupCellComponent = tableHeadCellComponent;
+        withTableHeadGroupCellComponent(tableHeadGroupCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>) {
+            builder.tableHeadGroupCellComponent = tableHeadGroupCellComponent;
             return this;
         },
-        withTableHeadValueCellComponent(tableHeadCellComponent: React.ComponentType<TableHeadValueCellProps<D>>) {
-            builder.tableHeadValueCellComponent = tableHeadCellComponent;
+        withTableHeadValueCellComponent(tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>) {
+            builder.tableHeadValueCellComponent = tableHeadValueCellComponent;
             return this;
         },
         withTableBodyComponent(tableBodyComponent: React.ComponentType<TableBodyProps<D>>) {

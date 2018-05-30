@@ -4,6 +4,7 @@ import { Configuration, createConfigurationBuilder } from '../../lib/es6/configu
 import { createTableConfigurationBuilder } from '../../lib/es6/table/configuration';
 import { TableHeadCellProps } from '../../lib/es6/table/table-head-cell';
 import { resizable } from '../../lib/es6/plugins/table/resizable/resizable';
+import { stylable } from '../../lib/es6/plugins/table/stylable/stylable';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -211,8 +212,9 @@ export class App extends React.Component<{}, AppState> {
             // .withSorter((data1, data2) => data2.length - data1.length)
             .withTableConfiguration(
                 createTableConfigurationBuilder(data)
-                    .withPlugin(resizable)
-                    .withInitialSizes({})
+                    .withPlugin(stylable)
+                    .withPlugin(resizable<Data>())
+                    // .withInitialSizes({})
                     .build()
             )
             .build();

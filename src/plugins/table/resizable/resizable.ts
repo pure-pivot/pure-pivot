@@ -1,19 +1,30 @@
-import { TableConfigurationBuilder } from '../../../table/configuration';
+import { TableConfigurationBuilder, TableConfiguration } from '../../../table/configuration';
 import { Sizes } from './model';
 import { resizableHoc } from './resizable-hoc';
+import { TableHeadGroupCellProps } from '../../../table/table-head-group-cell';
+import { TableHeadValueCellProps } from '../../../table/table-head-value-cell';
+import { StylableCellsTableConfigurationBuilder } from '../stylable/stylable';
 
-export interface ResizableTableConfigurationBuilder<D> extends TableConfigurationBuilder<D> {
+export interface StyledTableHeadGroupCellProps<D> extends TableHeadGroupCellProps<D> {
+    style?: React.CSSProperties;
+}
+
+export interface StyledTableHeadValueCellProps<D> extends TableHeadValueCellProps<D> {
+    style?: React.CSSProperties;
+}
+
+export interface ResizeTableConfigurationBuilder<D> {
     handleWidth: number;
     initialSizes: Sizes;
     withHandleWidth<C>(this: C, handleWidth: number): C;
-    withInitialSizes<C>(this: C, sizes: Sizes): C;
+    withInitialSizes<C>(this: C, initialSizes: Sizes): C;
 }
 
-export function resizable<D>(tableConfigurationBuilder: TableConfigurationBuilder<D>): ResizableTableConfigurationBuilder<D> {
-    const builder: ResizableTableConfigurationBuilder<D> = {
-        ...tableConfigurationBuilder,
+export const resizable = <D>() => <C extends StylableCellsTableConfigurationBuilder<D>>(tableConfigurationBuilder: C): C & ResizeTableConfigurationBuilder<D> => {
+    const builder: C & ResizeTableConfigurationBuilder<D> = Object.assign({}, tableConfigurationBuilder, {
         handleWidth: 30,
         initialSizes: {},
+        tableHeadValueCellComponent: resizableHoc<D>({}, 30)(tableConfigurationBuilder.tableHeadValueCellComponent),
         withHandleWidth(handleWidth: number) {
             builder.handleWidth = handleWidth;
             return this;
@@ -23,11 +34,10 @@ export function resizable<D>(tableConfigurationBuilder: TableConfigurationBuilde
             return this;
         },
         build() {
-            tableConfigurationBuilder.withTableHeadGroupCellComponent(resizableHoc<D>(this.initialSizes, this.handleWidth)(this.tableHeadGroupCellComponent));
-            tableConfigurationBuilder.withTableHeadValueCellComponent(resizableHoc<D>(this.initialSizes, this.handleWidth)(this.tableHeadValueCellComponent));
+            tableConfigurationBuilder.withTableHeadValueCellComponent(builder.tableHeadValueCellComponent);
             return tableConfigurationBuilder.build();
         }
-    };
+    });
 
     return builder;
-}
+};
