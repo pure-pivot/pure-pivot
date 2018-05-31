@@ -46,6 +46,7 @@ function isArrayOfData(object: any): object is Data[] {
 interface AppState {
     data: WithStatus<Data[]>;
     sizes: number[];
+    offset: number;
 }
 
 const tableConfiguration = createTableConfigurationBuilder<Data>()
@@ -166,7 +167,7 @@ const configuration = createConfigurationBuilder<Data>()
     .build();
 
 export class App extends React.Component<{}, AppState> {
-    state: AppState = { data: { status: 'loading' }, sizes: [] };
+    state: AppState = { data: { status: 'loading' }, sizes: [], offset: 0 };
 
     componentDidMount() {
         window.setInterval(() => this.setState({ sizes: [] }), 1000);
@@ -221,8 +222,6 @@ export class App extends React.Component<{}, AppState> {
     }
 
     render() {
-        console.log('Render app');
-
         if (this.state.data.status === 'loading') {
             return <React.Fragment>
                 Loading...
@@ -242,7 +241,7 @@ export class App extends React.Component<{}, AppState> {
                     values={configuration.values}
                     sorting={configuration.sorting}
                 />
-                <tableConfiguration.paginationComponent offset={0} limit={50} onOffsetChange={() => void 0} />
+                <tableConfiguration.paginationComponent offset={this.state.offset} limit={50} onOffsetChange={(offset) => this.setState({ offset })} />
             </React.Fragment>;
         }
     }

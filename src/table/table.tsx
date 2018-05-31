@@ -139,8 +139,6 @@ export class Table<D> extends React.Component<TableProps<D>, never> {
     }
 
     render() {
-        console.log('Render table');
-
         const filteredData = applyFilters(this.props.filters, this.props.data);
         const columns = applyGrouping(this.props.groups, filteredData);
         const rows = applyGrouping(this.props.selections, filteredData);
