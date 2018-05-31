@@ -10,7 +10,6 @@ import { provideProps } from './util/provide-props';
 import { TableConfiguration, createTableConfigurationBuilder } from './table/configuration';
 
 export interface Configuration<D> {
-    data: D[];
     filters: Filters<D>;
     groups: Groups<D>;
     selections: Selections<D>;
@@ -41,14 +40,14 @@ export interface ConfigurationBuilder<D> {
     build(): Configuration<D>;
 }
 
-export function createConfigurationBuilder<D>(data: D[], plugins: ((configurationBuilder: ConfigurationBuilder<D>) => ConfigurationBuilder<D>)[] = defaultPlugins): ConfigurationBuilder<D> {
+export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: ConfigurationBuilder<D>) => ConfigurationBuilder<D>)[] = defaultPlugins): ConfigurationBuilder<D> {
     const builder: ConfigurationBuilder<D> = {
         filters: [],
         groups: [],
         selections: [],
         sorting: [],
         values: [],
-        tableConfiguration: createTableConfigurationBuilder(data).build(),
+        tableConfiguration: createTableConfigurationBuilder<D>().build(),
         withFilter(filter) {
             builder.filters = [...builder.filters, filter];
             return this;
@@ -98,7 +97,6 @@ export function createConfigurationBuilder<D>(data: D[], plugins: ((configuratio
         },
         build() {
             return {
-                data,
                 filters: builder.filters,
                 groups: builder.groups,
                 selections: builder.selections,

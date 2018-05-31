@@ -46,7 +46,7 @@ export interface TableConfigurationBuilder<D> {
     build(): TableConfiguration<D>;
 }
 
-export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableConfigurationBuilder: TableConfigurationBuilder<D>) => TableConfigurationBuilder<D>)[] = []): TableConfigurationBuilder<D> {
+export function createTableConfigurationBuilder<D>(plugins: ((tableConfigurationBuilder: TableConfigurationBuilder<D>) => TableConfigurationBuilder<D>)[] = []): TableConfigurationBuilder<D> {
     const builder: TableConfigurationBuilder<D> = {
         tableComponent: Table,
         tableContainerComponent: TableContainer,
@@ -107,6 +107,7 @@ export function createTableConfigurationBuilder<D>(data: D[], plugins: ((tableCo
         },
         build() {
             return {
+                exportedProperties: 'tableComponent',
                 tableComponent: provideProps(builder.tableComponent, {
                     tableContainerComponent: provideProps(builder.tableContainerComponent, {
                         tableHeadComponent: provideProps(builder.tableHeadComponent, {

@@ -44,14 +44,133 @@ function isArrayOfData(object: any): object is Data[] {
 }
 
 interface AppState {
-    configuration: WithStatus<Configuration<Data>>;
+    data: WithStatus<Data[]>;
     sizes: number[];
 }
 
+const tableConfiguration = createTableConfigurationBuilder<Data>()
+    // .withPlugin(stylable)
+    // .withPlugin(resizable)
+    .withPlugin(gridLayout())
+    .build();
+
+const configuration = createConfigurationBuilder<Data>()
+    .withFilter((data) => data)
+    // .withGroup({
+    //     id: 'method',
+    //     label: 'Method',
+    //     grouper: (data) => {
+    //         const byMethod: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
+
+    //         for (const row of data) {
+    //             if (byMethod[row.method] === undefined) {
+    //                 byMethod[row.method] = labels.length;
+    //                 labels.push(row.method);
+    //             }
+    //             dataIndices.push(byMethod[row.method]);
+    //         }
+
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withGroup({
+    //     id: 'statusCode',
+    //     label: 'Status code',
+    //     grouper: (data) => {
+    //         const byStatusCode: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
+
+    //         for (const row of data) {
+    //             if (byStatusCode[row.statusCode] === undefined) {
+    //                 byStatusCode[row.statusCode] = labels.length;
+    //                 labels.push(row.statusCode.toString());
+    //             }
+    //             dataIndices.push(byStatusCode[row.statusCode]);
+    //         }
+
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withSelection({
+    //     id: 'url-first',
+    //     label: 'URL 1st',
+    //     grouper: (data) => {
+    //         const byUrlFirst: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
+
+    //         for (const row of data) {
+    //             const urlFirst = row.url.split('/')[1];
+    //             if (byUrlFirst[urlFirst] === undefined) {
+    //                 byUrlFirst[urlFirst] = labels.length;
+    //                 labels.push(urlFirst);
+    //             }
+    //             dataIndices.push(byUrlFirst[urlFirst]);
+    //         }
+
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withSelection({
+    //     id: 'url-second',
+    //     label: 'URL 2nd',
+    //     grouper: (data) => {
+    //         const byUrlSecond: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
+
+    //         for (const row of data) {
+    //             const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
+    //             if (byUrlSecond[urlSecond] === undefined) {
+    //                 byUrlSecond[urlSecond] = labels.length;
+    //                 labels.push(urlSecond);
+    //             }
+    //             dataIndices.push(byUrlSecond[urlSecond]);
+    //         }
+
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withValue({
+    //     id: 'count',
+    //     label: 'Count',
+    //     reducer: (values) => values.length.toString()
+    // })
+    // .withValue({
+    //     id: 'average-duration',
+    //     label: 'Avg. duration',
+    //     reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
+    // })
+    // .withValue({
+    //     id: 'sum-duration',
+    //     label: 'Sum duration',
+    //     reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
+    // })
+    // .withSorter((data1, data2) => data2.length - data1.length)
+    .withTableConfiguration(tableConfiguration)
+    .build();
+
 export class App extends React.Component<{}, AppState> {
-    state: AppState = { configuration: { status: 'loading' }, sizes: [] };
+    state: AppState = { data: { status: 'loading' }, sizes: [] };
 
     componentDidMount() {
+        window.setInterval(() => this.setState({ sizes: [] }), 1000);
+
         fetch(`http://build.test-cancun.com:8111/app/rest/builds/?guest=1&locator=count:${2},buildType:(id:CancunProduction_HealthCheck)`)
             .then((response) => {
                 if (response.status === 200) {
@@ -93,161 +212,37 @@ export class App extends React.Component<{}, AppState> {
                     }
                 }
                 requests.sort((a, b) => a.time - b.time);
-                this.setState({ configuration: { status: 'success', result: this.buildConfiguration(requests) } });
+                this.setState({ data: { status: 'success', result: requests } });
             })
             .catch((error) => {
                 console.error(error);
-                this.setState({ configuration: { status: 'failed', reason: error } });
+                this.setState({ data: { status: 'failed', reason: error } });
             });
     }
 
-    buildConfiguration(data: Data[]): Configuration<Data> {
-        return createConfigurationBuilder(data)
-            .withFilter((data) => data)
-            // .withGroup({
-            //     id: 'method',
-            //     label: 'Method',
-            //     grouper: (data) => {
-            //         const byMethod: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
-
-            //         for (const row of data) {
-            //             if (byMethod[row.method] === undefined) {
-            //                 byMethod[row.method] = labels.length;
-            //                 labels.push(row.method);
-            //             }
-            //             dataIndices.push(byMethod[row.method]);
-            //         }
-
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withGroup({
-            //     id: 'statusCode',
-            //     label: 'Status code',
-            //     grouper: (data) => {
-            //         const byStatusCode: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
-
-            //         for (const row of data) {
-            //             if (byStatusCode[row.statusCode] === undefined) {
-            //                 byStatusCode[row.statusCode] = labels.length;
-            //                 labels.push(row.statusCode.toString());
-            //             }
-            //             dataIndices.push(byStatusCode[row.statusCode]);
-            //         }
-
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withSelection({
-            //     id: 'url-first',
-            //     label: 'URL 1st',
-            //     grouper: (data) => {
-            //         const byUrlFirst: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
-
-            //         for (const row of data) {
-            //             const urlFirst = row.url.split('/')[1];
-            //             if (byUrlFirst[urlFirst] === undefined) {
-            //                 byUrlFirst[urlFirst] = labels.length;
-            //                 labels.push(urlFirst);
-            //             }
-            //             dataIndices.push(byUrlFirst[urlFirst]);
-            //         }
-
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withSelection({
-            //     id: 'url-second',
-            //     label: 'URL 2nd',
-            //     grouper: (data) => {
-            //         const byUrlSecond: { [Key: string]: number } = {};
-            //         const labels: string[] = [];
-            //         const dataIndices: number[] = [];
-
-            //         for (const row of data) {
-            //             const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
-            //             if (byUrlSecond[urlSecond] === undefined) {
-            //                 byUrlSecond[urlSecond] = labels.length;
-            //                 labels.push(urlSecond);
-            //             }
-            //             dataIndices.push(byUrlSecond[urlSecond]);
-            //         }
-
-            //         return {
-            //             groupIndices: dataIndices,
-            //             groupLabels: labels
-            //         };
-            //     }
-            // })
-            // .withValue({
-            //     id: 'count',
-            //     label: 'Count',
-            //     reducer: (values) => values.length.toString()
-            // })
-            // .withValue({
-            //     id: 'average-duration',
-            //     label: 'Avg. duration',
-            //     reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
-            // })
-            // .withValue({
-            //     id: 'sum-duration',
-            //     label: 'Sum duration',
-            //     reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
-            // })
-            // .withSorter((data1, data2) => data2.length - data1.length)
-            .withTableConfiguration(
-                createTableConfigurationBuilder(data)
-                    // .withPlugin(stylable)
-                    // .withPlugin(resizable)
-                    .withPlugin(gridLayout)
-                    .build()
-            )
-            .build();
-    }
-
     render() {
-        if (this.state.configuration.status === 'loading') {
+        console.log('Render app');
+
+        if (this.state.data.status === 'loading') {
             return <React.Fragment>
                 Loading...
             </React.Fragment>;
-        } else if (this.state.configuration.status === 'failed') {
+        } else if (this.state.data.status === 'failed') {
             return <pre>
-                {JSON.stringify(this.state.configuration.reason, null, 2)}
+                {JSON.stringify(this.state.data.reason, null, 2)}
             </pre>;
         } else {
             return <React.Fragment>
-                {/* <h3>Fields</h3>
-                <this.state.result.fieldsComponent fields={this.state.result.fields} /> */}
-                {/* <h3>Filters</h3>
-                <this.state.result.filtersComponent filters={this.state.result.filters} /> */}
-                {/* <h3>Group by</h3>
-                <this.state.result.groupByValueComponent groupByValue={this.state.result.groupBy} />
-                <h3>Values</h3>
-                <this.state.result.valuesComponent values={this.state.result.values} /> */}
                 <h3>Table</h3>
-                <this.state.configuration.result.tableComponent
-                    data={this.state.configuration.result.data}
-                    filters={this.state.configuration.result.filters}
-                    groups={this.state.configuration.result.groups}
-                    selections={this.state.configuration.result.selections}
-                    values={this.state.configuration.result.values}
-                    sorting={this.state.configuration.result.sorting}
+                <configuration.tableComponent
+                    data={this.state.data.result}
+                    filters={configuration.filters}
+                    groups={configuration.groups}
+                    selections={configuration.selections}
+                    values={configuration.values}
+                    sorting={configuration.sorting}
                 />
+                <tableConfiguration.paginationComponent offset={0} limit={50} onOffsetChange={() => void 0} />
             </React.Fragment>;
         }
     }

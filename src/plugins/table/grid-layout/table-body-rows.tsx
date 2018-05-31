@@ -7,6 +7,8 @@ export interface PaginatedTableBodyRowsProps<D> extends TableBodyRowsProps<D> {
     limit: number;
 }
 
+export type PaginatedTableBodyRowsProvidedProps = 'offset' | 'limit';
+
 export class TableBodyRows<D> extends React.Component<PaginatedTableBodyRowsProps<D>, never> {
     shouldComponentUpdate(prevProps: PaginatedTableBodyRowsProps<D>) {
         return !shallowEqual(this.props, prevProps);
