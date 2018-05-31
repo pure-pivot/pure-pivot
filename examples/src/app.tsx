@@ -5,6 +5,8 @@ import { createTableConfigurationBuilder } from '../../lib/es6/table/configurati
 import { resizable } from '../../lib/es6/plugins/table/resizable/resizable';
 import { stylable } from '../../lib/es6/plugins/table/stylable/stylable';
 import { gridLayout } from '../../lib/es6/plugins/table/grid-layout/grid-layout';
+import { generateTableDescription } from '../../lib/es6/generate-table-description';
+import { TableDescription } from '../../lib/es6/table/model';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -44,7 +46,7 @@ function isArrayOfData(object: any): object is Data[] {
 }
 
 interface AppState {
-    data: WithStatus<Data[]>;
+    tableDescription: WithStatus<TableDescription<Data>>;
     sizes: number[];
     offset: number;
 }
@@ -53,6 +55,18 @@ const tableConfiguration = createTableConfigurationBuilder<Data>()
     // .withPlugin(stylable)
     // .withPlugin(resizable)
     .withPlugin(gridLayout())
+    .withTableHeadGroupRowComponent(() => null)
+    .withTableHeadValueCellComponent((props) =>
+        props.column.type === 'head-column'
+            ? <div />
+            : <div {...props} />
+    )
+    .withTableContainerComponent((props) =>
+        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${props.tableDescription.columnCount}, auto)`, gridRowGap: '4px', gridColumnGap: '4px' }}>
+            <props.tableHeadComponent tableDescription={props.tableDescription} />
+            <props.tableBodyComponent tableDescription={props.tableDescription} />
+        </div>
+    )
     .build();
 
 const configuration = createConfigurationBuilder<Data>()
@@ -167,7 +181,7 @@ const configuration = createConfigurationBuilder<Data>()
     .build();
 
 export class App extends React.Component<{}, AppState> {
-    state: AppState = { data: { status: 'loading' }, sizes: [], offset: 0 };
+    state: AppState = { tableDescription: { status: 'loading' }, sizes: [], offset: 0 };
 
     componentDidMount() {
         window.setInterval(() => this.setState({ sizes: [] }), 1000);
@@ -213,35 +227,41 @@ export class App extends React.Component<{}, AppState> {
                     }
                 }
                 requests.sort((a, b) => a.time - b.time);
-                this.setState({ data: { status: 'success', result: requests } });
+                this.setState({ tableDescription: { status: 'success', result: generateTableDescription(configuration)(requests) } });
             })
             .catch((error) => {
                 console.error(error);
-                this.setState({ data: { status: 'failed', reason: error } });
+                this.setState({ tableDescription: { status: 'failed', reason: error } });
             });
     }
 
     render() {
-        if (this.state.data.status === 'loading') {
+        if (this.state.tableDescription.status === 'loading') {
             return <React.Fragment>
                 Loading...
             </React.Fragment>;
-        } else if (this.state.data.status === 'failed') {
+        } else if (this.state.tableDescription.status === 'failed') {
             return <pre>
-                {JSON.stringify(this.state.data.reason, null, 2)}
+                {JSON.stringify(this.state.tableDescription.reason, null, 2)}
             </pre>;
         } else {
             return <React.Fragment>
                 <h3>Table</h3>
-                <configuration.tableComponent
-                    data={this.state.data.result}
-                    filters={configuration.filters}
-                    groups={configuration.groups}
-                    selections={configuration.selections}
-                    values={configuration.values}
-                    sorting={configuration.sorting}
+                <tableConfiguration.paginationComponent
+                    tableDescription={this.state.tableDescription.result}
+                    offset={this.state.offset}
+                    limit={50}
+                    onOffsetChange={(offset) => this.setState({ offset })}
                 />
-                <tableConfiguration.paginationComponent offset={this.state.offset} limit={50} onOffsetChange={(offset) => this.setState({ offset })} />
+                <tableConfiguration.tableContainerComponent
+                    tableDescription={this.state.tableDescription.result}
+                // data={this.state.data.result}
+                // filters={configuration.filters}
+                // groups={configuration.groups}
+                // selections={configuration.selections}
+                // values={configuration.values}
+                // sorting={configuration.sorting}
+                />
             </React.Fragment>;
         }
     }

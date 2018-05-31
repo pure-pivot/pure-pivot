@@ -10,6 +10,7 @@ import { Comparators } from './sorting/model';
 import { applySorting } from './sorting/apply-sorting';
 import { Configuration } from './configuration';
 import { GroupDescriptor, DataColumnDescriptor, GroupColumnDescriptor, GroupHeaderRow, ValueHeaderRow, BodyRow, TableDescription, BodyCell } from './table/model';
+import { defaultGenerateTableDescriptionPlugins } from './plugins/default-plugins';
 
 function createColumnDescriptors<D>(recursiveColumns: RecursiveGroup[], values: ValueReducers<D>, groupDescriptors: GroupDescriptor[] = []): { dataColumns: DataColumnDescriptor<D>[], groupColumns: GroupColumnDescriptor[] } {
     const dataColumns: DataColumnDescriptor<D>[] = [];
@@ -119,13 +120,13 @@ function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: numbe
     return accumulator;
 }
 
-export const generateTableDescription = <D>(configuration: Configuration<D>) => (data: D[]): TableDescription<D> => {
+export const generateTableDescription = defaultGenerateTableDescriptionPlugins.reduce((generateTableDescription, plugin) => plugin(generateTableDescription), <D>(configuration: Configuration<D>) => (data: D[]): TableDescription<D> => {
     const filteredData = applyFilters(configuration.filters, data);
     const columns = applyGrouping(configuration.groups, filteredData);
     const rows = applyGrouping(configuration.selections, filteredData);
 
     const columnDescriptors = createColumnDescriptors(columns.recursiveGroups, configuration.values);
-    const valueHeaderRow: ValueHeaderRow<D> = createValueHeaderRow(columnDescriptors.dataColumns);
+    const valueHeaderRow = createValueHeaderRow(columnDescriptors.dataColumns);
     const groupHeaderRows = createGroupHeaderRows(columnDescriptors.groupColumns, configuration.groups);
     const bodyRows = createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData, configuration.values, configuration.sorting);
 
@@ -144,4 +145,4 @@ export const generateTableDescription = <D>(configuration: Configuration<D>) => 
         ],
         bodyRows
     };
-};
+});

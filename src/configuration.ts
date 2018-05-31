@@ -3,7 +3,7 @@ import { Filters, Filter } from './filters/model';
 import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { Selections } from './selections/model';
-import { defaultPlugins } from './plugins/default-plugins';
+import { defaultConfigurationPlugins } from './plugins/default-plugins';
 import { Comparators, Comparator } from './sorting/model';
 import { provideProps } from './util/provide-props';
 import { TableConfiguration, createTableConfigurationBuilder } from './table/configuration';
@@ -16,7 +16,6 @@ export interface Configuration<D> {
     selections: Selections<D>;
     sorting: Comparators<D>;
     values: ValueReducers<D>;
-    generateTableDescription: (data: D[]) => TableDescription<D>;
 }
 
 export interface ConfigurationBuilder<D> {
@@ -42,7 +41,7 @@ export interface ConfigurationBuilder<D> {
     build(): Configuration<D>;
 }
 
-export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: ConfigurationBuilder<D>) => ConfigurationBuilder<D>)[] = defaultPlugins): ConfigurationBuilder<D> {
+export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: ConfigurationBuilder<D>) => ConfigurationBuilder<D>)[] = defaultConfigurationPlugins): ConfigurationBuilder<D> {
     const builder: ConfigurationBuilder<D> = {
         filters: [],
         groups: [],
@@ -104,8 +103,7 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
                 groups: builder.groups,
                 selections: builder.selections,
                 sorting: builder.sorting,
-                values: builder.values,
-                generateTableDescription: builder.generateTableDescription(builder)
+                values: builder.values
             };
         }
     };
