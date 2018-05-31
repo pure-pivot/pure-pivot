@@ -59,7 +59,7 @@ const tableConfiguration = createTableConfigurationBuilder<Data>()
     .withTableHeadValueCellComponent((props) =>
         props.column.type === 'head-column'
             ? <div />
-            : <div {...props} />
+            : <div children={props.children} />
     )
     .withTableContainerComponent((props) =>
         <div style={{ display: 'grid', gridTemplateColumns: `repeat(${props.tableDescription.columnCount}, auto)`, gridRowGap: '4px', gridColumnGap: '4px' }}>

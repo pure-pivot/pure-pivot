@@ -25,17 +25,19 @@ export function tableBodyRowsFactory<D>(initialOffset: number, initialLimit: num
         }
 
         render() {
+            console.log('render');
+
             return this.props.tableDescription.bodyRows.slice(this.state.offset, this.state.offset + this.state.limit).map((row, index) =>
-                <this.props.tableBodyRowComponent key={index}>
+                <this.props.tableBodyRowComponent key={this.state.offset + index}>
                     <this.props.tableBodyCellComponent
-                        id={`body-row-${index}-head-column`}
+                        id={`body-row-${this.state.offset + index}-head-column`}
                         row={row}
                         column={{ type: 'head-column' }}
                     >
                         {row.label}
                     </this.props.tableBodyCellComponent>
                     {row.cells.map((cell) => {
-                        const id = `body-row-${index}-${cell.column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-value-${cell.column.valueDescription.id}`;
+                        const id = `body-row-${this.state.offset + index}-${cell.column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-value-${cell.column.valueDescription.id}`;
                         return <this.props.tableBodyCellComponent
                             key={id}
                             id={id}
