@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { Filters, Filter } from './filters/model';
-import { TableProps, TableProvidedProps, Table } from './table/table';
 import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { Selections } from './selections/model';
@@ -8,6 +7,8 @@ import { defaultPlugins } from './plugins/default-plugins';
 import { Comparators, Comparator } from './sorting/model';
 import { provideProps } from './util/provide-props';
 import { TableConfiguration, createTableConfigurationBuilder } from './table/configuration';
+import { TableDescription } from './table/model';
+import { generateTableDescription } from './generate-table-description';
 
 export interface Configuration<D> {
     filters: Filters<D>;
@@ -15,7 +16,7 @@ export interface Configuration<D> {
     selections: Selections<D>;
     sorting: Comparators<D>;
     values: ValueReducers<D>;
-    tableComponent: React.ComponentType<Pick<TableProps<D>, Exclude<keyof TableProps<D>, TableProvidedProps>>>;
+    generateTableDescription: (data: D[]) => TableDescription<D>;
 }
 
 export interface ConfigurationBuilder<D> {
@@ -25,6 +26,7 @@ export interface ConfigurationBuilder<D> {
     sorting: Comparators<D>;
     values: ValueReducers<D>;
     tableConfiguration: TableConfiguration<D>;
+    generateTableDescription: (configuration: Configuration<D>) => (data: D[]) => TableDescription<D>;
     withFilters<C>(this: C, filters: Filters<D>): C;
     withFilter<C>(this: C, filter: Filter<D>): C;
     withValues<C>(this: C, values: ValueReducers<D>): C;
@@ -48,6 +50,7 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
         sorting: [],
         values: [],
         tableConfiguration: createTableConfigurationBuilder<D>().build(),
+        generateTableDescription,
         withFilter(filter) {
             builder.filters = [...builder.filters, filter];
             return this;
@@ -102,7 +105,7 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
                 selections: builder.selections,
                 sorting: builder.sorting,
                 values: builder.values,
-                tableComponent: builder.tableConfiguration.tableComponent
+                generateTableDescription: builder.generateTableDescription(builder)
             };
         }
     };

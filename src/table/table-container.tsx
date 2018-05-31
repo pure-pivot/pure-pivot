@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as shallowEqual from 'shallowequal';
 import { TableDescription } from './model';
 import { TableHeadProps, TableHeadProvidedProps } from './table-head';
 import { TableBodyProps, TableBodyProvidedProps } from './table-body';
@@ -14,6 +15,10 @@ export interface TableContainerProps<D> {
 export type TableContainerProvidedProps = 'tableHeadComponent' | 'tableBodyComponent' | 'tableFootComponent';
 
 export class TableContainer<D> extends React.Component<TableContainerProps<D>, never> {
+    shouldComponentUpdate(prevProps: TableContainerProps<D>) {
+        return !shallowEqual(this.props, prevProps);
+    }
+
     render() {
         return <table>
             <this.props.tableHeadComponent tableDescription={this.props.tableDescription} />

@@ -1,15 +1,22 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
-import { ConfigurationBuilder } from '../configuration';
+import { ConfigurationBuilder, Configuration } from '../configuration';
 import { ObjectKeys } from '../util/keys';
 import { ValueReducers } from '../values/model';
-import { TableProps, TableProvidedProps } from '../table/table';
 
 export function defaultAllValues<D>(configurationBuilder: ConfigurationBuilder<D>): ConfigurationBuilder<D> {
     return {
         ...configurationBuilder,
         build() {
             const result = configurationBuilder.build();
+            const generateTableDescription = result.generateTableDescription;
+
+            result.generateTableDescription = (configuration: Configuration<D>) => (data: D[]) => {
+                return generateTableDescription(configuration)(data);
+            };
+
+            result.generateTableDescription()
+
             const TableComponent = result.tableComponent;
 
             result.tableComponent = class DefaultAllValuesTable extends React.Component<Pick<TableProps<D>, Exclude<keyof TableProps<D>, TableProvidedProps>>, never> {
