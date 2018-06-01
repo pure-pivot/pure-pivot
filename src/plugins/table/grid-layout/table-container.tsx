@@ -3,8 +3,8 @@ import * as shallowEqual from 'shallowequal';
 import { TableContainerProps } from '../../../table/table-container';
 
 export class TableContainer<D> extends React.Component<TableContainerProps<D>, never> {
-    shouldComponentUpdate(prevProps: TableContainerProps<D>) {
-        return !shallowEqual(this.props, prevProps);
+    shouldComponentUpdate(nextProps: TableContainerProps<D>) {
+        return !shallowEqual(this.props, nextProps);
     }
 
     render() {

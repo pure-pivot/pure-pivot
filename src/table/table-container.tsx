@@ -15,8 +15,8 @@ export interface TableContainerProps<D> {
 export type TableContainerProvidedProps = 'tableHeadComponent' | 'tableBodyComponent' | 'tableFootComponent';
 
 export class TableContainer<D> extends React.Component<TableContainerProps<D>, never> {
-    shouldComponentUpdate(prevProps: TableContainerProps<D>) {
-        return !shallowEqual(this.props, prevProps);
+    shouldComponentUpdate(nextProps: TableContainerProps<D>) {
+        return !shallowEqual(this.props, nextProps);
     }
 
     render() {

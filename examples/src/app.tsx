@@ -5,6 +5,7 @@ import { createTableConfigurationBuilder } from '../../lib/es6/table/configurati
 import { resizable } from '../../lib/es6/plugins/table/resizable/resizable';
 import { stylable } from '../../lib/es6/plugins/table/stylable/stylable';
 import { gridLayout } from '../../lib/es6/plugins/table/grid-layout/grid-layout';
+import { virtualGrid } from '../../lib/es6/plugins/table/virtual-grid/virtual-grid';
 import { generateTableDescription } from '../../lib/es6/generate-table-description';
 import { TableDescription } from '../../lib/es6/table/model';
 
@@ -54,45 +55,39 @@ interface AppState {
 const tableConfiguration = createTableConfigurationBuilder<Data>()
     // .withPlugin(stylable)
     // .withPlugin(resizable)
-    .withPlugin(gridLayout())
-    .withTableHeadGroupRowComponent(() => null)
-    .withTableHeadValueCellComponent((props) =>
-        props.column.type === 'head-column'
-            ? <div />
-            : <div children={props.children} />
-    )
-    .withTableContainerComponent((props) =>
-        <div style={{ display: 'grid', gridTemplateColumns: `repeat(${props.tableDescription.columnCount}, auto)`, gridRowGap: '4px', gridColumnGap: '4px' }}>
-            <props.tableHeadComponent tableDescription={props.tableDescription} />
-            <props.tableBodyComponent tableDescription={props.tableDescription} />
-        </div>
-    )
+    .withPlugin(virtualGrid())
+    // .withTableHeadGroupRowComponent(() => null)
+    // .withTableHeadValueCellComponent((props) =>
+    //     props.column.type === 'head-column'
+    //         ? <div />
+    //         : <div children={props.children} />
+    // )
     .build();
 
 const configuration = createConfigurationBuilder<Data>()
     .withFilter((data) => data)
-    // .withGroup({
-    //     id: 'method',
-    //     label: 'Method',
-    //     grouper: (data) => {
-    //         const byMethod: { [Key: string]: number } = {};
-    //         const labels: string[] = [];
-    //         const dataIndices: number[] = [];
+    .withGroup({
+        id: 'method',
+        label: 'Method',
+        grouper: (data) => {
+            const byMethod: { [Key: string]: number } = {};
+            const labels: string[] = [];
+            const dataIndices: number[] = [];
 
-    //         for (const row of data) {
-    //             if (byMethod[row.method] === undefined) {
-    //                 byMethod[row.method] = labels.length;
-    //                 labels.push(row.method);
-    //             }
-    //             dataIndices.push(byMethod[row.method]);
-    //         }
+            for (const row of data) {
+                if (byMethod[row.method] === undefined) {
+                    byMethod[row.method] = labels.length;
+                    labels.push(row.method);
+                }
+                dataIndices.push(byMethod[row.method]);
+            }
 
-    //         return {
-    //             groupIndices: dataIndices,
-    //             groupLabels: labels
-    //         };
-    //     }
-    // })
+            return {
+                groupIndices: dataIndices,
+                groupLabels: labels
+            };
+        }
+    })
     // .withGroup({
     //     id: 'statusCode',
     //     label: 'Status code',
@@ -161,21 +156,21 @@ const configuration = createConfigurationBuilder<Data>()
     //         };
     //     }
     // })
-    // .withValue({
-    //     id: 'count',
-    //     label: 'Count',
-    //     reducer: (values) => values.length.toString()
-    // })
-    // .withValue({
-    //     id: 'average-duration',
-    //     label: 'Avg. duration',
-    //     reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
-    // })
-    // .withValue({
-    //     id: 'sum-duration',
-    //     label: 'Sum duration',
-    //     reducer: (values) => values.length >= 1 ? `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms` : ''
-    // })
+    .withValue({
+        id: 'count',
+        label: 'Count',
+        reducer: (values) => values.length.toString()
+    })
+    .withValue({
+        id: 'average-duration',
+        label: 'Avg. duration',
+        reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
+    })
+    .withValue({
+        id: 'sum-duration',
+        label: 'Sum duration',
+        reducer: (values) => `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms`
+    })
     // .withSorter((data1, data2) => data2.length - data1.length)
     .withTableConfiguration(tableConfiguration)
     .build();
@@ -247,12 +242,6 @@ export class App extends React.Component<{}, AppState> {
         } else {
             return <React.Fragment>
                 <h3>Table</h3>
-                <tableConfiguration.paginationComponent
-                    tableDescription={this.state.tableDescription.result}
-                    offset={this.state.offset}
-                    limit={50}
-                    onOffsetChange={(offset) => this.setState({ offset })}
-                />
                 <tableConfiguration.tableContainerComponent
                     tableDescription={this.state.tableDescription.result}
                 // data={this.state.data.result}

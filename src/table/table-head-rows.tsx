@@ -13,8 +13,8 @@ export interface TableHeadRowsProps<D> {
 export type TableHeadRowsProvidedProps = 'tableHeadGroupRowComponent' | 'tableHeadValueRowComponent';
 
 export class TableHeadRows<D> extends React.Component<TableHeadRowsProps<D>, never> {
-    shouldComponentUpdate(prevProps: TableHeadRowsProps<D>) {
-        return !shallowEqual(this.props, prevProps);
+    shouldComponentUpdate(nextProps: TableHeadRowsProps<D>) {
+        return !shallowEqual(this.props, nextProps);
     }
 
     render() {

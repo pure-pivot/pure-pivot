@@ -16,8 +16,8 @@ export function paginationFactory(pushPaginationChange: (offset: number, limit: 
             pushPaginationChange(props.offset, props.limit);
         }
 
-        shouldComponentUpdate(prevProps: PaginationProps) {
-            return !shallowEqual(this.props, prevProps);
+        shouldComponentUpdate(nextProps: PaginationProps) {
+            return !shallowEqual(this.props, nextProps);
         }
 
         componentWillReceiveProps(nextProps: PaginationProps) {

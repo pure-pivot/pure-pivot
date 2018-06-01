@@ -12,8 +12,8 @@ export interface TableBodyRowsProps<D> {
 export type TableBodyRowsProvidedProps = 'tableBodyRowComponent' | 'tableBodyFirstCellComponent' | 'tableBodyCellComponent';
 
 export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, never> {
-    shouldComponentUpdate(prevProps: TableBodyRowsProps<D>) {
-        return !shallowEqual(this.props, prevProps);
+    shouldComponentUpdate(nextProps: TableBodyRowsProps<D>) {
+        return !shallowEqual(this.props, nextProps);
     }
 
     render() {

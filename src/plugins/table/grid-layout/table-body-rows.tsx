@@ -20,8 +20,8 @@ export function tableBodyRowsFactory<D>(initialOffset: number, initialLimit: num
             setListener((offset: number, limit: number) => this.setState({ offset, limit }));
         }
 
-        shouldComponentUpdate(prevProps: TableBodyRowsProps<D>, prevState: PaginatedTableBodyRowsState) {
-            return !shallowEqual(this.props, prevProps) || !shallowEqual(this.state, prevState);
+        shouldComponentUpdate(nextProps: TableBodyRowsProps<D>, nextState: PaginatedTableBodyRowsState) {
+            return !shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState);
         }
 
         render() {
