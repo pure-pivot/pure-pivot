@@ -9,7 +9,7 @@ export interface TableBodyRowsProps<D> {
     tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
 }
 
-export type TableBodyRowsProvidedProps = 'tableBodyRowComponent' | 'tableBodyFirstCellComponent' | 'tableBodyCellComponent';
+export type TableBodyRowsProvidedProps = 'tableBodyRowComponent' | 'tableBodyCellComponent';
 
 export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, never> {
     shouldComponentUpdate(nextProps: TableBodyRowsProps<D>) {

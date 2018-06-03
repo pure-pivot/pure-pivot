@@ -24,7 +24,6 @@ export interface ConfigurationBuilder<D> {
     selections: Selections<D>;
     sorting: Comparators<D>;
     values: ValueReducers<D>;
-    tableConfiguration: TableConfiguration<D>;
     generateTableDescription: (configuration: Configuration<D>) => (data: D[]) => TableDescription<D>;
     withFilters<C>(this: C, filters: Filters<D>): C;
     withFilter<C>(this: C, filter: Filter<D>): C;
@@ -36,7 +35,6 @@ export interface ConfigurationBuilder<D> {
     withSelection<C>(this: C, selection: Grouper<D>): C;
     withSorters<C>(this: C, sorters: Comparators<D>): C;
     withSorter<C>(this: C, sorter: Comparator<D>): C;
-    withTableConfiguration<C>(this: C, tableConfiguration: TableConfiguration<D>): C;
     withPlugin<C>(plugin: (configurationBuilder: ConfigurationBuilder<D>) => C): C;
     build(): Configuration<D>;
 }
@@ -48,7 +46,6 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
         selections: [],
         sorting: [],
         values: [],
-        tableConfiguration: createTableConfigurationBuilder<D>().build(),
         generateTableDescription,
         withFilter(filter) {
             builder.filters = [...builder.filters, filter];
@@ -88,10 +85,6 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
         },
         withSorter(sorter: Comparator<D>) {
             builder.sorting = [...builder.sorting, sorter];
-            return this;
-        },
-        withTableConfiguration(tableConfiguration: TableConfiguration<D>) {
-            builder.tableConfiguration = tableConfiguration;
             return this;
         },
         withPlugin<C>(plugin: (configurationBuilder: ConfigurationBuilder<D>) => C) {

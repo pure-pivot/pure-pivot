@@ -172,7 +172,6 @@ const configuration = createConfigurationBuilder<Data>()
         reducer: (values) => `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms`
     })
     // .withSorter((data1, data2) => data2.length - data1.length)
-    .withTableConfiguration(tableConfiguration)
     .build();
 
 export class App extends React.Component<{}, AppState> {
@@ -244,6 +243,8 @@ export class App extends React.Component<{}, AppState> {
                 <h3>Table</h3>
                 <tableConfiguration.tableContainerComponent
                     tableDescription={this.state.tableDescription.result}
+                    rowHeight={20}
+                    overscan={2}
                 // data={this.state.data.result}
                 // filters={configuration.filters}
                 // groups={configuration.groups}
