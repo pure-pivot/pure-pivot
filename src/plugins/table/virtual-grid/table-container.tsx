@@ -74,7 +74,6 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
     renderHead() {
         return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: `repeat(${this.props.tableDescription.columnCount}, ${1 / this.props.tableDescription.columnCount * 100}%)`, top: this.state.scrollTop, backgroundColor: 'white' }} ref={(ref) => this.head = ref}>
             <this.props.tableHeadRowsComponent tableDescription={this.props.tableDescription} />
-            <div>Extra</div>
         </div>;
     }
 

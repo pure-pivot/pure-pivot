@@ -10,7 +10,6 @@ import { TableHeadGroupCell, TableHeadGroupCellProps } from './table-head-group-
 import { TableHeadValueCell, TableHeadValueCellProps } from './table-head-value-cell';
 import { TableBodyCellProps, TableBodyCell } from './table-body-cell';
 import { TableHeadRowsProps, TableHeadRows } from './table-head-rows';
-import { TableFootProps, TableFoot } from './table-foot';
 import { TableDescription } from './model';
 
 export interface TableConfiguration<D> {
@@ -30,7 +29,6 @@ export interface TableConfigurationBuilder<D> {
     tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
     tableBodyRowComponent: React.ReactType;
     tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
-    tableFootComponent: React.ComponentType<TableFootProps<D>>;
     withTableContainerComponent<C>(this: C, tableContainerComponent: React.ComponentType<TableContainerProps<D>>): C;
     withTableHeadComponent<C>(this: C, tableHeadComponent: React.ComponentType<TableHeadProps<D>>): C;
     withTableHeadRowsComponent<C>(this: C, tableHeadRowsComponent: React.ComponentType<TableHeadRowsProps<D>>): C;
@@ -42,7 +40,6 @@ export interface TableConfigurationBuilder<D> {
     withTableBodyRowsComponent<C>(this: C, tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>): C;
     withTableBodyRowComponent<C>(this: C, tableBodyRowComponent: React.ReactType): C;
     withTableBodyCellComponent<C>(this: C, tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>): C;
-    withTableFootComponent<C>(this: C, tableFootComponent: React.ComponentType<TableFootProps<D>>): C;
     withPlugin<C>(plugin: (tableConfigurationBuilder: this) => C): C;
     build(): TableConfiguration<D>;
 }
@@ -61,7 +58,6 @@ export function createTableConfigurationBuilder<D>(plugins: ((tableConfiguration
         tableBodyRowsComponent: TableBodyRows,
         tableBodyRowComponent: 'tr',
         tableBodyCellComponent: TableBodyCell,
-        tableFootComponent: TableFoot,
         withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
             return this;
@@ -106,10 +102,6 @@ export function createTableConfigurationBuilder<D>(plugins: ((tableConfiguration
             builder.tableBodyCellComponent = tableBodyCellComponent;
             return this;
         },
-        withTableFootComponent(tableFootComponent: React.ComponentType<TableFootProps<D>>) {
-            builder.tableFootComponent = tableFootComponent;
-            return this;
-        },
         withPlugin<C>(plugin: (tableConfigurationBuilder: TableConfigurationBuilder<D>) => C) {
             return plugin(this);
         },
@@ -133,8 +125,7 @@ export function createTableConfigurationBuilder<D>(plugins: ((tableConfiguration
                             tableBodyRowComponent: builder.tableBodyRowComponent,
                             tableBodyCellComponent: builder.tableBodyCellComponent
                         })
-                    }),
-                    tableFootComponent: builder.tableFootComponent
+                    })
                 })
             };
         }

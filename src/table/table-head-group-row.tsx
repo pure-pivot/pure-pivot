@@ -1,9 +1,10 @@
 import * as React from 'react';
 import { TableHeadGroupCellProps } from './table-head-group-cell';
-import { GroupHeaderRow, TableDescription } from './model';
+import { GroupHeaderRow, TableDescription, GroupHeaderRowDOMDescription } from './model';
 
 export interface TableHeadGroupRowProps<D> {
     row: GroupHeaderRow;
+    onDOMDescription?: (groupHeaderRowDOMDescription: GroupHeaderRowDOMDescription) => void;
     tableDescription: TableDescription<D>;
     tableHeadRowComponent: React.ReactType;
     tableHeadGroupCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>;

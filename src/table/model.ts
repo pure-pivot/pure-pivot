@@ -65,3 +65,40 @@ export interface TableDescription<D> {
     headRows: HeadRow<D>[];
     bodyRows: BodyRow<D>[];
 }
+
+export type DOMDescriptionElement = Element | null;
+
+export interface BodyRowDOMDescription {
+    type: 'body-row';
+    cells: DOMDescriptionElement[];
+}
+
+export interface GroupHeaderRowDOMDescription {
+    type: 'group-header-row';
+    columns: DOMDescriptionElement[];
+}
+
+export interface ValueHeaderRowDOMDescription {
+    type: 'value-header-row';
+    columns: DOMDescriptionElement[];
+}
+
+export type HeadRowDOMDescription = GroupHeaderRowDOMDescription | ValueHeaderRowDOMDescription;
+
+export type RowDOMDescription = BodyRowDOMDescription | HeadRowDOMDescription;
+
+export interface HeadDOMDescription {
+    head: DOMDescriptionElement;
+    headRows: HeadRowDOMDescription[];
+}
+
+export interface BodyDOMDescription {
+    body: DOMDescriptionElement;
+    bodyRows: BodyRowDOMDescription[];
+}
+
+export interface TableDOMDescription {
+    container: DOMDescriptionElement;
+    head: HeadDOMDescription | null;
+    body: BodyDOMDescription | null;
+}

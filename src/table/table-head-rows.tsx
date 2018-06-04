@@ -2,10 +2,12 @@ import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
 import { TableHeadGroupRowProps, TableHeadGroupRowProvidedProps } from './table-head-group-row';
 import { TableHeadValueRowProps, TableHeadValueRowProvidedProps } from './table-head-value-row';
-import { TableDescription } from './model';
+import { TableDescription, HeadRowDOMDescription } from './model';
+import { domDescriptionHelper } from '../util/dom-description-helper';
 
 export interface TableHeadRowsProps<D> {
     tableDescription: TableDescription<D>;
+    onDOMDescription?: (headRowsDOMDescription: HeadRowDOMDescription[]) => void;
     tableHeadGroupRowComponent: React.ComponentType<Pick<TableHeadGroupRowProps<D>, Exclude<keyof TableHeadGroupRowProps<D>, TableHeadGroupRowProvidedProps>>>;
     tableHeadValueRowComponent: React.ComponentType<Pick<TableHeadValueRowProps<D>, Exclude<keyof TableHeadValueRowProps<D>, TableHeadValueRowProvidedProps>>>;
 }
@@ -13,6 +15,16 @@ export interface TableHeadRowsProps<D> {
 export type TableHeadRowsProvidedProps = 'tableHeadGroupRowComponent' | 'tableHeadValueRowComponent';
 
 export class TableHeadRows<D> extends React.Component<TableHeadRowsProps<D>, never> {
+    domDescriptionHelper = domDescriptionHelper<{ rows: HeadRowDOMDescription[] }>({
+        rows: []
+    }, (domDescription) => {
+        if (this.props.onDOMDescription) {
+            this.props.onDOMDescription(domDescription.rows);
+        }
+    });
+
+    rows: HeadRowDOMDescription[] = [];
+
     shouldComponentUpdate(nextProps: TableHeadRowsProps<D>) {
         return !shallowEqual(this.props, nextProps);
     }

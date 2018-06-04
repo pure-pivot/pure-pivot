@@ -66,8 +66,7 @@ export const virtualGrid = <D>() => (tableConfigurationBuilder: TableConfigurati
                     tableBodyRowsComponent: provideProps(builder.tableBodyRowsComponent, {
                         tableBodyRowComponent: builder.tableBodyRowComponent,
                         tableBodyCellComponent: builder.tableBodyCellComponent
-                    }),
-                    tableFootComponent: builder.tableFootComponent
+                    })
                 })
             };
         }
