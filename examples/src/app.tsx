@@ -65,7 +65,7 @@ const tableConfiguration = createTableConfigurationBuilder<Data>()
     .build();
 
 const configuration = createConfigurationBuilder<Data>()
-    .withFilter((data) => data)
+    // .withFilter((data) => data.slice(0, 50))
     .withGroup({
         id: 'method',
         label: 'Method',
