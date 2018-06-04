@@ -11,6 +11,7 @@ import { virtualGrid } from '../../lib/es6/plugins/table/virtual-grid/virtual-gr
 import { generateTableDescription } from '../../lib/es6/generate-table-description';
 import { TableDescription } from '../../lib/es6/table/model';
 import { TableContainerProps, TableContainerProvidedProps } from '../../lib/es6/plugins/table/virtual-grid/table-container';
+import { Sizes } from '../../lib/es6/plugins/resizer/model';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -51,7 +52,7 @@ function isArrayOfData(object: any): object is Data[] {
 
 interface AppState {
     tableDescription: WithStatus<TableDescription<Data>>;
-    sizes: number[];
+    sizes: Sizes;
     offset: number;
     table: Element | null;
 }
@@ -181,7 +182,7 @@ const configuration = createConfigurationBuilder<Data>()
 export class App extends React.Component<{}, AppState> {
     state: AppState = {
         tableDescription: { status: 'loading' },
-        sizes: [],
+        sizes: {},
         offset: 0,
         table: null
     };
@@ -271,7 +272,8 @@ export class App extends React.Component<{}, AppState> {
                 />
                 {this.state.table !== null &&
                     <Resizer
-                        onSizesChange={(sizes) => void 0}
+                        sizes={this.state.sizes}
+                        onSizesChange={(sizes) => this.setState({ sizes })}
                         tableDescription={this.state.tableDescription.result}
                         tableElement={this.state.table}
                     />
