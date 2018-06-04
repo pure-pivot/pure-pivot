@@ -17,7 +17,7 @@ export interface TableConfiguration<D> {
 }
 
 export interface TableConfigurationBuilder<D> {
-    tableContainerComponent: React.ComponentType<TableContainerProps<D>>;
+    tableContainerComponent: React.ComponentClass<TableContainerProps<D>>;
     tableHeadComponent: React.ComponentType<TableHeadProps<D>>;
     tableHeadRowsComponent: React.ComponentType<TableHeadRowsProps<D>>;
     tableHeadGroupRowComponent: React.ComponentType<TableHeadGroupRowProps<D>>;
@@ -58,7 +58,7 @@ export function createTableConfigurationBuilder<D>(plugins: ((tableConfiguration
         tableBodyRowsComponent: TableBodyRows,
         tableBodyRowComponent: 'tr',
         tableBodyCellComponent: TableBodyCell,
-        withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>) {
+        withTableContainerComponent(tableContainerComponent: React.ComponentClass<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
             return this;
         },

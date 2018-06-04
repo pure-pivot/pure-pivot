@@ -1,13 +1,16 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import { Draggable } from 'react-managed-draggable';
 import { Configuration, createConfigurationBuilder } from '../../lib/es6/configuration';
 import { createTableConfigurationBuilder } from '../../lib/es6/table/configuration';
 import { resizable } from '../../lib/es6/plugins/table/resizable/resizable';
+import { Resizer } from '../../lib/es6/plugins/resizer/resizer-component';
 import { stylable } from '../../lib/es6/plugins/table/stylable/stylable';
 import { gridLayout } from '../../lib/es6/plugins/table/grid-layout/grid-layout';
 import { virtualGrid } from '../../lib/es6/plugins/table/virtual-grid/virtual-grid';
 import { generateTableDescription } from '../../lib/es6/generate-table-description';
 import { TableDescription } from '../../lib/es6/table/model';
+import { TableContainerProps, TableContainerProvidedProps } from '../../lib/es6/plugins/table/virtual-grid/table-container';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -50,6 +53,7 @@ interface AppState {
     tableDescription: WithStatus<TableDescription<Data>>;
     sizes: number[];
     offset: number;
+    table: Element | null;
 }
 
 const tableConfiguration = createTableConfigurationBuilder<Data>()
@@ -175,10 +179,15 @@ const configuration = createConfigurationBuilder<Data>()
     .build();
 
 export class App extends React.Component<{}, AppState> {
-    state: AppState = { tableDescription: { status: 'loading' }, sizes: [], offset: 0 };
+    state: AppState = {
+        tableDescription: { status: 'loading' },
+        sizes: [],
+        offset: 0,
+        table: null
+    };
 
     componentDidMount() {
-        window.setInterval(() => this.setState({ sizes: [] }), 1000);
+        // window.setInterval(() => this.setState({ sizes: [] }), 1000);
 
         fetch(`http://build.test-cancun.com:8111/app/rest/builds/?guest=1&locator=count:${2},buildType:(id:CancunProduction_HealthCheck)`)
             .then((response) => {
@@ -242,6 +251,14 @@ export class App extends React.Component<{}, AppState> {
             return <React.Fragment>
                 <h3>Table</h3>
                 <tableConfiguration.tableContainerComponent
+                    ref={(ref) => {
+                        if (ref !== null) {
+                            const element = ReactDOM.findDOMNode(ref);
+                            if (element && 'getBoundingClientRect' in element && element !== this.state.table) {
+                                this.setState({ table: element });
+                            }
+                        }
+                    }}
                     tableDescription={this.state.tableDescription.result}
                     rowHeight={20}
                     overscan={2}
@@ -252,6 +269,13 @@ export class App extends React.Component<{}, AppState> {
                 // values={configuration.values}
                 // sorting={configuration.sorting}
                 />
+                {this.state.table !== null &&
+                    <Resizer
+                        onSizesChange={(sizes) => void 0}
+                        tableDescription={this.state.tableDescription.result}
+                        tableElement={this.state.table}
+                    />
+                }
             </React.Fragment>;
         }
     }

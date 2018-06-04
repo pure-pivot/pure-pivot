@@ -10,11 +10,11 @@ import { TableBodyRows, TableBodyRowsProps } from './table-body-rows';
 // TODO: keep all existing functionality of builder, or drop it and make one monolithic component for now, and then perhaps custom .with calls in future
 
 export interface VirtualScrollingTableConfiguration<D> {
-    tableContainerComponent: React.ComponentType<Pick<TableContainerProps<D>, Exclude<keyof TableContainerProps<D>, TableContainerProvidedProps>>>;
+    tableContainerComponent: React.ComponentClass<Pick<TableContainerProps<D>, Exclude<keyof TableContainerProps<D>, TableContainerProvidedProps>>>;
 }
 
 export interface VirtualScrollingTableConfigurationBuilder<D> extends Pick<TableConfigurationBuilder<D>, Exclude<keyof TableConfigurationBuilder<D>, 'tableContainerComponent' | 'tableBodyRowsComponent' | 'withTableContainerComponent' | 'withTableBodyRowsComponent' | 'build'>> {
-    tableContainerComponent: React.ComponentType<TableContainerProps<D>>;
+    tableContainerComponent: React.ComponentClass<TableContainerProps<D>>;
     tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
     withTableContainerComponent<C>(this: C, tableContainerComponent: React.ComponentType<TableContainerProps<D>>): C;
     withTableBodyRowsComponent<C>(this: C, tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>): C;
@@ -42,7 +42,7 @@ export const virtualGrid = <D>() => (tableConfigurationBuilder: TableConfigurati
         tableBodyRowsComponent: TableBodyRows,
         tableBodyRowComponent: React.Fragment,
         tableBodyCellComponent: TableBodyCell,
-        withTableContainerComponent(tableContainerComponent: React.ComponentType<TableContainerProps<D>>) {
+        withTableContainerComponent(tableContainerComponent: React.ComponentClass<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
             return this;
         },
