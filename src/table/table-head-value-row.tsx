@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TableHeadValueCellProps } from './table-head-value-cell';
-import { ValueHeaderRow, TableDescription } from './model';
+import { ValueHeaderRow, TableDescription, HeadColumnDescriptor } from './model';
+import { getHeadValueRowCellId } from '../util/id-helper';
 
 export interface TableHeadValueRowProps<D> {
     row: ValueHeaderRow<D>;
@@ -13,19 +14,21 @@ export type TableHeadValueRowProvidedProps = 'tableHeadRowComponent' | 'tableHea
 
 export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps<D>, never> {
     render() {
+        const headColumn: HeadColumnDescriptor = { type: 'head-column' };
+
         return <this.props.tableHeadRowComponent>
             <this.props.tableHeadValueCellComponent
-                id="head-row-value-head-column"
+                id={getHeadValueRowCellId(headColumn)}
                 scope="row"
                 colStart={0}
                 row={this.props.row}
-                column={{ type: 'head-column' }}
+                column={headColumn}
                 tableDescription={this.props.tableDescription}
             >
                 Values
             </this.props.tableHeadValueCellComponent>
             {this.props.row.columns.map((column, index) => {
-                const id = `head-row-value-${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-${column.valueDescription.id}`;
+                const id = getHeadValueRowCellId(column);
                 return <this.props.tableHeadValueCellComponent
                     key={id}
                     id={id}

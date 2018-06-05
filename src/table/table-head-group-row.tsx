@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { TableHeadGroupCellProps } from './table-head-group-cell';
-import { GroupHeaderRow, TableDescription } from './model';
+import { GroupHeaderRow, TableDescription, HeadColumnDescriptor } from './model';
+import { getHeadGroupRowCellId } from '../util/id-helper';
 
 export interface TableHeadGroupRowProps<D> {
     row: GroupHeaderRow;
@@ -13,6 +14,8 @@ export type TableHeadGroupRowProvidedProps = 'tableHeadRowComponent' | 'tableHea
 
 export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps<D>, never> {
     render() {
+        const headColumn: HeadColumnDescriptor = { type: 'head-column' };
+
         const sums: number[] = [1];
         for (const column of this.props.row.groups) {
             sums.push(sums[sums.length - 1] + column.subColumnSize * this.props.tableDescription.valueCount);
@@ -23,15 +26,15 @@ export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps
                 scope="row"
                 colStart={0}
                 colSpan={1}
-                id={`head-row-${this.props.row.groupId}-head-column`}
+                id={getHeadGroupRowCellId(this.props.row.groupId, headColumn)}
                 row={this.props.row}
-                column={{ type: 'head-column' }}
+                column={headColumn}
                 tableDescription={this.props.tableDescription}
             >
                 {this.props.row.groupLabel}
             </this.props.tableHeadGroupCellComponent>
             {this.props.row.groups.map((column, index) => {
-                const id = `head-row-${this.props.row.groupId}-${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}`;
+                const id = getHeadGroupRowCellId(this.props.row.groupId, column);
                 return <this.props.tableHeadGroupCellComponent
                     key={id}
                     id={id}

@@ -1,12 +1,15 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
-import { TableDescription } from '../../../table/model';
+import { TableDescription, HeadColumnDescriptor, DataColumnDescriptor } from '../../../table/model';
 import { TableHeadRowsProps, TableHeadRowsProvidedProps } from '../../../table/table-head-rows';
 import { TableBodyRowsProps, TableBodyRowsProvidedProps } from './table-body-rows';
+import { getHeadValueRowCellId } from '../../../util/id-helper';
+import { Sizes } from './model';
 
 export interface TableContainerProps<D> {
     rowHeight: number;
     overscan: number;
+    sizes: Sizes;
     tableDescription: TableDescription<D>;
     tableHeadRowsComponent: React.ComponentType<Pick<TableHeadRowsProps<D>, Exclude<keyof TableHeadRowsProps<D>, TableHeadRowsProvidedProps>>>;
     tableBodyRowsComponent: React.ComponentType<Pick<TableBodyRowsProps<D>, Exclude<keyof TableBodyRowsProps<D>, TableBodyRowsProvidedProps>>>;
@@ -71,28 +74,31 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
         }
     }
 
-    renderHead() {
-        return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: `repeat(${this.props.tableDescription.columnCount}, ${1 / this.props.tableDescription.columnCount * 100}%)`, top: this.state.scrollTop, backgroundColor: 'white' }} ref={(ref) => this.head = ref}>
+    renderHead(sizes: number[]) {
+        return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: sizes.map((fraction) => `${fraction * 100}%`).join(' '), top: this.state.scrollTop, backgroundColor: 'white' }} ref={(ref) => this.head = ref}>
             <this.props.tableHeadRowsComponent tableDescription={this.props.tableDescription} />
         </div>;
     }
 
-    renderBody() {
+    renderBody(sizes: number[]) {
         if (this.state.containerHeight !== null && this.state.headHeight !== null) {
             const start = Math.max(0, Math.floor(this.state.scrollTop / this.props.rowHeight) - this.props.overscan);
             const end = Math.min(this.props.tableDescription.bodyRowCount, Math.ceil((this.state.scrollTop + this.state.containerHeight - this.state.headHeight) / this.props.rowHeight) + this.props.overscan);
 
-            return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: `repeat(${this.props.tableDescription.columnCount}, ${1 / this.props.tableDescription.columnCount * 100}%)`, top: this.state.headHeight + start * this.props.rowHeight }}>
+            return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: sizes.map((fraction) => `${fraction * 100}%`).join(' '), top: this.state.headHeight + start * this.props.rowHeight }}>
                 <this.props.tableBodyRowsComponent tableDescription={this.props.tableDescription} start={start} end={end} />
             </div>;
         }
     }
 
     render() {
+        const columns: (HeadColumnDescriptor | DataColumnDescriptor<any>)[] = [{ type: 'head-column' }, ...this.props.tableDescription.headValueRow.columns];
+        const sizes = columns.map(getHeadValueRowCellId).map((id) => this.props.sizes[id] === undefined ? 1 / columns.length : this.props.sizes[id]);
+
         return <div ref={(ref) => this.container = ref} tabIndex={0} style={{ position: 'relative', overflowX: 'visible', overflowY: 'auto', height: 500, border: '1px solid black' }}>
             {this.renderSpanner()}
-            {this.renderBody()}
-            {this.renderHead()}
+            {this.renderBody(sizes)}
+            {this.renderHead(sizes)}
         </div>;
     }
 }

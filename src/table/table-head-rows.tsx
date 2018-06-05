@@ -18,15 +18,11 @@ export class TableHeadRows<D> extends React.Component<TableHeadRowsProps<D>, nev
     }
 
     render() {
-        return this.props.tableDescription.headRows.map((headRow, index) => {
-            if (headRow.type === 'group-header-row') {
-                return <this.props.tableHeadGroupRowComponent key={headRow.groupId} tableDescription={this.props.tableDescription} row={headRow} />;
-            } else if (headRow.type === 'value-header-row') {
-                return <this.props.tableHeadValueRowComponent key={`value-row-${index}`} tableDescription={this.props.tableDescription} row={headRow} />;
-            } else {
-                // TODO: investigate custom head rows
-                // return <headRow.renderer tableDescription={this.props.tableDescription} />;
-            }
-        });
+        return <React.Fragment>
+            {this.props.tableDescription.headGroupRows.map((groupRow) =>
+                <this.props.tableHeadGroupRowComponent key={groupRow.groupId} tableDescription={this.props.tableDescription} row={groupRow} />
+            )}
+            <this.props.tableHeadValueRowComponent key="value-row" tableDescription={this.props.tableDescription} row={this.props.tableDescription.headValueRow} />
+        </React.Fragment>;
     }
 }

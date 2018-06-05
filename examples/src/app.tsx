@@ -263,6 +263,7 @@ export class App extends React.Component<{}, AppState> {
                     tableDescription={this.state.tableDescription.result}
                     rowHeight={20}
                     overscan={2}
+                    sizes={this.state.sizes}
                 // data={this.state.data.result}
                 // filters={configuration.filters}
                 // groups={configuration.groups}
@@ -273,6 +274,7 @@ export class App extends React.Component<{}, AppState> {
                 {this.state.table !== null &&
                     <Resizer
                         sizes={this.state.sizes}
+                        slack={0.1}
                         onSizesChange={(sizes) => this.setState({ sizes })}
                         tableDescription={this.state.tableDescription.result}
                         tableElement={this.state.table}

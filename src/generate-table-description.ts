@@ -139,10 +139,8 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
         rowCount: 1 + groupHeaderRows.length + bodyRows.length,
         valueCount: configuration.values.length,
         values: configuration.values,
-        headRows: [
-            ...groupHeaderRows,
-            valueHeaderRow
-        ],
+        headGroupRows: groupHeaderRows,
+        headValueRow: valueHeaderRow,
         bodyRows
     };
 });

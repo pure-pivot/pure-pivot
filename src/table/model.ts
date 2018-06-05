@@ -37,7 +37,7 @@ export interface ValueHeaderRow<D> {
     columns: DataColumnDescriptor<D>[];
 }
 
-export type HeadRow<D> = GroupHeaderRow | ValueHeaderRow<D>; // | CustomHeaderRow<D>;
+// export type HeadRow<D> = GroupHeaderRow | ValueHeaderRow<D>; // | CustomHeaderRow<D>;
 
 export interface BodyCell<D> {
     data: D[];
@@ -51,7 +51,7 @@ export interface BodyRow<D> {
     cells: BodyCell<D>[];
 }
 
-export type Row<D> = BodyRow<D> | HeadRow<D>;
+// export type Row<D> = BodyRow<D> | HeadRow<D>;
 
 export interface TableDescription<D> {
     headColumnCount: number;
@@ -62,6 +62,7 @@ export interface TableDescription<D> {
     rowCount: number;
     valueCount: number;
     values: ValueReducers<D>;
-    headRows: HeadRow<D>[];
+    headGroupRows: GroupHeaderRow[];
+    headValueRow: ValueHeaderRow<D>;
     bodyRows: BodyRow<D>[];
 }
