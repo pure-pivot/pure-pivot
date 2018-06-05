@@ -251,6 +251,7 @@ export class App extends React.Component<{}, AppState> {
         } else {
             return <React.Fragment>
                 <h3>Table</h3>
+                Sorting: ▼
                 <tableConfiguration.tableContainerComponent
                     ref={(ref) => {
                         if (ref !== null) {
