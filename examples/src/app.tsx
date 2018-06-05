@@ -276,6 +276,7 @@ export class App extends React.Component<{}, AppState> {
                         sizes={this.state.sizes}
                         slack={0.1}
                         onSizesChange={(sizes) => this.setState({ sizes })}
+                        onSizesChangeEnd={() => undefined}
                         tableDescription={this.state.tableDescription.result}
                         tableElement={this.state.table}
                     />

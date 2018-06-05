@@ -4,11 +4,13 @@ import { Draggable } from 'react-managed-draggable';
 import { TableDescription, DataColumnDescriptor, ValueHeaderRow, HeadColumnDescriptor } from '../../table/model';
 import { Sizes } from './model';
 import { getHeadValueRowCellId } from '../../util/id-helper';
+import { clamp } from '../../util/math';
 
 export interface ResizerProps {
     sizes: Sizes;
     slack: number;
     onSizesChange: (sizes: Sizes) => void;
+    onSizesChangeEnd: (sizes: Sizes) => void;
     tableElement: Element;
     tableDescription: TableDescription<any>;
 }
@@ -24,6 +26,7 @@ export interface ResizerState {
     tableInnerHeight: number | null;
     draggingId: string | null;
     draggingOffset: number;
+    draggingStartSizes: [number, number];
 }
 
 export class Resizer extends React.Component<ResizerProps, ResizerState> {
@@ -37,7 +40,8 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
         tableInnerWidth: null,
         tableInnerHeight: null,
         draggingId: null,
-        draggingOffset: 0
+        draggingOffset: 0,
+        draggingStartSizes: [0, 0]
     };
 
     raf: number | undefined = undefined;
@@ -96,10 +100,17 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
                             width: 20,
                             height: this.state.tableInnerHeight
                         }}
-                        onDragStart={() => this.setState({ draggingId: ids[i] })}
-                        onDragMove={(event, payload) => this.setState({ draggingOffset: payload.current.x - payload.start.x })}
-                        onDragEnd={(event, payload) => {
+                        onDragStart={() => this.setState({ draggingId: ids[i], draggingStartSizes: [sizes[i], sizes[i + 1]] })}
+                        onDragMove={(event, payload) => {
                             this.props.onSizesChange({
+                                ...this.props.sizes,
+                                [ids[i]]: sizes[i],
+                                [ids[i + 1]]: sizes[i + 1]
+                            });
+                            this.setState({ draggingOffset: payload.current.x - payload.start.x });
+                        }}
+                        onDragEnd={(event, payload) => {
+                            this.props.onSizesChangeEnd({
                                 ...this.props.sizes,
                                 [ids[i]]: sizes[i],
                                 [ids[i + 1]]: sizes[i + 1]
@@ -126,9 +137,15 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
         if (this.state.draggingId !== null && this.state.tableInnerWidth !== null) {
             const index = ids.indexOf(this.state.draggingId);
             const delta = this.state.draggingOffset / this.state.tableInnerWidth;
-            const clamped = Math.min(normalized[index + 1] - this.props.slack / ids.length, Math.max(-normalized[index] + this.props.slack / ids.length, delta));
-            normalized[index] += clamped;
-            normalized[index + 1] -= clamped;
+            const clamped = clamp(
+                delta,
+                this.props.slack / ids.length - this.state.draggingStartSizes[0],
+                this.state.draggingStartSizes[1] - this.props.slack / ids.length
+            );
+            normalized[index] = this.state.draggingStartSizes[0] + clamped;
+            normalized[index + 1] = this.state.draggingStartSizes[1] - clamped;
+
+            // TODO: if draggable is clamped, perhaps resize rest of columns instead?
         }
 
         return <div ref={(ref) => this.container = ref} style={{ position: 'relative' }}>
