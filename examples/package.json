@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/woutervh-/pure-pivot#readme",
   "devDependencies": {
+    "@pure-pivot/core": "^0.1.2",
+    "@pure-pivot/virtual-scrolling-grid": "^0.1.2",
     "@types/react": "^16.3.13",
     "@types/react-dom": "^16.0.5",
     "html-webpack-plugin": "^3.2.0",

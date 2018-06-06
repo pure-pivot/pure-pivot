@@ -1,17 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Draggable } from 'react-managed-draggable';
-import { Configuration, createConfigurationBuilder } from '../../lib/es6/configuration';
-import { createTableConfigurationBuilder } from '../../lib/es6/table/configuration';
-import { resizable } from '../../lib/es6/plugins/table/resizable/resizable';
-import { Resizer } from '../../lib/es6/plugins/resizer/resizer-component';
-import { stylable } from '../../lib/es6/plugins/table/stylable/stylable';
-import { gridLayout } from '../../lib/es6/plugins/table/grid-layout/grid-layout';
-import { virtualGrid } from '../../lib/es6/plugins/table/virtual-grid/virtual-grid';
-import { generateTableDescription } from '../../lib/es6/generate-table-description';
-import { TableDescription } from '../../lib/es6/table/model';
-import { TableContainerProps, TableContainerProvidedProps } from '../../lib/es6/plugins/table/virtual-grid/table-container';
-import { Sizes } from '../../lib/es6/plugins/resizer/model';
+import { Configuration, createConfigurationBuilder } from '@pure-pivot/core/lib/es6/configuration';
+import { createTableConfigurationBuilder } from '@pure-pivot/core/lib/es6/table/configuration';
+import { Resizer } from '@pure-pivot/core/lib/es6/plugins/resizer/resizer-component';
+import { virtualGrid } from '@pure-pivot/virtual-scrolling-grid';
+import { generateTableDescription } from '@pure-pivot/core/lib/es6/generate-table-description';
+import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
+import { Sizes } from '@pure-pivot/core/lib/es6/plugins/resizer/model';
 
 interface WithStatusLoading {
     status: 'loading';

@@ -1,11 +1,12 @@
 {
   "name": "@pure-pivot/virtual-scrolling-grid",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "",
   "main": "lib/es5/index.js",
   "module": "lib/es6/index.js",
   "types": "lib/es6/index.d.ts",
   "files": [
+    "src",
     "lib"
   ],
   "peerDependencies": {
