@@ -1,10 +1,10 @@
 {
-  "name": "@pure-pivot/virtual-scrolling-grid",
+  "name": "@pure-pivot/default-table",
   "version": "0.1.2",
   "description": "",
-  "main": "lib/es5/virtual-scrolling-grid.js",
-  "module": "lib/es6/virtual-scrolling-grid.js",
-  "types": "lib/es6/virtual-scrolling-grid.d.ts",
+  "main": "lib/es5/index.js",
+  "module": "lib/es6/index.js",
+  "types": "lib/es6/index.d.ts",
   "files": [
     "src",
     "lib"

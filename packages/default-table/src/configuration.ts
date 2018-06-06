@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { provideProps } from '../util/provide-props';
+import { provideProps } from '@pure-pivot/core/lib/es6/util/provide-props';
 import { TableContainer, TableContainerProps, TableContainerProvidedProps } from './table-container';
 import { TableBody, TableBodyProps } from './table-body';
 import { TableHead, TableHeadProps } from './table-head';

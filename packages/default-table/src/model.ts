@@ -1,4 +1,4 @@
-import { ValueReducers, ValueReducerDescription } from '../values/model';
+import { ValueReducers, ValueReducerDescription } from '@pure-pivot/core/lib/es6/values/model';
 
 export interface GroupDescriptor {
     groupId: string;

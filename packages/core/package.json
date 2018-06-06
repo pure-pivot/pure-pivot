@@ -10,23 +10,21 @@
     "lib"
   ],
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
+    "react": "*"
   },
   "devDependencies": {
     "@types/react": "^16.3.13",
-    "@types/react-dom": "^16.0.5",
-    "@types/shallowequal": "^0.2.2",
     "cross-env": "^5.1.5",
     "react": "^16.3.2",
-    "react-dom": "^16.4.0",
     "rimraf": "^2.6.2",
+    "tslint": "^5.9.1",
     "typescript": "2.8.3"
   },
   "scripts": {
+    "lint": "tslint --config ../../tslint.json --project tsconfig.json",
     "build:es5": "tsc --target es5 --module commonjs --outDir lib/es5 --declarationDir lib/es5",
     "build:es6": "tsc --target es6 --module es6 --outDir lib/es6 --declarationDir lib/es6",
-    "build": "rimraf lib && npm run build:es5 && npm run build:es6",
+    "build": "rimraf lib && npm run lint && npm run build:es5 && npm run build:es6",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -38,9 +36,5 @@
   "bugs": {
     "url": "https://github.com/pure-pivot/pure-pivot/issues"
   },
-  "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
-  "dependencies": {
-    "react-managed-draggable": "^0.1.5",
-    "shallowequal": "^1.0.2"
-  }
+  "homepage": "https://github.com/pure-pivot/pure-pivot#readme"
 }

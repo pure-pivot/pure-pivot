@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { TableHeadGroupCellProps } from './table-head-group-cell';
 import { GroupHeaderRow, TableDescription, HeadColumnDescriptor } from './model';
-import { getHeadGroupRowCellId } from '../util/id-helper';
+import { getHeadGroupRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
 
 export interface TableHeadGroupRowProps<D> {
     row: GroupHeaderRow;

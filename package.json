@@ -1,0 +1,10 @@
+{
+    "private": true,
+    "scripts": {
+        "lint": "tslint"
+    },
+    "devDependencies": {
+        "tslint": "^5.10.0",
+        "typescript": "2.8.3"
+    }
+}
