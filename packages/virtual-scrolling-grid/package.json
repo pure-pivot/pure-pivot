@@ -1,30 +1,31 @@
 {
-  "name": "@pure-pivot/core",
+  "name": "@pure-pivot/virtual-scrolling-grid",
   "version": "0.1.0",
   "description": "",
-  "main": "lib/index.js",
+  "main": "lib/es5/index.js",
+  "module": "lib/es6/index.js",
+  "types": "lib/es6/index.d.ts",
+  "files": [
+    "lib"
+  ],
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
+    "@pure-pivot/core": "*",
+    "react": "*"
   },
   "devDependencies": {
+    "@pure-pivot/core": "0.1.0",
     "@types/react": "^16.3.13",
-    "@types/react-dom": "^16.0.5",
     "@types/shallowequal": "^0.2.2",
     "cross-env": "^5.1.5",
     "react": "^16.3.2",
     "react-dom": "^16.4.0",
     "rimraf": "^2.6.2",
-    "rollup": "^0.58.2",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "rollup-plugin-sourcemaps": "^0.4.2",
-    "rollup-plugin-uglify": "^3.0.0",
-    "tslint": "^5.9.1",
-    "typescript": "^2.8.3"
+    "typescript": "2.8.3"
   },
   "scripts": {
-    "build": "rimraf ./lib && tsc && cross-env ROLLUP_UGLIFY=false rollup --config",
-    "lint": "tslint --project tsconfig.json",
+    "build:es5": "tsc --target es5 --module commonjs --outDir lib/es5 --declarationDir lib/es5",
+    "build:es6": "tsc --target es6 --module es6 --outDir lib/es6 --declarationDir lib/es6",
+    "build": "rimraf lib && npm run build:es5 && npm run build:es6",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

@@ -1,9 +1,9 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
-import { TableDescription, HeadColumnDescriptor, DataColumnDescriptor } from '../../../table/model';
-import { TableHeadRowsProps, TableHeadRowsProvidedProps } from '../../../table/table-head-rows';
+import { TableDescription, HeadColumnDescriptor, DataColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
+import { TableHeadRowsProps, TableHeadRowsProvidedProps } from '@pure-pivot/core/lib/es6/table/table-head-rows';
 import { TableBodyRowsProps, TableBodyRowsProvidedProps } from './table-body-rows';
-import { getHeadValueRowCellId } from '../../../util/id-helper';
+import { getHeadValueRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
 import { Sizes } from './model';
 
 export interface TableContainerProps<D> {

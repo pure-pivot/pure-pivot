@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
-import { TableDescription } from '../../../table/model';
-import { TableBodyCellProps } from '../../../table/table-body-cell';
+import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
+import { TableBodyCellProps } from '@pure-pivot/core/lib/es6/table/table-body-cell';
 
 export interface TableBodyRowsProps<D> {
     start: number;

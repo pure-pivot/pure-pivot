@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { TableConfigurationBuilder, TableConfiguration } from '../../../table/configuration';
+import { TableConfigurationBuilder, TableConfiguration } from '@pure-pivot/core/lib/es6/table/configuration';
 import { TableHeadGroupCell } from './table-head-group-cell';
 import { TableHeadValueCell } from './table-head-value-cell';
-import { provideProps } from '../../../util/provide-props';
+import { provideProps } from '@pure-pivot/core/lib/es6/util/provide-props';
 import { TableContainer, TableContainerProps, TableContainerProvidedProps } from './table-container';
 import { TableBodyCell } from './table-body-cell';
 import { TableBodyRows, TableBodyRowsProps } from './table-body-rows';

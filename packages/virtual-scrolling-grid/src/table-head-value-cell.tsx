@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TableHeadValueCellProps } from '../../../table/table-head-value-cell';
+import { TableHeadValueCellProps } from '@pure-pivot/core/lib/es6/table/table-head-value-cell';
 
 export class TableHeadValueCell<D> extends React.Component<TableHeadValueCellProps<D>, never> {
     render() {

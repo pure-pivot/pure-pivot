@@ -1,16 +1,12 @@
 {
     "compilerOptions": {
         "moduleResolution": "node",
-        "target": "es6",
-        "module": "es6",
         "removeComments": true,
         "sourceMap": true,
         "allowSyntheticDefaultImports": false,
         "noImplicitAny": true,
         "strict": true,
         "declaration": true,
-        "declarationDir": "lib/es6",
-        "outDir": "lib/es6",
         "jsx": "react",
         "typeRoots": [
             "node_modules/@types"
@@ -19,12 +15,5 @@
             "dom",
             "es6"
         ]
-    },
-    "include": [
-        "src"
-    ],
-    "exclude": [
-        "node_modules",
-        "lib"
-    ]
+    }
 }
