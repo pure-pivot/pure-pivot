@@ -1,5 +1,3 @@
-import * as React from 'react';
-import * as shallowEqual from 'shallowequal';
 import { Filters } from './filters/model';
 import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';

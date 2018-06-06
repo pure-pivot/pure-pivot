@@ -13,7 +13,7 @@ export interface VirtualScrollingTableConfiguration<D> {
     tableContainerComponent: React.ComponentClass<Pick<TableContainerProps<D>, Exclude<keyof TableContainerProps<D>, TableContainerProvidedProps>>>;
 }
 
-export interface VirtualScrollingTableConfigurationBuilder<D> extends Pick<TableConfigurationBuilder<D>, Exclude<keyof TableConfigurationBuilder<D>, 'tableContainerComponent' | 'tableBodyRowsComponent' | 'withTableContainerComponent' | 'withTableBodyRowsComponent' | 'build'>> {
+export interface VirtualScrollingTableConfigurationBuilder<D> extends Pick<TableConfigurationBuilder<D>, Exclude<keyof TableConfigurationBuilder<D>, 'tableContainerComponent' | 'tableBodyRowsComponent' | 'withTableContainerComponent' | 'withTableHeadComponent' | 'withTableBodyComponent' | 'withTableBodyRowsComponent' | 'build'>> {
     tableContainerComponent: React.ComponentClass<TableContainerProps<D>>;
     tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
     withTableContainerComponent<C>(this: C, tableContainerComponent: React.ComponentType<TableContainerProps<D>>): C;
@@ -22,19 +22,10 @@ export interface VirtualScrollingTableConfigurationBuilder<D> extends Pick<Table
 }
 
 export const virtualGrid = <D>() => (tableConfigurationBuilder: TableConfigurationBuilder<D>): VirtualScrollingTableConfigurationBuilder<D> => {
-    // tableConfigurationBuilder.withTableBodyCellComponent(tableBodyCellFactory(initialState, addListener));
-    // tableConfigurationBuilder.withTableHeadRowComponent(React.Fragment);
-    // tableConfigurationBuilder.withTableHeadRowsComponent(TableHeadRows);
-    // tableConfigurationBuilder.withTableHeadComponent(TableHead);
-    // tableConfigurationBuilder.withTableBodyComponent(TableBody);
-    // tableConfigurationBuilder.withTableBodyRowsComponent(tableBodyRowsFactory(initialState, addListener));
-    // tableConfigurationBuilder.withTableBodyRowComponent(React.Fragment);
-    // tableConfigurationBuilder.withTableHeadGroupCellComponent(TableHeadGroupCell);
-    // tableConfigurationBuilder.withTableHeadValueCellComponent(TableHeadValueCell);
-    // tableConfigurationBuilder.withTableContainerComponent(tableContainerFactory(initialState, addListener, pushState));
+    const { withTableHeadComponent, withTableBodyComponent, ...other } = tableConfigurationBuilder;
 
     const builder: VirtualScrollingTableConfigurationBuilder<D> = {
-        ...tableConfigurationBuilder,
+        ...other,
         tableContainerComponent: TableContainer,
         tableHeadRowComponent: React.Fragment,
         tableHeadGroupCellComponent: TableHeadGroupCell,

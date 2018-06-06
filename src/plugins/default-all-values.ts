@@ -1,8 +1,5 @@
-import * as React from 'react';
-import * as shallowEqual from 'shallowequal';
-import { ConfigurationBuilder, Configuration } from '../configuration';
+import { Configuration } from '../configuration';
 import { ObjectKeys } from '../util/keys';
-import { ValueReducers } from '../values/model';
 import { TableDescription } from '../table/model';
 
 export function defaultAllValues<D>(generateTableDescription: (configuration: Configuration<D>) => (data: D[]) => TableDescription<D>): (configuration: Configuration<D>) => (data: D[]) => TableDescription<D> {
