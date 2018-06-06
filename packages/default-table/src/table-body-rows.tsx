@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
 import { TableBodyCellProps } from './table-body-cell';
-import { TableDescription, HeadColumnDescriptor } from './model';
+import { TableDescription, HeadColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
 import { getBodyRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
 
 export interface TableBodyRowsProps<D> {

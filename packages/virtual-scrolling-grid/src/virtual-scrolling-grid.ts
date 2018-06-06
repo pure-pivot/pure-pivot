@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TableConfigurationBuilder, TableConfiguration } from '@pure-pivot/core/lib/es6/table/configuration';
+import { TableConfigurationBuilder } from '@pure-pivot/default-table/lib/es6/configuration';
 import { TableHeadGroupCell } from './table-head-group-cell';
 import { TableHeadValueCell } from './table-head-value-cell';
 import { provideProps } from '@pure-pivot/core/lib/es6/util/provide-props';

@@ -2,7 +2,7 @@ import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
 import { TableHeadGroupRowProps, TableHeadGroupRowProvidedProps } from './table-head-group-row';
 import { TableHeadValueRowProps, TableHeadValueRowProvidedProps } from './table-head-value-row';
-import { TableDescription } from './model';
+import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 
 export interface TableHeadRowsProps<D> {
     tableDescription: TableDescription<D>;

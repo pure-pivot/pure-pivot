@@ -10,7 +10,6 @@ import { TableHeadGroupCell, TableHeadGroupCellProps } from './table-head-group-
 import { TableHeadValueCell, TableHeadValueCellProps } from './table-head-value-cell';
 import { TableBodyCellProps, TableBodyCell } from './table-body-cell';
 import { TableHeadRowsProps, TableHeadRows } from './table-head-rows';
-import { TableDescription } from './model';
 
 export interface TableConfiguration<D> {
     tableContainerComponent: React.ComponentType<Pick<TableContainerProps<D>, Exclude<keyof TableContainerProps<D>, TableContainerProvidedProps>>>;

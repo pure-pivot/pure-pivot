@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TableHeadGroupCellProps } from '@pure-pivot/core/lib/es6/table/table-head-group-cell';
+import { TableHeadGroupCellProps } from '@pure-pivot/default-table/lib/es6/table-head-group-cell';
 
 export class TableHeadGroupCell<D> extends React.Component<TableHeadGroupCellProps<D>, never> {
     render() {

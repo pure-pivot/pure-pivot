@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ColumnDescriptor, BodyRow } from './model';
+import { ColumnDescriptor, BodyRow } from '@pure-pivot/core/lib/es6/table/model';
 
 export interface TableBodyCellProps<D> {
     id: string;

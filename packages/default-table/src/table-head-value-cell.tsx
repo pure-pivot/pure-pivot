@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TableDescription, ColumnDescriptor, ValueHeaderRow } from './model';
+import { TableDescription, ColumnDescriptor, ValueHeaderRow } from '@pure-pivot/core/lib/es6/table/model';
 
 export interface TableHeadValueCellProps<D> {
     scope: 'row' | 'col';

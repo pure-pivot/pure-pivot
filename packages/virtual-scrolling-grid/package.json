@@ -1,6 +1,6 @@
 {
   "name": "@pure-pivot/virtual-scrolling-grid",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "description": "",
   "main": "lib/es5/virtual-scrolling-grid.js",
   "module": "lib/es6/virtual-scrolling-grid.js",
@@ -39,7 +39,8 @@
   },
   "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
-    "@pure-pivot/core": "0.1.2",
+    "@pure-pivot/core": "^0.1.4",
+    "@pure-pivot/default-table": "^0.1.5",
     "shallowequal": "^1.0.2"
   }
 }

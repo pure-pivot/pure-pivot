@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TableBodyRowsProps, TableBodyRowsProvidedProps } from './table-body-rows';
-import { TableDescription } from './model';
+import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 
 export interface TableBodyProps<D> {
     tableDescription: TableDescription<D>;

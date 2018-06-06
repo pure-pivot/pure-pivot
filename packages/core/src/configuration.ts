@@ -1,14 +1,11 @@
-import * as React from 'react';
 import { Filters, Filter } from './filters/model';
 import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { Selections } from './selections/model';
 import { defaultConfigurationPlugins } from './plugins/default-plugins';
 import { Comparators, Comparator } from './sorting/model';
-import { provideProps } from './util/provide-props';
-import { TableConfiguration, createTableConfigurationBuilder } from './table/configuration';
-import { TableDescription } from './table/model';
 import { generateTableDescription } from './generate-table-description';
+import { TableDescription } from './table/model';
 
 export interface Configuration<D> {
     filters: Filters<D>;

@@ -1,7 +1,5 @@
-import { Filters } from './filters/model';
-import { ValueReducers, ValueReducerDescription } from './values/model';
-import { Groups, Grouper } from './groups/model';
-import { Selections } from './selections/model';
+import { ValueReducers } from './values/model';
+import { Groups } from './groups/model';
 import { applyGrouping, Grouping, RecursiveGroup } from './groups/apply-grouping';
 import { applyFilters } from './filters/apply-filter';
 import { Comparators } from './sorting/model';

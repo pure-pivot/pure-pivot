@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { TableDescription, ColumnDescriptor, GroupHeaderRow } from './model';
+import { TableDescription, ColumnDescriptor, GroupHeaderRow } from '@pure-pivot/core/lib/es6/table/model';
 
 export interface TableHeadGroupCellProps<D> {
     scope: 'row' | 'col';
