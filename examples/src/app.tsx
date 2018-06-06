@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Configuration, createConfigurationBuilder } from '@pure-pivot/core/lib/es6/configuration';
-import { createTableConfigurationBuilder } from '@pure-pivot/core/lib/es6/table/configuration';
+import { createTableConfigurationBuilder } from '@pure-pivot/default-table/lib/es6/configuration';
 import { virtualGrid } from '@pure-pivot/virtual-scrolling-grid';
 import { generateTableDescription } from '@pure-pivot/core/lib/es6/generate-table-description';
 import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
