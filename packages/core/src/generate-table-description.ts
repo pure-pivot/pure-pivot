@@ -87,6 +87,8 @@ function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: numbe
         });
     }
 
+    // TODO: give more information to sorting: row data... columns... cells... group... value...
+
     for (const rows of rowsWithData) {
         const indicesByGroup = columns.groupDataIndices(rows.dataIndexStart, rows.dataIndexEnd);
         const cells: BodyCell<D>[] = [];

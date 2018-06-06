@@ -1,12 +1,19 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { Configuration, createConfigurationBuilder } from '@pure-pivot/core/lib/es6/configuration';
-import { createTableConfigurationBuilder } from '@pure-pivot/default-table/lib/es6/configuration';
-import { virtualGrid } from '@pure-pivot/virtual-scrolling-grid';
-import { generateTableDescription } from '@pure-pivot/core/lib/es6/generate-table-description';
-import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
-import { Resizer } from '@pure-pivot/column-resizer/lib/es6/resizer-component';
-import { Sizes } from '@pure-pivot/column-resizer/lib/es6/model';
+// import { Configuration, createConfigurationBuilder } from '@pure-pivot/core/lib/es6/configuration';
+// import { createTableConfigurationBuilder } from '@pure-pivot/default-table/lib/es6/configuration';
+// import { virtualGrid } from '@pure-pivot/virtual-scrolling-grid';
+// import { generateTableDescription } from '@pure-pivot/core/lib/es6/generate-table-description';
+// import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
+// import { Resizer } from '@pure-pivot/column-resizer/lib/es6/resizer-component';
+// import { Sizes } from '@pure-pivot/column-resizer/lib/es6/model';
+import { Configuration, createConfigurationBuilder } from '../../packages/core/src/configuration';
+import { createTableConfigurationBuilder } from '../../packages/default-table/src/configuration';
+import { virtualGrid } from '../../packages/virtual-scrolling-grid/src/virtual-scrolling-grid';
+import { generateTableDescription } from '../../packages/core/src/generate-table-description';
+import { TableDescription } from '../../packages/core/src/table/model';
+import { Resizer } from '../../packages/column-resizer/src/resizer-component';
+import { Sizes } from '../../packages/column-resizer/src/model';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -56,6 +63,10 @@ const tableConfiguration = createTableConfigurationBuilder<Data>()
     // .withPlugin(stylable)
     // .withPlugin(resizable)
     .withPlugin(virtualGrid())
+    .withTableHeadValueCellComponent((props) => {
+        console.log(props);
+        return <div>{props.children}</div>;
+    })
     // .withTableHeadGroupRowComponent(() => null)
     // .withTableHeadValueCellComponent((props) =>
     //     props.column.type === 'head-column'

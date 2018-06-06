@@ -24,15 +24,16 @@ export interface VirtualScrollingTableConfigurationBuilder<D> extends Pick<Table
 export const virtualGrid = <D>() => (tableConfigurationBuilder: TableConfigurationBuilder<D>): VirtualScrollingTableConfigurationBuilder<D> => {
     const { withTableHeadComponent, withTableBodyComponent, ...other } = tableConfigurationBuilder;
 
+    tableConfigurationBuilder.withTableHeadRowComponent(React.Fragment);
+    tableConfigurationBuilder.withTableHeadGroupCellComponent(TableHeadGroupCell);
+    tableConfigurationBuilder.withTableHeadValueCellComponent(TableHeadValueCell);
+    tableConfigurationBuilder.withTableBodyRowComponent(React.Fragment);
+    tableConfigurationBuilder.withTableBodyCellComponent(TableBodyCell);
+
     const builder: VirtualScrollingTableConfigurationBuilder<D> = {
         ...other,
         tableContainerComponent: TableContainer,
-        tableHeadRowComponent: React.Fragment,
-        tableHeadGroupCellComponent: TableHeadGroupCell,
-        tableHeadValueCellComponent: TableHeadValueCell,
         tableBodyRowsComponent: TableBodyRows,
-        tableBodyRowComponent: React.Fragment,
-        tableBodyCellComponent: TableBodyCell,
         withTableContainerComponent(tableContainerComponent: React.ComponentClass<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
             return this;
@@ -44,19 +45,19 @@ export const virtualGrid = <D>() => (tableConfigurationBuilder: TableConfigurati
         build() {
             return {
                 tableContainerComponent: provideProps(builder.tableContainerComponent, {
-                    tableHeadRowsComponent: provideProps(builder.tableHeadRowsComponent, {
-                        tableHeadGroupRowComponent: provideProps(builder.tableHeadGroupRowComponent, {
-                            tableHeadRowComponent: builder.tableHeadRowComponent,
-                            tableHeadGroupCellComponent: builder.tableHeadGroupCellComponent
+                    tableHeadRowsComponent: provideProps(tableConfigurationBuilder.tableHeadRowsComponent, {
+                        tableHeadGroupRowComponent: provideProps(tableConfigurationBuilder.tableHeadGroupRowComponent, {
+                            tableHeadRowComponent: tableConfigurationBuilder.tableHeadRowComponent,
+                            tableHeadGroupCellComponent: tableConfigurationBuilder.tableHeadGroupCellComponent
                         }),
-                        tableHeadValueRowComponent: provideProps(builder.tableHeadValueRowComponent, {
-                            tableHeadRowComponent: builder.tableHeadRowComponent,
-                            tableHeadValueCellComponent: builder.tableHeadValueCellComponent
+                        tableHeadValueRowComponent: provideProps(tableConfigurationBuilder.tableHeadValueRowComponent, {
+                            tableHeadRowComponent: tableConfigurationBuilder.tableHeadRowComponent,
+                            tableHeadValueCellComponent: tableConfigurationBuilder.tableHeadValueCellComponent
                         })
                     }),
                     tableBodyRowsComponent: provideProps(builder.tableBodyRowsComponent, {
-                        tableBodyRowComponent: builder.tableBodyRowComponent,
-                        tableBodyCellComponent: builder.tableBodyCellComponent
+                        tableBodyRowComponent: tableConfigurationBuilder.tableBodyRowComponent,
+                        tableBodyCellComponent: tableConfigurationBuilder.tableBodyCellComponent
                     })
                 })
             };
