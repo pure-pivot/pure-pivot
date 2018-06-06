@@ -1,10 +1,10 @@
 {
-  "name": "@pure-pivot/virtual-scrolling-grid",
-  "version": "0.1.2",
+  "name": "@pure-pivot/column-resizer",
+  "version": "0.1.3",
   "description": "",
-  "main": "lib/es5/virtual-scrolling-grid.js",
-  "module": "lib/es6/virtual-scrolling-grid.js",
-  "types": "lib/es6/virtual-scrolling-grid.d.ts",
+  "main": "lib/es5/resizer-component.js",
+  "module": "lib/es6/resizer-component.js",
+  "types": "lib/es6/resizer-component.d.ts",
   "files": [
     "src",
     "lib"

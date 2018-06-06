@@ -1,4 +1,2 @@
-import './configuration';
-import './plugins';
-
-// TODO: UMD exports
+export * from './configuration';
+export * from './generate-table-description';

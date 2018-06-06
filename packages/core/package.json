@@ -31,14 +31,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/woutervh-/pure-pivot.git"
+    "url": "git+https://github.com/pure-pivot/pure-pivot.git"
   },
   "author": "Wouter van Heeswijk",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/woutervh-/pure-pivot/issues"
+    "url": "https://github.com/pure-pivot/pure-pivot/issues"
   },
-  "homepage": "https://github.com/woutervh-/pure-pivot#readme",
+  "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
     "react-managed-draggable": "^0.1.5",
     "shallowequal": "^1.0.2"

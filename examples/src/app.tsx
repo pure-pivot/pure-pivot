@@ -2,11 +2,11 @@ import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Configuration, createConfigurationBuilder } from '@pure-pivot/core/lib/es6/configuration';
 import { createTableConfigurationBuilder } from '@pure-pivot/core/lib/es6/table/configuration';
-import { Resizer } from '@pure-pivot/core/lib/es6/plugins/resizer/resizer-component';
 import { virtualGrid } from '@pure-pivot/virtual-scrolling-grid';
 import { generateTableDescription } from '@pure-pivot/core/lib/es6/generate-table-description';
 import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
-import { Sizes } from '@pure-pivot/core/lib/es6/plugins/resizer/model';
+import { Resizer } from '@pure-pivot/column-resizer/lib/es6/resizer-component';
+import { Sizes } from '@pure-pivot/column-resizer/lib/es6/model';
 
 interface WithStatusLoading {
     status: 'loading';

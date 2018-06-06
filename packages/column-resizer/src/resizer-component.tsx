@@ -1,10 +1,10 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
 import { Draggable } from 'react-managed-draggable';
-import { TableDescription, DataColumnDescriptor, ValueHeaderRow, HeadColumnDescriptor } from '../../table/model';
+import { TableDescription, DataColumnDescriptor, ValueHeaderRow, HeadColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
 import { Sizes } from './model';
-import { getHeadValueRowCellId } from '../../util/id-helper';
-import { clamp } from '../../util/math';
+import { getHeadValueRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
+import { clamp } from '@pure-pivot/core/lib/es6/util/math';
 
 export interface ResizerProps {
     sizes: Sizes;
