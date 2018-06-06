@@ -110,12 +110,15 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
                             this.setState({ draggingOffset: payload.current.x - payload.start.x });
                         }}
                         onDragEnd={(event, payload) => {
-                            this.props.onSizesChangeEnd({
-                                ...this.props.sizes,
-                                [ids[i]]: sizes[i],
-                                [ids[i + 1]]: sizes[i + 1]
-                            });
-                            this.setState({ draggingId: null, draggingOffset: 0 });
+                            if (this.state.tableInnerWidth !== null) {
+                                this.adjustSizes(ids, sizes, i, (payload.current.x - payload.start.x) / this.state.tableInnerWidth);
+                                this.props.onSizesChangeEnd({
+                                    ...this.props.sizes,
+                                    [ids[i]]: sizes[i],
+                                    [ids[i + 1]]: sizes[i + 1]
+                                });
+                                this.setState({ draggingId: null, draggingOffset: 0 });
+                            }
                         }}
                     >
                         <div style={{ position: 'absolute', left: 9, width: 2, height: '100%', backgroundColor: 'blue' }} />
@@ -125,6 +128,18 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
 
             return result;
         }
+    }
+
+    adjustSizes(ids: string[], sizes: number[], index: number, delta: number) {
+        const clamped = clamp(
+            delta,
+            this.props.slack / ids.length - this.state.draggingStartSizes[0],
+            this.state.draggingStartSizes[1] - this.props.slack / ids.length
+        );
+        sizes[index] = this.state.draggingStartSizes[0] + clamped;
+        sizes[index + 1] = this.state.draggingStartSizes[1] - clamped;
+
+        // TODO: if draggable is clamped, perhaps resize rest of columns instead?
     }
 
     render() {
@@ -137,15 +152,7 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
         if (this.state.draggingId !== null && this.state.tableInnerWidth !== null) {
             const index = ids.indexOf(this.state.draggingId);
             const delta = this.state.draggingOffset / this.state.tableInnerWidth;
-            const clamped = clamp(
-                delta,
-                this.props.slack / ids.length - this.state.draggingStartSizes[0],
-                this.state.draggingStartSizes[1] - this.props.slack / ids.length
-            );
-            normalized[index] = this.state.draggingStartSizes[0] + clamped;
-            normalized[index + 1] = this.state.draggingStartSizes[1] - clamped;
-
-            // TODO: if draggable is clamped, perhaps resize rest of columns instead?
+            this.adjustSizes(ids, normalized, index, delta);
         }
 
         return <div ref={(ref) => this.container = ref} style={{ position: 'relative' }}>
