@@ -4,6 +4,6 @@ import { TableHeadGroupCellProps } from '@pure-pivot/default-table/lib/es6/table
 export class TableHeadGroupCell<D> extends React.Component<TableHeadGroupCellProps<D>, never> {
     render() {
         const { colStart, tableDescription, id, row, column, scope, colSpan, ...other } = this.props;
-        return <div style={{ gridColumnStart: `span ${colSpan}` }} {...other} />;
+        return <div style={{ gridColumnStart: `span ${colSpan}`, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }} {...other} />;
     }
 }

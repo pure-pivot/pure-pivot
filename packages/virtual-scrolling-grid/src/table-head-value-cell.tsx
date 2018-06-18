@@ -4,6 +4,6 @@ import { TableHeadValueCellProps } from '@pure-pivot/default-table/lib/es6/table
 export class TableHeadValueCell<D> extends React.Component<TableHeadValueCellProps<D>, never> {
     render() {
         const { colStart, tableDescription, id, row, column, scope, ...other } = this.props;
-        return <div {...other} />;
+        return <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }} {...other} />;
     }
 }

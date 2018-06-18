@@ -2,7 +2,7 @@ import { ValueReducers } from './values/model';
 import { Groups } from './groups/model';
 import { applyGrouping, Grouping, RecursiveGroup } from './groups/apply-grouping';
 import { applyFilters } from './filters/apply-filter';
-import { Comparators } from './sorting/model';
+import { Comparators, SortingGroup } from './sorting/model';
 import { applySorting } from './sorting/apply-sorting';
 import { Configuration } from './configuration';
 import { GroupDescriptor, DataColumnDescriptor, GroupColumnDescriptor, GroupHeaderRow, ValueHeaderRow, BodyRow, TableDescription, BodyCell } from './table/model';
@@ -73,26 +73,14 @@ function createValueHeaderRow<D>(dataColumns: DataColumnDescriptor<D>[]): ValueH
 }
 
 function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: number[], columns: Grouping, dataColumns: DataColumnDescriptor<D>[], data: D[], values: ValueReducers<D>, sorting: Comparators<D>, level: number = 0, accumulator: BodyRow<D>[] = []): BodyRow<D>[] {
-    const rowsWithData = recursiveRows.map((rows) => {
+    const rowsWithData: SortingGroup<D>[] = recursiveRows.map((rows) => {
         const rowIndices: number[] = [];
         for (let i = rows.dataIndexStart; i < rows.dataIndexEnd; i++) {
             rowIndices.push(sortedIndices[i]);
         }
-        return { ...rows, rowData: rowIndices.map((index) => data[index]) };
-    });
 
-    if (sorting.length >= 1) {
-        rowsWithData.sort((rows1, rows2) => {
-            return applySorting(sorting, rows1.rowData, rows2.rowData);
-        });
-    }
-
-    // TODO: give more information to sorting: row data... columns... cells... group... value...
-
-    for (const rows of rowsWithData) {
         const indicesByGroup = columns.groupDataIndices(rows.dataIndexStart, rows.dataIndexEnd);
         const cells: BodyCell<D>[] = [];
-
         for (let i = 0; i < indicesByGroup.length; i++) {
             const groupData = indicesByGroup[i].map((index) => data[index]);
             for (let j = 0; j < values.length; j++) {
@@ -103,11 +91,25 @@ function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: numbe
             }
         }
 
+        return {
+            ...rows,
+            rowData: rowIndices.map((index) => data[index]),
+            cells
+        };
+    });
+
+    if (sorting.length >= 1) {
+        rowsWithData.sort((rows1, rows2) => {
+            return applySorting(sorting, rows1, rows2);
+        });
+    }
+
+    for (const rows of rowsWithData) {
         accumulator.push({
             type: 'body-row',
             level,
             label: rows.label,
-            cells
+            cells: rows.cells
         });
 
         if (rows.childGroups) {
@@ -127,6 +129,8 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
     const valueHeaderRow = createValueHeaderRow(columnDescriptors.dataColumns);
     const groupHeaderRows = createGroupHeaderRows(columnDescriptors.groupColumns, configuration.groups);
     const bodyRows = createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData, configuration.values, configuration.sorting);
+
+    // TODO: after rows/columns have been generated, allow for sorting configuration to kick in
 
     return {
         headColumnCount: 1,
