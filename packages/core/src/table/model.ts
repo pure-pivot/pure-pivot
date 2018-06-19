@@ -16,13 +16,13 @@ export interface GroupColumnDescriptor {
     groupDescriptors: GroupDescriptor[];
 }
 
-export interface DataColumnDescriptor<D> {
+export interface DataColumnDescriptor<D, T> {
     type: 'data-column';
-    valueDescription: ValueReducerDescription<D, any>;
+    valueDescription: ValueReducerDescription<D, T>;
     groupDescriptors: GroupDescriptor[];
 }
 
-export type ColumnDescriptor<D> = DataColumnDescriptor<D> | HeadColumnDescriptor | GroupColumnDescriptor;
+// export type ColumnDescriptor<D> = DataColumnDescriptor<D, any> | HeadColumnDescriptor | GroupColumnDescriptor;
 
 export interface GroupHeaderRow {
     type: 'group-header-row';
@@ -34,21 +34,22 @@ export interface GroupHeaderRow {
 
 export interface ValueHeaderRow<D> {
     type: 'value-header-row';
-    columns: DataColumnDescriptor<D>[];
+    columns: DataColumnDescriptor<D, any>[];
 }
 
 // export type HeadRow<D> = GroupHeaderRow | ValueHeaderRow<D>; // | CustomHeaderRow<D>;
 
-export interface BodyCell<D> {
+export interface BodyCell<D, T> {
     data: D[];
-    column: DataColumnDescriptor<D>;
+    value: T;
+    column: DataColumnDescriptor<D, T>;
 }
 
 export interface BodyRow<D> {
     type: 'body-row';
     level: number;
     label: string;
-    cells: BodyCell<D>[];
+    cells: BodyCell<D, any>[];
 }
 
 // export type Row<D> = BodyRow<D> | HeadRow<D>;
