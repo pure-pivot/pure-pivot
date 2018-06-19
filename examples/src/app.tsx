@@ -15,7 +15,8 @@ import { TableDescription } from '../../packages/core/src/table/model';
 import { Resizer } from '../../packages/column-resizer/src/resizer-component';
 import { Sizes } from '../../packages/column-resizer/src/model';
 import { getHeadValueRowCellId } from '../../packages/core/src/util/id-helper';
-import { sortingHelper, ImprovedConfigurationBuilder } from '../../packages/sorting-helper/src/index';
+import { sortingHelper } from '../../packages/sorting-helper/src/index';
+import { ImprovedConfigurationBuilder } from '../../packages/sorting-helper/src/model';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -173,12 +174,14 @@ const configuration = createConfigurationBuilder<Data>()
     .withValue({
         id: 'count',
         label: 'Count',
-        reducer: (values) => values.length.toString()
+        reducer: (values) => values.length.toString(),
+        comparator: (data1, data2) => data1.length - data2.length
     })
     .withValue({
         id: 'average-duration',
         label: 'Avg. duration',
-        reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : ''
+        reducer: (values) => values.length >= 1 ? `${(values.reduce((sum, data) => sum + data.duration, 0) / values.length).toFixed(1)} ms` : '',
+        comparator: (data1, data2) => 
     })
     .withValue({
         id: 'sum-duration',

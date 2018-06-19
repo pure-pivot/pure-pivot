@@ -18,7 +18,7 @@ export interface GroupColumnDescriptor {
 
 export interface DataColumnDescriptor<D> {
     type: 'data-column';
-    valueDescription: ValueReducerDescription<D>;
+    valueDescription: ValueReducerDescription<D, any>;
     groupDescriptors: GroupDescriptor[];
 }
 

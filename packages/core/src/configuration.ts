@@ -25,7 +25,7 @@ export interface ConfigurationBuilder<D> {
     withFilters<C>(this: C, filters: Filters<D>): C;
     withFilter<C>(this: C, filter: Filter<D>): C;
     withValues<C>(this: C, values: ValueReducers<D>): C;
-    withValue<C>(this: C, value: ValueReducerDescription<D>): C;
+    withValue<C, T>(this: C, value: ValueReducerDescription<D, T>): C;
     withGroups<C>(this: C, groups: Groups<D>): C;
     withGroup<C>(this: C, group: Grouper<D>): C;
     withSelections<C>(this: C, selections: Selections<D>): C;
@@ -56,7 +56,7 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
             builder.values = values;
             return this;
         },
-        withValue(value: ValueReducerDescription<D>) {
+        withValue<C, T>(this: C, value: ValueReducerDescription<D, T>) {
             builder.values = [...builder.values, value];
             return this;
         },

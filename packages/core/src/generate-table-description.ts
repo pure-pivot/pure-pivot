@@ -131,8 +131,6 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
     const sorting = configuration.sorting.map((sorter) => sorter(valueHeaderRow.columns));
     const bodyRows = createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData, configuration.values, sorting);
 
-    // TODO: after rows/columns have been generated, allow for sorting configuration to kick in
-
     return {
         headColumnCount: 1,
         bodyColumnCount: valueHeaderRow.columns.length,

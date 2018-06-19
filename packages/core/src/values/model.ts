@@ -1,10 +1,14 @@
-// TODO: consider return type of React.ReactNode instead of string?
-export type ValueReducer<D> = (values: D[]) => string;
+import * as React from 'react';
 
-export interface ValueReducerDescription<D> {
+export type ValueReducer<D, T> = (values: D[]) => T;
+
+export type ValueRenderer<T> = (value: T) => React.ReactNode;
+
+export interface ValueReducerDescription<D, T> {
     id: string;
     label: string;
-    reducer: ValueReducer<D>;
+    reducer: ValueReducer<D, T>;
+    renderer: ValueRenderer<T>;
 }
 
-export type ValueReducers<D> = ValueReducerDescription<D>[];
+export type ValueReducers<D> = ValueReducerDescription<D, any>[];
