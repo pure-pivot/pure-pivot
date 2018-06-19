@@ -36,7 +36,7 @@ export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, nev
                         row={row}
                         column={cell.column}
                     >
-                        {cell.column.valueDescription.reducer(cell.data)}
+                        {cell.column.valueDescription.renderer(cell.value)}
                     </this.props.tableBodyCellComponent>;
                 })}
             </this.props.tableBodyRowComponent>

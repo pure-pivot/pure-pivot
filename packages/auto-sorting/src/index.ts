@@ -22,7 +22,7 @@ export function sortingHelper<D>(configurationBuilder: ConfigurationBuilder<D>):
             builder.values = values;
             return this;
         },
-        withValue(value: SortedValueReducerDescription<D>) {
+        withValue<C, T>(this: C, value: SortedValueReducerDescription<D, T>) {
             builder.values = [...builder.values, value];
             return this;
         },
@@ -33,11 +33,12 @@ export function sortingHelper<D>(configurationBuilder: ConfigurationBuilder<D>):
                 ...configuration.sorting,
                 ...builder.autoSorters.map((sorter) => {
                     const multiplier = sorter.order === 'ascending' ? 1 : -1;
-                    return (dataColumns: DataColumnDescriptor<D>[]) => {
+                    return (dataColumns: DataColumnDescriptor<D, any>[]) => {
                         const cellIndex = dataColumns.findIndex((column) =>
                             column.valueDescription.id === sorter.valueId
                             && column.groupDescriptors.every((group, index) =>
-                                group.groupId === sorter.groupDescriptors[index].groupId
+                                sorter.groupDescriptors[index] !== undefined
+                                && group.groupId === sorter.groupDescriptors[index].groupId
                                 && group.groupIndex === sorter.groupDescriptors[index].groupIndex
                             )
                         );
@@ -46,7 +47,7 @@ export function sortingHelper<D>(configurationBuilder: ConfigurationBuilder<D>):
                             if (cellIndex < 0 || valueDescription === undefined || sorter.order === null) {
                                 return 0;
                             } else {
-                                return multiplier * valueDescription.comparator(group1.cells[cellIndex].data, group2.cells[cellIndex].data);
+                                return multiplier * valueDescription.comparator(group1.cells[cellIndex].value, group2.cells[cellIndex].value);
                             }
                         };
                     };

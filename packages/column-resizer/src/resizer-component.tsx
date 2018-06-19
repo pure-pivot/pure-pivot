@@ -143,7 +143,7 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
     }
 
     render() {
-        const columns: (HeadColumnDescriptor | DataColumnDescriptor<any>)[] = [{ type: 'head-column' }, ...this.props.tableDescription.headValueRow.columns];
+        const columns: (HeadColumnDescriptor | DataColumnDescriptor<any, any>)[] = [{ type: 'head-column' }, ...this.props.tableDescription.headValueRow.columns];
         const ids = columns.map(getHeadValueRowCellId);
         const fractions = ids.map((id) => this.props.sizes[id] === undefined ? 1 / ids.length : this.props.sizes[id]);
         const sum = fractions.reduce((sum, fraction) => sum + fraction, 0);
