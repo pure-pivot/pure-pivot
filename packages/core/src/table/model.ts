@@ -22,7 +22,7 @@ export interface DataColumnDescriptor<D, T> {
     groupDescriptors: GroupDescriptor[];
 }
 
-// export type ColumnDescriptor<D> = DataColumnDescriptor<D, any> | HeadColumnDescriptor | GroupColumnDescriptor;
+export type ColumnDescriptor<D> = DataColumnDescriptor<D, any> | HeadColumnDescriptor | GroupColumnDescriptor;
 
 export interface GroupHeaderRow {
     type: 'group-header-row';
