@@ -33,7 +33,7 @@ export function sortingHelper<D>(configurationBuilder: ConfigurationBuilder<D>):
                 ...configuration.sorting,
                 ...builder.autoSorters.map((sorter) => {
                     const multiplier = sorter.order === 'ascending' ? 1 : -1;
-                    return (dataColumns: DataColumnDescriptor<D, any>[]) => {
+                    return (dataColumns: DataColumnDescriptor<D, {}>[]) => {
                         const cellIndex = dataColumns.findIndex((column) =>
                             column.valueDescription.id === sorter.valueId
                             && column.groupDescriptors.every((group, index) =>

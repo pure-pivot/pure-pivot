@@ -92,7 +92,7 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
     }
 
     render() {
-        const columns: (HeadColumnDescriptor | DataColumnDescriptor<any, any>)[] = [{ type: 'head-column' }, ...this.props.tableDescription.headValueRow.columns];
+        const columns: (HeadColumnDescriptor | DataColumnDescriptor<D, {}>)[] = [{ type: 'head-column' }, ...this.props.tableDescription.headValueRow.columns];
         const sizes = columns.map(getHeadValueRowCellId).map((id) => this.props.sizes[id] === undefined ? 1 / columns.length : this.props.sizes[id]);
 
         return <div ref={(ref) => this.container = ref} tabIndex={0} style={{ position: 'relative', overflowX: 'visible', overflowY: 'auto', height: 500, border: '1px solid black' }}>
