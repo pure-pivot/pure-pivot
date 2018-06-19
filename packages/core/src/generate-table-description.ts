@@ -8,8 +8,8 @@ import { Configuration } from './configuration';
 import { GroupDescriptor, DataColumnDescriptor, GroupColumnDescriptor, GroupHeaderRow, ValueHeaderRow, BodyRow, TableDescription, BodyCell } from './table/model';
 import { defaultGenerateTableDescriptionPlugins } from './plugins/default-plugins';
 
-function createColumnDescriptors<D>(recursiveColumns: RecursiveGroup[], values: ValueReducers<D>, groupDescriptors: GroupDescriptor[] = []): { dataColumns: DataColumnDescriptor<D, any>[], groupColumns: GroupColumnDescriptor[] } {
-    const dataColumns: DataColumnDescriptor<D, any>[] = [];
+function createColumnDescriptors<D>(recursiveColumns: RecursiveGroup[], values: ValueReducers<D>, groupDescriptors: GroupDescriptor[] = []): { dataColumns: DataColumnDescriptor<D, {}>[], groupColumns: GroupColumnDescriptor[] } {
+    const dataColumns: DataColumnDescriptor<D, {}>[] = [];
     const groupColumns: GroupColumnDescriptor[] = [];
 
     for (const column of recursiveColumns) {
@@ -65,14 +65,14 @@ function createGroupHeaderRows<D>(groupColumns: GroupColumnDescriptor[], groups:
     return rows;
 }
 
-function createValueHeaderRow<D>(dataColumns: DataColumnDescriptor<D, any>[]): ValueHeaderRow<D> {
+function createValueHeaderRow<D>(dataColumns: DataColumnDescriptor<D, {}>[]): ValueHeaderRow<D> {
     return {
         type: 'value-header-row',
         columns: dataColumns
     };
 }
 
-function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: number[], columns: Grouping, dataColumns: DataColumnDescriptor<D, any>[], data: D[], values: ValueReducers<D>, sorting: Comparators<D>, level: number = 0, accumulator: BodyRow<D>[] = []): BodyRow<D>[] {
+function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: number[], columns: Grouping, dataColumns: DataColumnDescriptor<D, {}>[], data: D[], values: ValueReducers<D>, sorting: Comparators<D>, level: number = 0, accumulator: BodyRow<D>[] = []): BodyRow<D>[] {
     const rowsWithData: SortingGroup<D>[] = recursiveRows.map((rows) => {
         const rowIndices: number[] = [];
         for (let i = rows.dataIndexStart; i < rows.dataIndexEnd; i++) {
@@ -80,7 +80,7 @@ function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: numbe
         }
 
         const indicesByGroup = columns.groupDataIndices(rows.dataIndexStart, rows.dataIndexEnd);
-        const cells: BodyCell<D, any>[] = [];
+        const cells: BodyCell<D, {}>[] = [];
         for (let i = 0; i < indicesByGroup.length; i++) {
             const groupData = indicesByGroup[i].map((index) => data[index]);
             for (let j = 0; j < values.length; j++) {

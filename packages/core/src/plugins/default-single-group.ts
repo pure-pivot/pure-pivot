@@ -1,7 +1,7 @@
 import { ConfigurationBuilder } from '../configuration';
 import { Grouper } from '../groups/model';
 
-export const singleGroup: Grouper<any> = {
+export const singleGroup: Grouper<{}> = {
     id: 'pure-pivot-default-group',
     label: 'All',
     grouper: (data) => {

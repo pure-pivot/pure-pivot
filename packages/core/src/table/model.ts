@@ -22,7 +22,7 @@ export interface DataColumnDescriptor<D, T> {
     groupDescriptors: GroupDescriptor[];
 }
 
-export type ColumnDescriptor<D> = DataColumnDescriptor<D, any> | HeadColumnDescriptor | GroupColumnDescriptor;
+export type ColumnDescriptor<D> = DataColumnDescriptor<D, {}> | HeadColumnDescriptor | GroupColumnDescriptor;
 
 export interface GroupHeaderRow {
     type: 'group-header-row';
@@ -34,7 +34,7 @@ export interface GroupHeaderRow {
 
 export interface ValueHeaderRow<D> {
     type: 'value-header-row';
-    columns: DataColumnDescriptor<D, any>[];
+    columns: DataColumnDescriptor<D, {}>[];
 }
 
 // export type HeadRow<D> = GroupHeaderRow | ValueHeaderRow<D>; // | CustomHeaderRow<D>;
@@ -49,7 +49,7 @@ export interface BodyRow<D> {
     type: 'body-row';
     level: number;
     label: string;
-    cells: BodyCell<D, any>[];
+    cells: BodyCell<D, {}>[];
 }
 
 // export type Row<D> = BodyRow<D> | HeadRow<D>;

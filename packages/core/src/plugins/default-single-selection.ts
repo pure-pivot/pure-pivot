@@ -1,7 +1,7 @@
 import { ConfigurationBuilder } from '../configuration';
 import { Grouper } from '../groups/model';
 
-export const singleSelection: Grouper<any> = {
+export const singleSelection: Grouper<{}> = {
     id: 'pure-pivot-default-selection',
     label: 'Identity',
     grouper: (data) => {

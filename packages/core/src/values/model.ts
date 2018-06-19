@@ -11,4 +11,4 @@ export interface ValueReducerDescription<D, T> {
     renderer: ValueRenderer<T>;
 }
 
-export type ValueReducers<D> = ValueReducerDescription<D, any>[];
+export type ValueReducers<D> = ValueReducerDescription<D, {}>[];
