@@ -128,7 +128,8 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
     const columnDescriptors = createColumnDescriptors(columns.recursiveGroups, configuration.values);
     const valueHeaderRow = createValueHeaderRow(columnDescriptors.dataColumns);
     const groupHeaderRows = createGroupHeaderRows(columnDescriptors.groupColumns, configuration.groups);
-    const bodyRows = createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData, configuration.values, configuration.sorting);
+    const sorting = configuration.sorting.map((sorter) => sorter(valueHeaderRow.columns));
+    const bodyRows = createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData, configuration.values, sorting);
 
     // TODO: after rows/columns have been generated, allow for sorting configuration to kick in
 

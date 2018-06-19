@@ -3,7 +3,7 @@ import { ValueReducers, ValueReducerDescription } from './values/model';
 import { Groups, Grouper } from './groups/model';
 import { Selections } from './selections/model';
 import { defaultConfigurationPlugins } from './plugins/default-plugins';
-import { Comparators, Comparator, Sorting } from './sorting/model';
+import { Sorter, Sorting } from './sorting/model';
 import { generateTableDescription } from './generate-table-description';
 import { TableDescription } from './table/model';
 
@@ -19,7 +19,7 @@ export interface ConfigurationBuilder<D> {
     filters: Filters<D>;
     groups: Groups<D>;
     selections: Selections<D>;
-    sorting: Comparators<D>;
+    sorting: Sorting<D>;
     values: ValueReducers<D>;
     generateTableDescription: (configuration: Configuration<D>) => (data: D[]) => TableDescription<D>;
     withFilters<C>(this: C, filters: Filters<D>): C;
@@ -30,8 +30,8 @@ export interface ConfigurationBuilder<D> {
     withGroup<C>(this: C, group: Grouper<D>): C;
     withSelections<C>(this: C, selections: Selections<D>): C;
     withSelection<C>(this: C, selection: Grouper<D>): C;
-    withSorters<C>(this: C, sorters: Comparators<D>): C;
-    withSorter<C>(this: C, sorter: Comparator<D>): C;
+    withSorters<C>(this: C, sorters: Sorting<D>): C;
+    withSorter<C>(this: C, sorter: Sorter<D>): C;
     withPlugin<C>(plugin: (configurationBuilder: ConfigurationBuilder<D>) => C): C;
     build(): Configuration<D>;
 }
@@ -76,11 +76,11 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
             builder.selections = [...builder.selections, selection];
             return this;
         },
-        withSorters(sorters: Comparators<D>) {
+        withSorters(sorters: Sorting<D>) {
             builder.sorting = sorters;
             return this;
         },
-        withSorter(sorter: Comparator<D>) {
+        withSorter(sorter: Sorter<D>) {
             builder.sorting = [...builder.sorting, sorter];
             return this;
         },

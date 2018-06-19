@@ -10,4 +10,6 @@ export type Comparator<D> = (group1: SortingGroup<D>, group2: SortingGroup<D>) =
 
 export type Comparators<D> = Comparator<D>[];
 
-export type Sorting<D> = (dataColumns: DataColumnDescriptor<D>[]) => Comparators<D>;
+export type Sorter<D> = (dataColumns: DataColumnDescriptor<D>[]) => Comparator<D>;
+
+export type Sorting<D> = Sorter<D>[];

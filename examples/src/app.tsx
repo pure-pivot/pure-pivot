@@ -15,6 +15,7 @@ import { TableDescription } from '../../packages/core/src/table/model';
 import { Resizer } from '../../packages/column-resizer/src/resizer-component';
 import { Sizes } from '../../packages/column-resizer/src/model';
 import { getHeadValueRowCellId } from '../../packages/core/src/util/id-helper';
+import { sortingHelper, ImprovedConfigurationBuilder } from '../../packages/sorting-helper/src/index';
 
 interface WithStatusLoading {
     status: 'loading';
@@ -78,6 +79,7 @@ const tableConfiguration = createTableConfigurationBuilder<Data>()
 
 const configuration = createConfigurationBuilder<Data>()
     // .withFilter((data) => data.slice(0, 50))
+    .withPlugin<ImprovedConfigurationBuilder<Data>>(sortingHelper)
     .withGroup({
         id: 'method',
         label: 'Method',
@@ -183,10 +185,10 @@ const configuration = createConfigurationBuilder<Data>()
         label: 'Sum duration',
         reducer: (values) => `${values.reduce((sum, data) => sum + data.duration, 0).toFixed(1)} ms`
     })
-    .withSorter((group1, group2) => {
-        console.log(group1.cells[0].column);
-        const cellIndex = group1.cells.findIndex((cell) => cell.column.groupDescriptors[0].groupIndex === 1 && cell.column.groupDescriptors[1].groupIndex === 0 && cell.column.valueDescription.id === 'count');
-        return group1.cells[cellIndex].data.length - group2.cells[cellIndex].data.length;
+    .withSorter((dataColumns) => {
+        const checks: { [Key: string]: number } = { method: 1, statusCode: 0 };
+        const cellIndex = dataColumns.findIndex((column) => column.groupDescriptors.every((group) => checks[group.groupId] === group.groupIndex) && column.valueDescription.id === 'count');
+        return (group1, group2) => group1.cells[cellIndex].data.length - group2.cells[cellIndex].data.length;
     })
     .build();
 
