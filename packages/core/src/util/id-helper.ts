@@ -1,6 +1,6 @@
 import { HeadColumnDescriptor, DataColumnDescriptor, GroupColumnDescriptor } from '../table/model';
 
-export function getHeadValueRowCellId(column: HeadColumnDescriptor | DataColumnDescriptor<{}, {}>) {
+export function getHeadValueRowCellId(column: HeadColumnDescriptor | DataColumnDescriptor<any, any>) {
     if (column.type === 'head-column') {
         return 'head-row-value-head-column';
     } else {
@@ -16,7 +16,7 @@ export function getHeadGroupRowCellId(groupId: string, column: HeadColumnDescrip
     }
 }
 
-export function getBodyRowCellId(rowIndex: number, column: HeadColumnDescriptor | DataColumnDescriptor<{}, {}>) {
+export function getBodyRowCellId(rowIndex: number, column: HeadColumnDescriptor | DataColumnDescriptor<any, any>) {
     if (column.type === 'head-column') {
         return `body-row-${rowIndex}-head-column`;
     } else {
