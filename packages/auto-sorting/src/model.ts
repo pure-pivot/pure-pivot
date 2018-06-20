@@ -8,7 +8,7 @@ export interface SortedValueReducerDescription<D, T> extends ValueReducerDescrip
     comparator: DataComparator<T>;
 }
 
-export type SortedValueReducers<D> = SortedValueReducerDescription<D, {}>[];
+export type SortedValueReducers<D> = SortedValueReducerDescription<D, any>[];
 
 export interface SortingDescriptor {
     valueId: string;

@@ -3,7 +3,7 @@ import { DataColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
 import { SortingGroup } from '@pure-pivot/core/lib/es6/sorting/model';
 import { ImprovedConfigurationBuilder, SortedValueReducers, SortedValueReducerDescription, SortingDescriptor } from './model';
 
-export function sortingHelper<D>(configurationBuilder: ConfigurationBuilder<D>): ImprovedConfigurationBuilder<D> {
+export function autoSorting<D>(configurationBuilder: ConfigurationBuilder<D>): ImprovedConfigurationBuilder<D> {
     const { values, withValue, withValues, ...other } = configurationBuilder;
 
     const builder: ImprovedConfigurationBuilder<D> = {
@@ -33,6 +33,7 @@ export function sortingHelper<D>(configurationBuilder: ConfigurationBuilder<D>):
                 ...configuration.sorting,
                 ...builder.autoSorters.map((sorter) => {
                     const multiplier = sorter.order === 'ascending' ? 1 : -1;
+                    console.log(multiplier);
                     return (dataColumns: DataColumnDescriptor<D, {}>[]) => {
                         const cellIndex = dataColumns.findIndex((column) =>
                             column.valueDescription.id === sorter.valueId
