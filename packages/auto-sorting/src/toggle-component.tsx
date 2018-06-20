@@ -8,15 +8,6 @@ export interface ToggleComponentProps {
     onSetActiveSorting: (sorting: SortingDescriptor | null) => void;
 }
 
-// .withAutoSorter({
-//     valueId: 'sum-duration',
-//     groupDescriptors: [{
-//         groupId: 'pure-pivot-default-group',
-//         groupIndex: 0
-//     }],
-//     order: 'descending'
-// })
-
 export class ToggleComponent extends React.Component<ToggleComponentProps, never> {
     renderInactive() {
         return <span style={{ cursor: 'pointer' }} onClick={() => this.props.onSetActiveSorting({ valueId: this.props.column.valueDescription.id, groupDescriptors: this.props.column.groupDescriptors, order: 'ascending' })}>

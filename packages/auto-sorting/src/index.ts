@@ -32,8 +32,8 @@ export function autoSorting<D>(configurationBuilder: ConfigurationBuilder<D>): I
             configuration.sorting = [
                 ...configuration.sorting,
                 ...builder.autoSorters.map((sorter) => {
+                    const valueDescription = builder.values.find((valueDescription) => valueDescription.id === sorter.valueId);
                     const multiplier = sorter.order === 'ascending' ? 1 : -1;
-                    console.log(multiplier);
                     return (dataColumns: DataColumnDescriptor<D, {}>[]) => {
                         const cellIndex = dataColumns.findIndex((column) =>
                             column.valueDescription.id === sorter.valueId
@@ -43,14 +43,13 @@ export function autoSorting<D>(configurationBuilder: ConfigurationBuilder<D>): I
                                 && group.groupIndex === sorter.groupDescriptors[index].groupIndex
                             )
                         );
-                        return (group1: SortingGroup<D>, group2: SortingGroup<D>) => {
-                            const valueDescription = builder.values.find((valueDescription) => valueDescription.id === sorter.valueId);
-                            if (cellIndex < 0 || valueDescription === undefined || sorter.order === null) {
-                                return 0;
-                            } else {
-                                return multiplier * valueDescription.comparator(group1.cells[cellIndex].value, group2.cells[cellIndex].value);
-                            }
-                        };
+
+                        if (cellIndex < 0 || valueDescription === undefined || sorter.order === null) {
+                            return () => 0;
+                        } else {
+                            return (group1: SortingGroup<D>, group2: SortingGroup<D>) =>
+                                multiplier * valueDescription.comparator(group1.cells[cellIndex].value, group2.cells[cellIndex].value);
+                        }
                     };
                 })
             ];
