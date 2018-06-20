@@ -8,11 +8,11 @@ import { clamp } from '@pure-pivot/core/lib/es6/util/math';
 
 export interface ResizerProps {
     sizes: Sizes;
-    slack: number;
+    minimumSpace: number;
     onSizesChange: (sizes: Sizes) => void;
     onSizesChangeEnd: (sizes: Sizes) => void;
     tableElement: Element;
-    tableDescription: TableDescription<{}>;
+    tableDescription: TableDescription<any>;
 }
 
 export interface ResizerState {
@@ -133,8 +133,8 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
     adjustSizes(ids: string[], sizes: number[], index: number, delta: number) {
         const clamped = clamp(
             delta,
-            this.props.slack / ids.length - this.state.draggingStartSizes[0],
-            this.state.draggingStartSizes[1] - this.props.slack / ids.length
+            this.props.minimumSpace / ids.length - this.state.draggingStartSizes[0],
+            this.state.draggingStartSizes[1] - this.props.minimumSpace / ids.length
         );
         sizes[index] = this.state.draggingStartSizes[0] + clamped;
         sizes[index + 1] = this.state.draggingStartSizes[1] - clamped;
