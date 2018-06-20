@@ -15,8 +15,9 @@ import { TableDescription } from '../../packages/core/src/table/model';
 import { Resizer } from '../../packages/column-resizer/src/resizer-component';
 import { Sizes } from '../../packages/column-resizer/src/model';
 import { getHeadValueRowCellId } from '../../packages/core/src/util/id-helper';
-import { sortingHelper } from '../../packages/auto-sorting/src/index';
-import { ImprovedConfigurationBuilder } from '../../packages/auto-sorting/src/model';
+import { autoSorting } from '../../packages/auto-sorting/src/index';
+import { ImprovedConfigurationBuilder, SortingDescriptor } from '../../packages/auto-sorting/src/model';
+import { ToggleComponent } from '../../packages/auto-sorting/src/toggle-component';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -55,124 +56,99 @@ function isArrayOfData(object: any): object is Data[] {
     return Array.isArray(object) && object.every((item) => isData(item));
 }
 
-export interface AppState {
-    tableDescription: WithStatus<TableDescription<Data>>;
-    sizes: Sizes;
-    offset: number;
-    table: Element | null;
-}
-
-const tableConfiguration = createTableConfigurationBuilder<Data>()
-    // .withPlugin(stylable)
-    // .withPlugin(resizable)
-    .withPlugin(virtualGrid())
-    .withTableHeadValueCellComponent((props) => {
-        if (props.column.type === 'data-column') {
-            console.log(props.column);
-        }
-        return <div style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{props.children}</div>;
-    })
-    // .withTableHeadGroupRowComponent(() => null)
-    // .withTableHeadValueCellComponent((props) =>
-    //     props.column.type === 'head-column'
-    //         ? <div />
-    //         : <div children={props.children} />
-    // )
-    .build();
-
-const configuration = createConfigurationBuilder<Data>()
+const configurationBuilder = createConfigurationBuilder<Data>()
     // .withFilter((data) => data.slice(0, 50))
-    .withPlugin<ImprovedConfigurationBuilder<Data>>(sortingHelper)
-    // .withGroup({
-    //     id: 'method',
-    //     label: 'Method',
-    //     grouper: (data) => {
-    //         const byMethod: { [Key: string]: number } = {};
-    //         const labels: string[] = [];
-    //         const dataIndices: number[] = [];
+    .withPlugin<ImprovedConfigurationBuilder<Data>>(autoSorting)
+    .withGroup({
+        id: 'method',
+        label: 'Method',
+        grouper: (data) => {
+            const byMethod: { [Key: string]: number } = {};
+            const labels: string[] = [];
+            const dataIndices: number[] = [];
 
-    //         for (const row of data) {
-    //             if (byMethod[row.method] === undefined) {
-    //                 byMethod[row.method] = labels.length;
-    //                 labels.push(row.method);
-    //             }
-    //             dataIndices.push(byMethod[row.method]);
-    //         }
+            for (const row of data) {
+                if (byMethod[row.method] === undefined) {
+                    byMethod[row.method] = labels.length;
+                    labels.push(row.method);
+                }
+                dataIndices.push(byMethod[row.method]);
+            }
 
-    //         return {
-    //             groupIndices: dataIndices,
-    //             groupLabels: labels
-    //         };
-    //     }
-    // })
-    // .withGroup({
-    //     id: 'statusCode',
-    //     label: 'Status code',
-    //     grouper: (data) => {
-    //         const byStatusCode: { [Key: string]: number } = {};
-    //         const labels: string[] = [];
-    //         const dataIndices: number[] = [];
+            return {
+                groupIndices: dataIndices,
+                groupLabels: labels
+            };
+        }
+    })
+    .withGroup({
+        id: 'statusCode',
+        label: 'Status code',
+        grouper: (data) => {
+            const byStatusCode: { [Key: string]: number } = {};
+            const labels: string[] = [];
+            const dataIndices: number[] = [];
 
-    //         for (const row of data) {
-    //             if (byStatusCode[row.statusCode] === undefined) {
-    //                 byStatusCode[row.statusCode] = labels.length;
-    //                 labels.push(row.statusCode.toString());
-    //             }
-    //             dataIndices.push(byStatusCode[row.statusCode]);
-    //         }
+            for (const row of data) {
+                if (byStatusCode[row.statusCode] === undefined) {
+                    byStatusCode[row.statusCode] = labels.length;
+                    labels.push(row.statusCode.toString());
+                }
+                dataIndices.push(byStatusCode[row.statusCode]);
+            }
 
-    //         return {
-    //             groupIndices: dataIndices,
-    //             groupLabels: labels
-    //         };
-    //     }
-    // })
-    // .withSelection({
-    //     id: 'url-first',
-    //     label: 'URL 1st',
-    //     grouper: (data) => {
-    //         const byUrlFirst: { [Key: string]: number } = {};
-    //         const labels: string[] = [];
-    //         const dataIndices: number[] = [];
+            return {
+                groupIndices: dataIndices,
+                groupLabels: labels
+            };
+        }
+    })
+    .withSelection({
+        id: 'url-first',
+        label: 'URL 1st',
+        grouper: (data) => {
+            const byUrlFirst: { [Key: string]: number } = {};
+            const labels: string[] = [];
+            const dataIndices: number[] = [];
 
-    //         for (const row of data) {
-    //             const urlFirst = row.url.split('/')[1];
-    //             if (byUrlFirst[urlFirst] === undefined) {
-    //                 byUrlFirst[urlFirst] = labels.length;
-    //                 labels.push(urlFirst);
-    //             }
-    //             dataIndices.push(byUrlFirst[urlFirst]);
-    //         }
+            for (const row of data) {
+                const urlFirst = row.url.split('/')[1];
+                if (byUrlFirst[urlFirst] === undefined) {
+                    byUrlFirst[urlFirst] = labels.length;
+                    labels.push(urlFirst);
+                }
+                dataIndices.push(byUrlFirst[urlFirst]);
+            }
 
-    //         return {
-    //             groupIndices: dataIndices,
-    //             groupLabels: labels
-    //         };
-    //     }
-    // })
-    // .withSelection({
-    //     id: 'url-second',
-    //     label: 'URL 2nd',
-    //     grouper: (data) => {
-    //         const byUrlSecond: { [Key: string]: number } = {};
-    //         const labels: string[] = [];
-    //         const dataIndices: number[] = [];
+            return {
+                groupIndices: dataIndices,
+                groupLabels: labels
+            };
+        }
+    })
+    .withSelection({
+        id: 'url-second',
+        label: 'URL 2nd',
+        grouper: (data) => {
+            const byUrlSecond: { [Key: string]: number } = {};
+            const labels: string[] = [];
+            const dataIndices: number[] = [];
 
-    //         for (const row of data) {
-    //             const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
-    //             if (byUrlSecond[urlSecond] === undefined) {
-    //                 byUrlSecond[urlSecond] = labels.length;
-    //                 labels.push(urlSecond);
-    //             }
-    //             dataIndices.push(byUrlSecond[urlSecond]);
-    //         }
+            for (const row of data) {
+                const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
+                if (byUrlSecond[urlSecond] === undefined) {
+                    byUrlSecond[urlSecond] = labels.length;
+                    labels.push(urlSecond);
+                }
+                dataIndices.push(byUrlSecond[urlSecond]);
+            }
 
-    //         return {
-    //             groupIndices: dataIndices,
-    //             groupLabels: labels
-    //         };
-    //     }
-    // })
+            return {
+                groupIndices: dataIndices,
+                groupLabels: labels
+            };
+        }
+    })
     .withValue({
         id: 'count',
         label: 'Count',
@@ -185,7 +161,7 @@ const configuration = createConfigurationBuilder<Data>()
         label: 'Avg. duration',
         reducer: (values) => values.reduce((sum, data) => sum + data.duration, 0) / values.length,
         renderer: (value: number) => Number.isNaN(value) ? '' : `${value.toFixed(1)} ms`,
-        comparator: (value1, value2) => value1 - value2
+        comparator: (value1, value2) => Number.isNaN(value1) ? -1 : Number.isNaN(value2) ? 1 : value1 - value2
     })
     .withValue({
         id: 'sum-duration',
@@ -193,24 +169,76 @@ const configuration = createConfigurationBuilder<Data>()
         reducer: (values) => values.reduce((sum, data) => sum + data.duration, 0),
         renderer: (value: number) => `${value.toFixed(1)} ms`,
         comparator: (value1, value2) => value1 - value2
-    })
-    .withAutoSorter({
-        valueId: 'sum-duration',
-        groupDescriptors: [{
-            groupId: 'pure-pivot-default-group',
-            groupIndex: 0
-        }],
-        order: 'descending'
-    })
-    .build();
+    });
+
+// .withAutoSorter({
+//     valueId: 'sum-duration',
+//     groupDescriptors: [{
+//         groupId: 'pure-pivot-default-group',
+//         groupIndex: 0
+//     }],
+//     order: 'descending'
+// })
+
+export interface AppState {
+    async: WithStatus<{ data: Data[], tableDescription: TableDescription<Data> }>;
+    sizes: Sizes;
+    offset: number;
+    table: Element | null;
+    sorting: SortingDescriptor | null;
+}
 
 export class App extends React.Component<{}, AppState> {
     state: AppState = {
-        tableDescription: { status: 'loading' },
+        async: { status: 'loading' },
         sizes: {},
         offset: 0,
-        table: null
+        table: null,
+        sorting: null
     };
+
+    tableConfiguration = createTableConfigurationBuilder<Data>()
+        .withPlugin(virtualGrid())
+        .withTableHeadValueCellComponent((props) =>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>{props.children}</span>
+                {props.column.type === 'data-column'
+                    && <ToggleComponent
+                        activeSorting={this.state.sorting}
+                        column={props.column}
+                        onSetActiveSorting={(sorting) => {
+                            this.setState({
+                                sorting,
+                                async: this.state.async.status === 'success'
+                                    ? {
+                                        ...this.state.async,
+                                        result: {
+                                            ...this.state.async.result,
+                                            tableDescription: generateTableDescription(this.buildConfiguration(sorting))(this.state.async.result.data)
+                                        }
+                                    }
+                                    : this.state.async
+                            });
+                        }}
+                    />
+                }
+            </div>
+        )
+        // .withTableHeadGroupRowComponent(() => null)
+        // .withTableHeadValueCellComponent((props) =>
+        //     props.column.type === 'head-column'
+        //         ? <div />
+        //         : <div children={props.children} />
+        // )
+        .build();
+
+    buildConfiguration(sorting: SortingDescriptor | null) {
+        if (sorting === null) {
+            return configurationBuilder.withAutoSorters([]).build();
+        } else {
+            return configurationBuilder.withAutoSorters([sorting]).build();
+        }
+    }
 
     componentDidMount() {
         // window.setInterval(() => this.setState({ sizes: [] }), 1000);
@@ -256,54 +284,47 @@ export class App extends React.Component<{}, AppState> {
                     }
                 }
                 requests.sort((a, b) => a.time - b.time);
-                this.setState({ tableDescription: { status: 'success', result: generateTableDescription(configuration)(requests) } });
+                this.setState({ async: { status: 'success', result: { data: requests, tableDescription: generateTableDescription(this.buildConfiguration(this.state.sorting))(requests) } } });
             })
             .catch((error) => {
                 console.error(error);
-                this.setState({ tableDescription: { status: 'failed', reason: error } });
+                this.setState({ async: { status: 'failed', reason: error } });
             });
     }
 
     render() {
-        if (this.state.tableDescription.status === 'loading') {
+        if (this.state.async.status === 'loading') {
             return <React.Fragment>
                 Loading...
             </React.Fragment>;
-        } else if (this.state.tableDescription.status === 'failed') {
+        } else if (this.state.async.status === 'failed') {
             return <pre>
-                {JSON.stringify(this.state.tableDescription.reason, null, 2)}
+                {JSON.stringify(this.state.async.reason, null, 2)}
             </pre>;
         } else {
             return <React.Fragment>
                 <h3>Table</h3>
-                Sorting: ▼
-                <tableConfiguration.tableContainerComponent
+                <this.tableConfiguration.tableContainerComponent
                     ref={(ref) => {
                         if (ref !== null) {
                             const element = ReactDOM.findDOMNode(ref);
-                            if (element && 'getBoundingClientRect' in element && element !== this.state.table) {
+                            if (element !== null && 'getBoundingClientRect' in element && element !== this.state.table) {
                                 this.setState({ table: element });
                             }
                         }
                     }}
-                    tableDescription={this.state.tableDescription.result}
+                    tableDescription={this.state.async.result.tableDescription}
                     rowHeight={20}
                     overscan={2}
                     sizes={this.state.sizes}
-                // data={this.state.data.result}
-                // filters={configuration.filters}
-                // groups={configuration.groups}
-                // selections={configuration.selections}
-                // values={configuration.values}
-                // sorting={configuration.sorting}
                 />
-                {this.state.table !== null &&
-                    <Resizer
+                {this.state.table !== null
+                    && <Resizer
                         sizes={this.state.sizes}
-                        slack={0.1}
+                        minimumSpace={0.1}
                         onSizesChange={(sizes) => this.setState({ sizes })}
                         onSizesChangeEnd={() => undefined}
-                        tableDescription={this.state.tableDescription.result}
+                        tableDescription={this.state.async.result.tableDescription}
                         tableElement={this.state.table}
                     />
                 }
