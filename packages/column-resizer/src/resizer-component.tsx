@@ -8,6 +8,8 @@ import { clamp } from '@pure-pivot/core/lib/es6/util/math';
 
 export interface ResizerProps {
     sizes: Sizes;
+    dragHandleWidth: number;
+    dragHandleComponent?: React.ReactType;
     minimumSpace: number;
     onSizesChange: (sizes: Sizes) => void;
     onSizesChangeEnd: (sizes: Sizes) => void;
@@ -96,8 +98,8 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
                             position: 'absolute',
                             cursor: 'col-resize',
                             top: offsetTop,
-                            left: offsetLeft + size * this.state.tableInnerWidth - 10/* + (this.state.draggingId === ids[i] ? this.state.draggingOffset : 0)*/,
-                            width: 20,
+                            left: offsetLeft + size * this.state.tableInnerWidth - this.props.dragHandleWidth / 2,
+                            width: this.props.dragHandleWidth,
                             height: this.state.tableInnerHeight
                         }}
                         onDragStart={() => this.setState({ draggingId: ids[i], draggingStartSizes: [sizes[i], sizes[i + 1]] })}
@@ -121,7 +123,7 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
                             }
                         }}
                     >
-                        <div style={{ position: 'absolute', left: 9, width: 2, height: '100%', backgroundColor: 'blue' }} />
+                        {this.props.dragHandleComponent !== undefined && <this.props.dragHandleComponent />}
                     </Draggable>
                 );
             }
@@ -138,8 +140,6 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
         );
         sizes[index] = this.state.draggingStartSizes[0] + clamped;
         sizes[index + 1] = this.state.draggingStartSizes[1] - clamped;
-
-        // TODO: if draggable is clamped, perhaps resize rest of columns instead?
     }
 
     render() {

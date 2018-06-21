@@ -326,6 +326,8 @@ export class App extends React.Component<{}, AppState> {
                         onSizesChangeEnd={() => undefined}
                         tableDescription={this.state.async.result.tableDescription}
                         tableElement={this.state.table}
+                        dragHandleWidth={20}
+                        dragHandleComponent={() => <div style={{ position: 'absolute', left: 9, width: 2, height: '100%', backgroundColor: 'green' }} />}
                     />
                 }
             </React.Fragment>;
