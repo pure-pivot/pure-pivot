@@ -4,7 +4,7 @@ export function provideProps<P, U>(Component: React.ComponentClass<P>, providedP
 export function provideProps<P, U>(Component: React.StatelessComponent<P>, providedProps: U): React.StatelessComponent<Pick<P, Exclude<keyof P, keyof U>>>;
 export function provideProps<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>>;
 export function provideProps<P, U>(Component: React.ComponentType<P>, providedProps: U): React.ComponentType<Pick<P, Exclude<keyof P, keyof U>>> {
-    if (typeof Component === 'function' && 'render' in Component.prototype) {
+    if (Component.prototype !== undefined && 'render' in Component.prototype) {
         return class ProvideProps extends React.Component<Pick<P, Exclude<keyof P, keyof U>>, never> {
             render() {
                 return <Component {...providedProps} {...this.props} />;
