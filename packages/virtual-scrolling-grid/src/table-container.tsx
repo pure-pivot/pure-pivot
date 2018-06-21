@@ -1,21 +1,24 @@
 import * as React from 'react';
+import * as ReactDOM from 'react-dom';
 import * as shallowEqual from 'shallowequal';
 import { TableDescription, HeadColumnDescriptor, DataColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
-import { TableHeadRowsProps, TableHeadRowsProvidedProps } from '@pure-pivot/default-table/lib/es6/table-head-rows';
-import { TableBodyRowsProps, TableBodyRowsProvidedProps } from './table-body-rows';
 import { getHeadValueRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
+import { isElement } from '@pure-pivot/core/lib/es6/util/assertion';
 import { Sizes } from './model';
+import { TableHeadProps, TableHeadProvidedProps } from './table-head';
+import { TableBodyProps, TableBodyProvidedProps } from './table-body';
 
 export interface TableContainerProps<D> {
     rowHeight: number;
     overscan: number;
     sizes: Sizes;
     tableDescription: TableDescription<D>;
-    tableHeadRowsComponent: React.ComponentType<Pick<TableHeadRowsProps<D>, Exclude<keyof TableHeadRowsProps<D>, TableHeadRowsProvidedProps>>>;
-    tableBodyRowsComponent: React.ComponentType<Pick<TableBodyRowsProps<D>, Exclude<keyof TableBodyRowsProps<D>, TableBodyRowsProvidedProps>>>;
+    tableWrapperComponent: React.ReactType;
+    tableHeadComponent: React.ComponentClass<Pick<TableHeadProps<D>, Exclude<keyof TableHeadProps<D>, TableHeadProvidedProps>>>;
+    tableBodyComponent: React.ComponentType<Pick<TableBodyProps<D>, Exclude<keyof TableBodyProps<D>, TableBodyProvidedProps>>>;
 }
 
-export type TableContainerProvidedProps = 'tableHeadRowsComponent' | 'tableBodyRowsComponent';
+export type TableContainerProvidedProps = 'tableWrapperComponent' | 'tableHeadComponent' | 'tableBodyComponent';
 
 export interface TableContainerState {
     scrollTop: number;
@@ -30,9 +33,9 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
         headHeight: null
     };
 
-    container: HTMLDivElement | null = null;
+    container: Element | null = null;
 
-    head: HTMLDivElement | null = null;
+    head: Element | null = null;
 
     raf: number | undefined = undefined;
 
@@ -41,12 +44,26 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
     }
 
     componentDidMount() {
+        this.updateContainer();
         this.raf = window.requestAnimationFrame(this.update);
+    }
+
+    componentDidUpdate() {
+        this.updateContainer();
     }
 
     componentWillUnmount() {
         if (this.raf !== undefined) {
             window.cancelAnimationFrame(this.raf);
+        }
+    }
+
+    updateContainer() {
+        const node = ReactDOM.findDOMNode(this);
+        if (node !== null && isElement(node)) {
+            this.container = node;
+        } else {
+            this.container = null;
         }
     }
 
@@ -75,19 +92,39 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
     }
 
     renderHead(sizes: number[]) {
-        return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: sizes.map((fraction) => `${fraction * 100}%`).join(' '), top: this.state.scrollTop, backgroundColor: 'white' }} ref={(ref) => this.head = ref}>
-            <this.props.tableHeadRowsComponent tableDescription={this.props.tableDescription} />
-        </div>;
+        return <this.props.tableHeadComponent
+            ref={(ref) => {
+                if (ref !== null) {
+                    const node = ReactDOM.findDOMNode(ref);
+                    if (node !== null && isElement(node)) {
+                        this.head = node;
+                    } else {
+                        this.head = null;
+                    }
+                } else {
+                    this.head = null;
+                }
+            }}
+            rowHeight={this.props.rowHeight}
+            scrollTop={this.state.scrollTop}
+            sizes={sizes}
+            tableDescription={this.props.tableDescription}
+        />;
     }
 
     renderBody(sizes: number[]) {
         if (this.state.containerHeight !== null && this.state.headHeight !== null) {
             const start = Math.max(0, Math.floor(this.state.scrollTop / this.props.rowHeight) - this.props.overscan);
             const end = Math.min(this.props.tableDescription.bodyRowCount, Math.ceil((this.state.scrollTop + this.state.containerHeight - this.state.headHeight) / this.props.rowHeight) + this.props.overscan);
-
-            return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: sizes.map((fraction) => `${fraction * 100}%`).join(' '), top: this.state.headHeight + start * this.props.rowHeight }}>
-                <this.props.tableBodyRowsComponent tableDescription={this.props.tableDescription} start={start} end={end} />
-            </div>;
+            return <this.props.tableBodyComponent
+                rowHeight={this.props.rowHeight}
+                scrollTop={this.state.scrollTop}
+                sizes={sizes}
+                tableDescription={this.props.tableDescription}
+                headHeight={this.state.headHeight}
+                start={start}
+                end={end}
+            />;
         }
     }
 
@@ -95,10 +132,10 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
         const columns: (HeadColumnDescriptor | DataColumnDescriptor<D, {}>)[] = [{ type: 'head-column' }, ...this.props.tableDescription.headValueRow.columns];
         const sizes = columns.map(getHeadValueRowCellId).map((id) => this.props.sizes[id] === undefined ? 1 / columns.length : this.props.sizes[id]);
 
-        return <div ref={(ref) => this.container = ref} tabIndex={0} style={{ position: 'relative', overflowX: 'visible', overflowY: 'auto', height: 500, border: '1px solid black' }}>
+        return <this.props.tableWrapperComponent>
             {this.renderSpanner()}
             {this.renderBody(sizes)}
             {this.renderHead(sizes)}
-        </div>;
+        </this.props.tableWrapperComponent>;
     }
 }

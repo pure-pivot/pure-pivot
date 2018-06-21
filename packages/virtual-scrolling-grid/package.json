@@ -1,6 +1,6 @@
 {
   "name": "@pure-pivot/virtual-scrolling-grid",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "",
   "main": "lib/es5/virtual-scrolling-grid.js",
   "module": "lib/es6/virtual-scrolling-grid.js",
@@ -10,13 +10,16 @@
     "lib"
   ],
   "peerDependencies": {
-    "react": "*"
+    "react": "*",
+    "react-dom": "*"
   },
   "devDependencies": {
     "@types/react": "^16.3.13",
+    "@types/react-dom": "^16.0.6",
     "@types/shallowequal": "^0.2.2",
     "cross-env": "^5.1.5",
     "react": "^16.3.2",
+    "react-dom": "^16.3.2",
     "rimraf": "^2.6.2",
     "tslint": "^5.9.1",
     "typescript": "2.8.3"
@@ -39,7 +42,7 @@
   },
   "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
-    "@pure-pivot/core": "^0.1.14",
+    "@pure-pivot/core": "^0.1.15",
     "@pure-pivot/default-table": "^0.1.5",
     "shallowequal": "^1.0.2"
   }
