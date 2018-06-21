@@ -1,6 +1,6 @@
 {
   "name": "@pure-pivot/core",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "",
   "main": "lib/es5/index.js",
   "module": "lib/es6/index.js",
