@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
-    "@pure-pivot/core": "^0.1.12",
+    "@pure-pivot/core": "^0.1.13",
     "react-managed-draggable": "^0.1.5",
     "shallowequal": "^1.0.2"
   }
