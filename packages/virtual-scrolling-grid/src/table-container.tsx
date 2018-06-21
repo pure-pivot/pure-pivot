@@ -105,7 +105,6 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
                     this.head = null;
                 }
             }}
-            rowHeight={this.props.rowHeight}
             scrollTop={this.state.scrollTop}
             sizes={sizes}
             tableDescription={this.props.tableDescription}

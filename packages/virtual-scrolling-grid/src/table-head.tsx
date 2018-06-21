@@ -5,7 +5,6 @@ import { TableHeadRowsProps, TableHeadRowsProvidedProps } from '@pure-pivot/defa
 export interface TableHeadProps<D> {
     sizes: number[];
     scrollTop: number;
-    rowHeight: number;
     tableDescription: TableDescription<D>;
     tableHeadRowsComponent: React.ComponentType<Pick<TableHeadRowsProps<D>, Exclude<keyof TableHeadRowsProps<D>, TableHeadRowsProvidedProps>>>;
 }
@@ -14,7 +13,7 @@ export type TableHeadProvidedProps = 'tableHeadRowsComponent';
 
 export class TableHead<D> extends React.Component<TableHeadProps<D>, never> {
     render() {
-        return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridAutoRows: this.props.rowHeight, gridTemplateColumns: this.props.sizes.map((fraction) => `${fraction * 100}%`).join(' '), top: this.props.scrollTop, backgroundColor: 'white' }}>
+        return <div style={{ display: 'grid', position: 'absolute', width: '100%', gridTemplateColumns: this.props.sizes.map((fraction) => `${fraction * 100}%`).join(' '), top: this.props.scrollTop, backgroundColor: 'white' }}>
             <this.props.tableHeadRowsComponent tableDescription={this.props.tableDescription} />
         </div>;
     }
