@@ -21,3 +21,7 @@ export function assertOrThrow<T>(object: any, assertion: (object: any) => object
         throw new Error('Type assertion failed.');
     }
 }
+
+export function isElement(node: Element | Text): node is Element {
+    return 'getBoundingClientRect' in node;
+}
