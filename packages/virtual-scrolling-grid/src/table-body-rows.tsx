@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
-import { TableDescription, HeadColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
+import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 import { TableBodyCellProps } from '@pure-pivot/default-table/lib/es6/table-body-cell';
 import { getBodyRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
 

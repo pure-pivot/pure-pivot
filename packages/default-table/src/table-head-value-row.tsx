@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TableHeadValueCellProps } from './table-head-value-cell';
-import { ValueHeaderRow, TableDescription, HeadColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
+import { ValueHeaderRow, TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 import { getHeadValueRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
 
 export interface TableHeadValueRowProps<D> {

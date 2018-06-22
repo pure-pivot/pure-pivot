@@ -321,7 +321,7 @@ export class App extends React.Component<{}, AppState> {
                 {this.state.table !== null
                     && <Resizer
                         sizes={this.state.sizes}
-                        minimumSize={0.1 / this.state.async.result.tableDescription.columns.length}
+                        minimumSize={0.1 / this.state.async.result.tableDescription.columnCount}
                         onSizesChange={(sizes) => this.setState({ sizes })}
                         onSizesChangeEnd={() => undefined}
                         tableDescription={this.state.async.result.tableDescription}

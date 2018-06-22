@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
 import { Draggable, DraggableProps } from 'react-managed-draggable';
-import { TableDescription, DataColumnDescriptor, HeadColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
+import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 import { Sizes } from './model';
 import { getHeadValueRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
 import { clamp } from '@pure-pivot/core/lib/es6/util/math';

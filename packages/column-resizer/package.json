@@ -1,6 +1,6 @@
 {
   "name": "@pure-pivot/column-resizer",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "",
   "main": "lib/es5/resizer-component.js",
   "module": "lib/es6/resizer-component.js",

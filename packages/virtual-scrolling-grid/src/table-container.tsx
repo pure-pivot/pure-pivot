@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import * as shallowEqual from 'shallowequal';
-import { TableDescription, HeadColumnDescriptor, DataColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
+import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 import { getHeadValueRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
 import { isElement } from '@pure-pivot/core/lib/es6/util/assertion';
 import { Sizes } from './model';
