@@ -20,15 +20,17 @@ export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, nev
     render() {
         return this.props.tableDescription.bodyRows.map((row, index) =>
             <this.props.tableBodyRowComponent key={index}>
-                {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) =>
-                    <this.props.tableBodyCellComponent
-                        id={getBodyRowCellId(index, column)}
+                {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) => {
+                    const id = getBodyRowCellId(index, column);
+                    return <this.props.tableBodyCellComponent
+                        key={id}
+                        id={id}
                         row={row}
                         column={column}
                     >
                         {row.label}
-                    </this.props.tableBodyCellComponent>
-                )}
+                    </this.props.tableBodyCellComponent>;
+                })}
                 {row.cells.map((cell) => {
                     const id = getBodyRowCellId(index, cell.column);
                     return <this.props.tableBodyCellComponent

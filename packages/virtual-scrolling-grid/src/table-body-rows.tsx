@@ -22,15 +22,17 @@ export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, nev
     render() {
         return this.props.tableDescription.bodyRows.slice(this.props.start, this.props.end).map((row, index) =>
             <this.props.tableBodyRowComponent key={this.props.start + index}>
-                {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) =>
-                    <this.props.tableBodyCellComponent
-                        id={getBodyRowCellId(this.props.start + index, column)}
+                {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) => {
+                    const id = getBodyRowCellId(this.props.start + index, column);
+                    return <this.props.tableBodyCellComponent
+                        key={id}
+                        id={id}
                         row={row}
                         column={column}
                     >
                         {row.label}
-                    </this.props.tableBodyCellComponent>
-                )}
+                    </this.props.tableBodyCellComponent>;
+                })}
                 {row.cells.map((cell) => {
                     const id = getBodyRowCellId(this.props.start + index, cell.column);
                     return <this.props.tableBodyCellComponent

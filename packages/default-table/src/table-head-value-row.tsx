@@ -15,9 +15,11 @@ export type TableHeadValueRowProvidedProps = 'tableHeadRowComponent' | 'tableHea
 export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps<D>, never> {
     render() {
         return <this.props.tableHeadRowComponent>
-            {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) =>
-                <this.props.tableHeadValueCellComponent
-                    id={getHeadValueRowCellId(column)}
+            {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) => {
+                const id = getHeadValueRowCellId(column);
+                return <this.props.tableHeadValueCellComponent
+                    key={id}
+                    id={id}
                     scope="row"
                     colStart={0}
                     row={this.props.row}
@@ -25,8 +27,8 @@ export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps
                     tableDescription={this.props.tableDescription}
                 >
                     Values
-                </this.props.tableHeadValueCellComponent>
-            )}
+                </this.props.tableHeadValueCellComponent>;
+            })}
             {this.props.row.dataColumns.map((column, index) => {
                 const id = getHeadValueRowCellId(column);
                 return <this.props.tableHeadValueCellComponent
