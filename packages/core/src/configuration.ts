@@ -30,7 +30,7 @@ export interface ConfigurationBuilder<D> {
     withGroup<C>(this: C, group: Grouper<D>): C;
     withSelections<C>(this: C, selections: Selections<D>): C;
     withSelection<C>(this: C, selection: Grouper<D>): C;
-    withSorters<C>(this: C, sorters: Sorting<D>): C;
+    withSorters<C>(this: C, sorting: Sorting<D>): C;
     withSorter<C>(this: C, sorter: Sorter<D>): C;
     withPlugin<C>(plugin: (configurationBuilder: ConfigurationBuilder<D>) => C): C;
     build(): Configuration<D>;
@@ -76,8 +76,8 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
             builder.selections = [...builder.selections, selection];
             return this;
         },
-        withSorters(sorters: Sorting<D>) {
-            builder.sorting = sorters;
+        withSorters(sorting: Sorting<D>) {
+            builder.sorting = sorting;
             return this;
         },
         withSorter(sorter: Sorter<D>) {
