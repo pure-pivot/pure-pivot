@@ -1,12 +1,12 @@
 import { ConfigurationBuilder } from '@pure-pivot/core/lib/es6/configuration';
 import { DataColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
 import { SortingGroup } from '@pure-pivot/core/lib/es6/sorting/model';
-import { ImprovedConfigurationBuilder, SortedValueReducers, SortedValueReducerDescription, SortingDescriptor } from './model';
+import { AutoSortingConfigurationBuilder, SortedValueReducers, SortedValueReducerDescription, SortingDescriptor } from './model';
 
-export function autoSorting<D>(configurationBuilder: ConfigurationBuilder<D>): ImprovedConfigurationBuilder<D> {
+export function autoSorting<D>(configurationBuilder: ConfigurationBuilder<D>): AutoSortingConfigurationBuilder<D> {
     const { values, withValue, withValues, ...other } = configurationBuilder;
 
-    const builder: ImprovedConfigurationBuilder<D> = {
+    const builder: AutoSortingConfigurationBuilder<D> = {
         ...other,
         values: [],
         autoSorters: [],

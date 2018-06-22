@@ -16,7 +16,7 @@ export interface SortingDescriptor {
     order: 'ascending' | 'descending' | null;
 }
 
-export interface ImprovedConfigurationBuilder<D> extends Pick<ConfigurationBuilder<D>, Exclude<keyof ConfigurationBuilder<D>, 'values' | 'withValue' | 'withValues'>> {
+export interface AutoSortingConfigurationBuilder<D> extends Pick<ConfigurationBuilder<D>, Exclude<keyof ConfigurationBuilder<D>, 'values' | 'withValue' | 'withValues'>> {
     values: SortedValueReducers<D>;
     autoSorters: SortingDescriptor[];
     withAutoSorter<C>(this: C, sorter: SortingDescriptor): C;
