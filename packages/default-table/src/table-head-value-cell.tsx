@@ -1,12 +1,12 @@
 import * as React from 'react';
-import { TableDescription, ColumnDescriptor, ValueHeaderRow } from '@pure-pivot/core/lib/es6/table/model';
+import { TableDescription, ValueHeaderRow, ValueColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
 
 export interface TableHeadValueCellProps<D> {
     scope: 'row' | 'col';
     colStart: number;
     id: string;
     row: ValueHeaderRow<D>;
-    column: ColumnDescriptor<D>;
+    column: ValueColumnDescriptor<D>;
     tableDescription: TableDescription<D>;
 }
 
