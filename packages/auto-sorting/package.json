@@ -1,6 +1,6 @@
 {
   "name": "@pure-pivot/auto-sorting",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "",
   "main": "lib/es5/index.js",
   "module": "lib/es6/index.js",
@@ -38,6 +38,6 @@
   },
   "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
-    "@pure-pivot/core": "^0.1.16"
+    "@pure-pivot/core": "^0.1.18"
   }
 }

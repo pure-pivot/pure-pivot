@@ -2,7 +2,7 @@ import { HeadColumnDescriptor, DataColumnDescriptor, GroupColumnDescriptor } fro
 
 export function getHeadValueRowCellId(column: HeadColumnDescriptor | DataColumnDescriptor<any, any>) {
     if (column.type === 'head-column') {
-        return 'head-row-value-head-column';
+        return `head-row-value-head-column-${column.id}`;
     } else {
         return `head-row-value-${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-${column.valueDescription.id}`;
     }
@@ -10,7 +10,7 @@ export function getHeadValueRowCellId(column: HeadColumnDescriptor | DataColumnD
 
 export function getHeadGroupRowCellId(groupId: string, column: HeadColumnDescriptor | GroupColumnDescriptor) {
     if (column.type === 'head-column') {
-        return `head-row-${groupId}-head-column`;
+        return `head-row-${groupId}-head-column-${column.id}`;
     } else {
         return `head-row-${groupId}-${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}`;
     }
@@ -18,7 +18,7 @@ export function getHeadGroupRowCellId(groupId: string, column: HeadColumnDescrip
 
 export function getBodyRowCellId(rowIndex: number, column: HeadColumnDescriptor | DataColumnDescriptor<any, any>) {
     if (column.type === 'head-column') {
-        return `body-row-${rowIndex}-head-column`;
+        return `body-row-${rowIndex}-head-column-${column.id}`;
     } else {
         return `body-row-${rowIndex}-${column.groupDescriptors.map((group) => `${group.groupId}-${group.groupIndex}`).join('-')}-value-${column.valueDescription.id}`;
     }

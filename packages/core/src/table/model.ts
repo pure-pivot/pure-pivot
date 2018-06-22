@@ -7,6 +7,7 @@ export interface GroupDescriptor {
 
 export interface HeadColumnDescriptor {
     type: 'head-column';
+    id: string;
 }
 
 export interface GroupColumnDescriptor {
@@ -22,7 +23,9 @@ export interface DataColumnDescriptor<D, T> {
     groupDescriptors: GroupDescriptor[];
 }
 
-export type ColumnDescriptor<D> = DataColumnDescriptor<D, {}> | HeadColumnDescriptor | GroupColumnDescriptor;
+export type ValueColumnDescriptor<D> = DataColumnDescriptor<D, {}> | HeadColumnDescriptor;
+
+export type ColumnDescriptor<D> = ValueColumnDescriptor<D> | GroupColumnDescriptor;
 
 export interface GroupHeaderRow {
     type: 'group-header-row';
@@ -61,6 +64,6 @@ export interface TableDescription<D> {
     values: ValueReducers<D>;
     headGroupRows: GroupHeaderRow[];
     headValueRow: ValueHeaderRow<D>;
-    columns: ColumnDescriptor<D>[];
+    columns: ValueColumnDescriptor<D>[];
     bodyRows: BodyRow<D>[];
 }

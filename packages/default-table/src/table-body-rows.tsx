@@ -18,17 +18,17 @@ export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, nev
     }
 
     render() {
-        const headColumn: HeadColumnDescriptor = { type: 'head-column' };
-
         return this.props.tableDescription.bodyRows.map((row, index) =>
             <this.props.tableBodyRowComponent key={index}>
-                <this.props.tableBodyCellComponent
-                    id={getBodyRowCellId(index, headColumn)}
-                    row={row}
-                    column={headColumn}
-                >
-                    {row.label}
-                </this.props.tableBodyCellComponent>
+                {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) =>
+                    <this.props.tableBodyCellComponent
+                        id={getBodyRowCellId(index, column)}
+                        row={row}
+                        column={column}
+                    >
+                        {row.label}
+                    </this.props.tableBodyCellComponent>
+                )}
                 {row.cells.map((cell) => {
                     const id = getBodyRowCellId(index, cell.column);
                     return <this.props.tableBodyCellComponent

@@ -14,20 +14,20 @@ export type TableHeadValueRowProvidedProps = 'tableHeadRowComponent' | 'tableHea
 
 export class TableHeadValueRow<D> extends React.Component<TableHeadValueRowProps<D>, never> {
     render() {
-        const headColumn: HeadColumnDescriptor = { type: 'head-column' };
-
         return <this.props.tableHeadRowComponent>
-            <this.props.tableHeadValueCellComponent
-                id={getHeadValueRowCellId(headColumn)}
-                scope="row"
-                colStart={0}
-                row={this.props.row}
-                column={headColumn}
-                tableDescription={this.props.tableDescription}
-            >
-                Values
-            </this.props.tableHeadValueCellComponent>
-            {this.props.row.columns.map((column, index) => {
+            {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) =>
+                <this.props.tableHeadValueCellComponent
+                    id={getHeadValueRowCellId(column)}
+                    scope="row"
+                    colStart={0}
+                    row={this.props.row}
+                    column={column}
+                    tableDescription={this.props.tableDescription}
+                >
+                    Values
+                </this.props.tableHeadValueCellComponent>
+            )}
+            {this.props.row.dataColumns.map((column, index) => {
                 const id = getHeadValueRowCellId(column);
                 return <this.props.tableHeadValueCellComponent
                     key={id}

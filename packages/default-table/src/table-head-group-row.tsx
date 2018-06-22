@@ -14,25 +14,27 @@ export type TableHeadGroupRowProvidedProps = 'tableHeadRowComponent' | 'tableHea
 
 export class TableHeadGroupRow<D> extends React.Component<TableHeadGroupRowProps<D>, never> {
     render() {
-        const headColumn: HeadColumnDescriptor = { type: 'head-column' };
-
         const sums: number[] = [1];
         for (const column of this.props.row.groups) {
             sums.push(sums[sums.length - 1] + column.subColumnSize * this.props.tableDescription.valueCount);
         }
 
         return <this.props.tableHeadRowComponent>
-            <this.props.tableHeadGroupCellComponent
-                scope="row"
-                colStart={0}
-                colSpan={1}
-                id={getHeadGroupRowCellId(this.props.row.groupId, headColumn)}
-                row={this.props.row}
-                column={headColumn}
-                tableDescription={this.props.tableDescription}
-            >
-                {this.props.row.groupLabel}
-            </this.props.tableHeadGroupCellComponent>
+            {this.props.tableDescription.columns.map((column) => {
+                if (column.type === 'head-column') {
+                    return <this.props.tableHeadGroupCellComponent
+                        scope="row"
+                        colStart={0}
+                        colSpan={1}
+                        id={getHeadGroupRowCellId(this.props.row.groupId, column)}
+                        row={this.props.row}
+                        column={column}
+                        tableDescription={this.props.tableDescription}
+                    >
+                        {this.props.row.groupLabel}
+                    </this.props.tableHeadGroupCellComponent>;
+                }
+            })}
             {this.props.row.groups.map((column, index) => {
                 const id = getHeadGroupRowCellId(this.props.row.groupId, column);
                 return <this.props.tableHeadGroupCellComponent

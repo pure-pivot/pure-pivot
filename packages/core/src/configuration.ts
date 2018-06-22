@@ -8,6 +8,7 @@ import { generateTableDescription } from './generate-table-description';
 import { TableDescription } from './table/model';
 
 export interface Configuration<D> {
+    headColumn: boolean;
     filters: Filters<D>;
     groups: Groups<D>;
     selections: Selections<D>;
@@ -16,12 +17,14 @@ export interface Configuration<D> {
 }
 
 export interface ConfigurationBuilder<D> {
+    headColumn: boolean;
     filters: Filters<D>;
     groups: Groups<D>;
     selections: Selections<D>;
     sorting: Sorting<D>;
     values: ValueReducers<D>;
     generateTableDescription: (configuration: Configuration<D>) => (data: D[]) => TableDescription<D>;
+    withHeadColumn<C>(this: C, headColumn: boolean): C;
     withFilters<C>(this: C, filters: Filters<D>): C;
     withFilter<C>(this: C, filter: Filter<D>): C;
     withValues<C>(this: C, values: ValueReducers<D>): C;
@@ -38,12 +41,17 @@ export interface ConfigurationBuilder<D> {
 
 export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: ConfigurationBuilder<D>) => ConfigurationBuilder<D>)[] = defaultConfigurationPlugins): ConfigurationBuilder<D> {
     const builder: ConfigurationBuilder<D> = {
+        headColumn: true,
         filters: [],
         groups: [],
         selections: [],
         sorting: [],
         values: [],
         generateTableDescription,
+        withHeadColumn(headColumn) {
+            builder.headColumn = headColumn;
+            return this;
+        },
         withFilter(filter) {
             builder.filters = [...builder.filters, filter];
             return this;
@@ -89,6 +97,7 @@ export function createConfigurationBuilder<D>(plugins: ((configurationBuilder: C
         },
         build() {
             return {
+                headColumn: builder.headColumn,
                 filters: builder.filters,
                 groups: builder.groups,
                 selections: builder.selections,

@@ -5,7 +5,7 @@ import { applyFilters } from './filters/apply-filter';
 import { Comparators, SortingGroup } from './sorting/model';
 import { applySorting } from './sorting/apply-sorting';
 import { Configuration } from './configuration';
-import { GroupDescriptor, DataColumnDescriptor, GroupColumnDescriptor, GroupHeaderRow, ValueHeaderRow, BodyRow, TableDescription, BodyCell } from './table/model';
+import { GroupDescriptor, DataColumnDescriptor, GroupColumnDescriptor, GroupHeaderRow, ValueHeaderRow, BodyRow, TableDescription, BodyCell, HeadColumnDescriptor } from './table/model';
 import { defaultGenerateTableDescriptionPlugins } from './plugins/default-plugins';
 
 function createColumnDescriptors<D>(recursiveColumns: RecursiveGroup[], values: ValueReducers<D>, groupDescriptors: GroupDescriptor[] = []): { dataColumns: DataColumnDescriptor<D, {}>[], groupColumns: GroupColumnDescriptor[] } {
@@ -132,11 +132,12 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
     const groupHeaderRows = createGroupHeaderRows(columnDescriptors.groupColumns, configuration.groups);
     const sorting = configuration.sorting.map((sorter) => sorter(valueHeaderRow.dataColumns));
     const bodyRows = createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData, configuration.values, sorting);
+    const headColumns: HeadColumnDescriptor[] = configuration.headColumn ? [{ type: 'head-column', id: 'head' }] : [];
 
     return {
-        headColumnCount: 1,
+        headColumnCount: headColumns.length,
         bodyColumnCount: valueHeaderRow.dataColumns.length,
-        columnCount: 1 + valueHeaderRow.dataColumns.length,
+        columnCount: headColumns.length + valueHeaderRow.dataColumns.length,
         headRowCount: 1 + groupHeaderRows.length,
         bodyRowCount: bodyRows.length,
         rowCount: 1 + groupHeaderRows.length + bodyRows.length,
@@ -144,7 +145,7 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
         values: configuration.values,
         headGroupRows: groupHeaderRows,
         headValueRow: valueHeaderRow,
-        columns: [{ type: 'head-column' }, ...columnDescriptors.dataColumns],
+        columns: [...headColumns, ...columnDescriptors.dataColumns],
         bodyRows
     };
 });
