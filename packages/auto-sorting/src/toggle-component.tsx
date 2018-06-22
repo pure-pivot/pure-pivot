@@ -2,40 +2,43 @@ import * as React from 'react';
 import { DataColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
 import { SortingDescriptor } from './model';
 
+export interface SubComponentProps {
+    onToggle: () => void;
+}
+
 export interface ToggleComponentProps {
     column: DataColumnDescriptor<any, any>;
     activeSorting: SortingDescriptor | null;
     onSetActiveSorting: (sorting: SortingDescriptor | null) => void;
+    inactiveComponent?: React.ComponentType<SubComponentProps>;
+    ascendingComponent?: React.ComponentType<SubComponentProps>;
+    descendingComponent?: React.ComponentType<SubComponentProps>;
 }
 
-export class ToggleComponent extends React.Component<ToggleComponentProps, never> {
-    renderInactive() {
-        return <span style={{ cursor: 'pointer' }} onClick={() => this.props.onSetActiveSorting({ valueId: this.props.column.valueDescription.id, groupDescriptors: this.props.column.groupDescriptors, order: 'ascending' })}>
-            ▬
-        </span>;
-    }
+export function DefaultAscendingComponent(props: SubComponentProps) {
+    return <span onClick={props.onToggle}>▲</span>;
+}
 
-    renderAscending() {
-        return <span style={{ cursor: 'pointer' }} onClick={() => this.props.onSetActiveSorting({ valueId: this.props.column.valueDescription.id, groupDescriptors: this.props.column.groupDescriptors, order: 'descending' })}>
-            ▲
-        </span>;
-    }
+export function DefaultDescendingComponent(props: SubComponentProps) {
+    return <span onClick={props.onToggle}>▼</span>;
+}
 
-    renderDescending() {
-        return <span style={{ cursor: 'pointer' }} onClick={() => this.props.onSetActiveSorting(null)}>
-            ▼
-        </span>;
-    }
+export function DefaultInactiveComponent(props: SubComponentProps) {
+    return <span onClick={props.onToggle}>▬</span>;
+}
 
-    render() {
-        if (this.props.activeSorting !== null && this.props.activeSorting.valueId === this.props.column.valueDescription.id && this.props.activeSorting.groupDescriptors.every((group, index) => group.groupId === this.props.column.groupDescriptors[index].groupId && group.groupIndex === this.props.column.groupDescriptors[index].groupIndex)) {
-            if (this.props.activeSorting.order === 'ascending') {
-                return this.renderAscending();
-            } else {
-                return this.renderDescending();
-            }
+export function ToggleComponent(props: ToggleComponentProps) {
+    const AscendingComponent = props.ascendingComponent || DefaultAscendingComponent;
+    const DescendingComponent = props.descendingComponent || DefaultDescendingComponent;
+    const InactiveComponent = props.inactiveComponent || DefaultInactiveComponent;
+
+    if (props.activeSorting !== null && props.activeSorting.valueId === props.column.valueDescription.id && props.activeSorting.groupDescriptors.every((group, index) => group.groupId === props.column.groupDescriptors[index].groupId && group.groupIndex === props.column.groupDescriptors[index].groupIndex)) {
+        if (props.activeSorting.order === 'ascending') {
+            return <AscendingComponent onToggle={() => props.onSetActiveSorting({ valueId: props.column.valueDescription.id, groupDescriptors: props.column.groupDescriptors, order: 'descending' })} />;
         } else {
-            return this.renderInactive();
+            return <DescendingComponent onToggle={() => props.onSetActiveSorting(null)} />;
         }
+    } else {
+        return <InactiveComponent onToggle={() => props.onSetActiveSorting({ valueId: props.column.valueDescription.id, groupDescriptors: props.column.groupDescriptors, order: 'ascending' })} />;
     }
 }
