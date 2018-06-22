@@ -1,6 +1,6 @@
 import * as React from 'react';
 import * as shallowEqual from 'shallowequal';
-import { Draggable } from 'react-managed-draggable';
+import { Draggable, DraggableProps } from 'react-managed-draggable';
 import { TableDescription, DataColumnDescriptor, HeadColumnDescriptor } from '@pure-pivot/core/lib/es6/table/model';
 import { Sizes } from './model';
 import { getHeadValueRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
@@ -10,6 +10,7 @@ export interface ResizerProps {
     sizes: Sizes;
     dragHandleWidth: number;
     dragHandleComponent?: React.ReactType;
+    draggableProps?: Pick<DraggableProps, Exclude<keyof DraggableProps, 'onDragStart' | 'onDragMove' | 'onDragEnd'>>;
     minimumSpace: number;
     onSizesChange: (sizes: Sizes) => void;
     onSizesChangeEnd: (sizes: Sizes) => void;
@@ -88,13 +89,16 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
         if (this.state.containerTop !== null && this.state.containerLeft !== null && this.state.tableTop !== null && this.state.tableLeft !== null && this.state.tableInnerTop !== null && this.state.tableInnerLeft !== null && this.state.tableInnerWidth !== null && this.state.tableInnerHeight !== null) {
             const offsetTop = this.state.tableTop - this.state.containerTop + this.state.tableInnerTop;
             const offsetLeft = this.state.tableLeft - this.state.containerLeft + this.state.tableInnerLeft;
+            const style = this.props.draggableProps && this.props.draggableProps.style;
 
             const result: React.ReactNode[] = [];
             for (let i = 0, size = sizes[0]; i < ids.length - 1; i++ , size += sizes[i]) {
                 result.push(
                     <Draggable
                         key={ids[i]}
+                        {...this.props.draggableProps}
                         style={{
+                            ...style,
                             position: 'absolute',
                             cursor: 'col-resize',
                             top: offsetTop,
