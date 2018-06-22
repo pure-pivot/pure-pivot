@@ -32,6 +32,7 @@ export interface TableConfigurationBuilder<D> {
     withTableHeadComponent<C>(this: C, tableHeadComponent: React.ComponentType<TableHeadProps<D>>): C;
     withTableHeadRowsComponent<C>(this: C, tableHeadRowsComponent: React.ComponentType<TableHeadRowsProps<D>>): C;
     withTableHeadGroupRowComponent<C>(this: C, tableHeadGroupRowComponent: React.ComponentType<TableHeadGroupRowProps<D>>): C;
+    withTableHeadValueRowComponent<C>(this: C, tableHeadValueRowComponent: React.ComponentType<TableHeadValueRowProps<D>>): C;
     withTableHeadRowComponent<C>(this: C, tableHeadRowComponent: React.ReactType): C;
     withTableHeadGroupCellComponent<C>(this: C, tableHeadGroupCellComponent: React.ComponentType<TableHeadGroupCellProps<D>>): C;
     withTableHeadValueCellComponent<C>(this: C, tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): C;
@@ -71,6 +72,10 @@ export function createTableConfigurationBuilder<D>(plugins: ((tableConfiguration
         },
         withTableHeadGroupRowComponent<C>(this: C, tableHeadGroupRowComponent: React.ComponentType<TableHeadGroupRowProps<D>>) {
             builder.tableHeadGroupRowComponent = tableHeadGroupRowComponent;
+            return this;
+        },
+        withTableHeadValueRowComponent<C>(this: C, tableHeadValueRowComponent: React.ComponentType<TableHeadValueRowProps<D>>) {
+            builder.tableHeadValueRowComponent = tableHeadValueRowComponent;
             return this;
         },
         withTableHeadRowComponent(tableHeadRowComponent: React.ReactType) {
