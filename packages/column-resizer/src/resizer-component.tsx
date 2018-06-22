@@ -11,7 +11,7 @@ export interface ResizerProps {
     dragHandleWidth: number;
     dragHandleComponent?: React.ReactType;
     draggableProps?: Pick<DraggableProps, Exclude<keyof DraggableProps, 'onDragStart' | 'onDragMove' | 'onDragEnd'>>;
-    minimumSpace: number;
+    minimumSize: number;
     onSizesChange: (sizes: Sizes) => void;
     onSizesChangeEnd: (sizes: Sizes) => void;
     tableElement: Element;
@@ -117,7 +117,7 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
                         }}
                         onDragEnd={(event, payload) => {
                             if (this.state.tableInnerWidth !== null) {
-                                this.adjustSizes(ids, sizes, i, (payload.current.x - payload.start.x) / this.state.tableInnerWidth);
+                                this.adjustSizes(sizes, i, (payload.current.x - payload.start.x) / this.state.tableInnerWidth);
                                 this.props.onSizesChangeEnd({
                                     ...this.props.sizes,
                                     [ids[i]]: sizes[i],
@@ -136,11 +136,11 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
         }
     }
 
-    adjustSizes(ids: string[], sizes: number[], index: number, delta: number) {
+    adjustSizes(sizes: number[], index: number, delta: number) {
         const clamped = clamp(
             delta,
-            this.props.minimumSpace / ids.length - this.state.draggingStartSizes[0],
-            this.state.draggingStartSizes[1] - this.props.minimumSpace / ids.length
+            this.props.minimumSize - this.state.draggingStartSizes[0],
+            this.state.draggingStartSizes[1] - this.props.minimumSize
         );
         sizes[index] = this.state.draggingStartSizes[0] + clamped;
         sizes[index + 1] = this.state.draggingStartSizes[1] - clamped;
@@ -156,7 +156,7 @@ export class Resizer extends React.Component<ResizerProps, ResizerState> {
         if (this.state.draggingId !== null && this.state.tableInnerWidth !== null) {
             const index = ids.indexOf(this.state.draggingId);
             const delta = this.state.draggingOffset / this.state.tableInnerWidth;
-            this.adjustSizes(ids, normalized, index, delta);
+            this.adjustSizes(normalized, index, delta);
         }
 
         return <div ref={(ref) => this.container = ref} style={{ position: 'relative' }}>
