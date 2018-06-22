@@ -68,7 +68,7 @@ function createGroupHeaderRows<D>(groupColumns: GroupColumnDescriptor[], groups:
 function createValueHeaderRow<D>(dataColumns: DataColumnDescriptor<D, {}>[]): ValueHeaderRow<D> {
     return {
         type: 'value-header-row',
-        columns: dataColumns
+        dataColumns
     };
 }
 
@@ -130,13 +130,13 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
     const columnDescriptors = createColumnDescriptors(columns.recursiveGroups, configuration.values);
     const valueHeaderRow = createValueHeaderRow(columnDescriptors.dataColumns);
     const groupHeaderRows = createGroupHeaderRows(columnDescriptors.groupColumns, configuration.groups);
-    const sorting = configuration.sorting.map((sorter) => sorter(valueHeaderRow.columns));
+    const sorting = configuration.sorting.map((sorter) => sorter(valueHeaderRow.dataColumns));
     const bodyRows = createBodyRows(rows.recursiveGroups, rows.sortedIndices, columns, columnDescriptors.dataColumns, filteredData, configuration.values, sorting);
 
     return {
         headColumnCount: 1,
-        bodyColumnCount: valueHeaderRow.columns.length,
-        columnCount: 1 + valueHeaderRow.columns.length,
+        bodyColumnCount: valueHeaderRow.dataColumns.length,
+        columnCount: 1 + valueHeaderRow.dataColumns.length,
         headRowCount: 1 + groupHeaderRows.length,
         bodyRowCount: bodyRows.length,
         rowCount: 1 + groupHeaderRows.length + bodyRows.length,
@@ -144,6 +144,7 @@ export const generateTableDescription = defaultGenerateTableDescriptionPlugins.r
         values: configuration.values,
         headGroupRows: groupHeaderRows,
         headValueRow: valueHeaderRow,
+        columns: [{ type: 'head-column' }, ...columnDescriptors.dataColumns],
         bodyRows
     };
 });
