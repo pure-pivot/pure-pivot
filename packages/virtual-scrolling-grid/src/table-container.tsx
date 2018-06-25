@@ -16,6 +16,7 @@ export interface TableContainerProps<D> {
     tableWrapperComponent: React.ReactType;
     tableHeadComponent: React.ComponentClass<Pick<TableHeadProps<D>, Exclude<keyof TableHeadProps<D>, TableHeadProvidedProps>>>;
     tableBodyComponent: React.ComponentType<Pick<TableBodyProps<D>, Exclude<keyof TableBodyProps<D>, TableBodyProvidedProps>>>;
+    minColumnWidth?: number;
 }
 
 export type TableContainerProvidedProps = 'tableWrapperComponent' | 'tableHeadComponent' | 'tableBodyComponent';
@@ -107,6 +108,7 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
             }}
             scrollTop={this.state.scrollTop}
             sizes={sizes}
+            minColumnWidth={this.props.minColumnWidth}
             tableDescription={this.props.tableDescription}
         />;
     }
@@ -123,6 +125,7 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
                 headHeight={this.state.headHeight}
                 start={start}
                 end={end}
+                minColumnWidth={this.props.minColumnWidth}
             />;
         }
     }
