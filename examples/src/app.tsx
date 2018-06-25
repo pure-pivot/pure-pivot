@@ -16,7 +16,7 @@ import { Resizer } from '../../packages/column-resizer/src/resizer-component';
 import { Sizes } from '../../packages/column-resizer/src/model';
 import { getHeadValueRowCellId } from '../../packages/core/src/util/id-helper';
 import { autoSorting } from '../../packages/auto-sorting/src/index';
-import { ImprovedConfigurationBuilder, SortingDescriptor } from '../../packages/auto-sorting/src/model';
+import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../packages/auto-sorting/src/model';
 import { ToggleComponent } from '../../packages/auto-sorting/src/toggle-component';
 
 export interface WithStatusLoading {
@@ -58,7 +58,7 @@ function isArrayOfData(object: any): object is Data[] {
 
 const configurationBuilder = createConfigurationBuilder<Data>()
     // .withFilter((data) => data.slice(0, 50))
-    .withPlugin<ImprovedConfigurationBuilder<Data>>(autoSorting)
+    .withPlugin<AutoSortingConfigurationBuilder<Data>>(autoSorting)
     .withGroup({
         id: 'method',
         label: 'Method',
@@ -316,20 +316,23 @@ export class App extends React.Component<{}, AppState> {
                     tableDescription={this.state.async.result.tableDescription}
                     rowHeight={20}
                     overscan={2}
-                    sizes={this.state.sizes}
-                />
-                {this.state.table !== null
-                    && <Resizer
-                        sizes={this.state.sizes}
-                        minimumSize={0.1 / this.state.async.result.tableDescription.columnCount}
-                        onSizesChange={(sizes) => this.setState({ sizes })}
-                        onSizesChangeEnd={() => undefined}
-                        tableDescription={this.state.async.result.tableDescription}
-                        tableElement={this.state.table}
-                        dragHandleWidth={20}
-                        dragHandleComponent={() => <div style={{ position: 'absolute', left: 9, width: 2, height: '100%', backgroundColor: 'green' }} />}
-                    />
-                }
+                    columnWidths={this.state.sizes}
+                    defaultColumnWidth={200}
+                >
+                    {this.state.table !== null
+                        && <Resizer
+                            columnWidths={this.state.sizes}
+                            defaultColumnWidth={200}
+                            minimumColumnWidth={20}
+                            onWidthsChange={(sizes) => this.setState({ sizes })}
+                            onWidthsChangeEnd={() => undefined}
+                            tableDescription={this.state.async.result.tableDescription}
+                            tableElement={this.state.table}
+                            dragHandleWidth={20}
+                            dragHandleComponent={() => <div style={{ position: 'absolute', left: 9.5, width: 1, height: '100%', backgroundColor: 'green' }} />}
+                        />
+                    }
+                </this.tableConfiguration.tableContainerComponent>
             </React.Fragment>;
         }
     }

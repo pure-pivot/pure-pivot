@@ -11,12 +11,12 @@ import { TableBodyProps, TableBodyProvidedProps } from './table-body';
 export interface TableContainerProps<D> {
     rowHeight: number;
     overscan: number;
-    sizes: Sizes;
+    columnWidths: Sizes;
+    defaultColumnWidth: number;
     tableDescription: TableDescription<D>;
     tableWrapperComponent: React.ReactType;
     tableHeadComponent: React.ComponentClass<Pick<TableHeadProps<D>, Exclude<keyof TableHeadProps<D>, TableHeadProvidedProps>>>;
     tableBodyComponent: React.ComponentType<Pick<TableBodyProps<D>, Exclude<keyof TableBodyProps<D>, TableBodyProvidedProps>>>;
-    minColumnWidth?: number;
 }
 
 export type TableContainerProvidedProps = 'tableWrapperComponent' | 'tableHeadComponent' | 'tableBodyComponent';
@@ -92,7 +92,7 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
         }
     }
 
-    renderHead(sizes: number[]) {
+    renderHead(columnWidths: number[]) {
         return <this.props.tableHeadComponent
             ref={(ref) => {
                 if (ref !== null) {
@@ -107,36 +107,35 @@ export class TableContainer<D> extends React.Component<TableContainerProps<D>, T
                 }
             }}
             scrollTop={this.state.scrollTop}
-            sizes={sizes}
-            minColumnWidth={this.props.minColumnWidth}
+            columnWidths={columnWidths}
             tableDescription={this.props.tableDescription}
         />;
     }
 
-    renderBody(sizes: number[]) {
+    renderBody(columnWidths: number[]) {
         if (this.state.containerHeight !== null && this.state.headHeight !== null) {
             const start = Math.max(0, Math.floor(this.state.scrollTop / this.props.rowHeight) - this.props.overscan);
             const end = Math.min(this.props.tableDescription.bodyRowCount, Math.ceil((this.state.scrollTop + this.state.containerHeight - this.state.headHeight) / this.props.rowHeight) + this.props.overscan);
             return <this.props.tableBodyComponent
                 rowHeight={this.props.rowHeight}
                 scrollTop={this.state.scrollTop}
-                sizes={sizes}
+                columnWidths={columnWidths}
                 tableDescription={this.props.tableDescription}
                 headHeight={this.state.headHeight}
                 start={start}
                 end={end}
-                minColumnWidth={this.props.minColumnWidth}
             />;
         }
     }
 
     render() {
-        const sizes = this.props.tableDescription.columns.map(getHeadValueRowCellId).map((id) => this.props.sizes[id] === undefined ? 1 / this.props.tableDescription.columns.length : this.props.sizes[id]);
+        const sizes = this.props.tableDescription.columns.map(getHeadValueRowCellId).map((id) => this.props.columnWidths[id] === undefined ? this.props.defaultColumnWidth : this.props.columnWidths[id]);
 
         return <this.props.tableWrapperComponent>
             {this.renderSpanner()}
             {this.renderBody(sizes)}
             {this.renderHead(sizes)}
+            {this.props.children}
         </this.props.tableWrapperComponent>;
     }
 }

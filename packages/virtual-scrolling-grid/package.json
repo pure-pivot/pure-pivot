@@ -1,6 +1,6 @@
 {
   "name": "@pure-pivot/virtual-scrolling-grid",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "description": "",
   "main": "lib/es5/virtual-scrolling-grid.js",
   "module": "lib/es6/virtual-scrolling-grid.js",

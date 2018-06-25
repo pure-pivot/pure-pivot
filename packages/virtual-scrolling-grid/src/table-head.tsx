@@ -3,9 +3,8 @@ import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 import { TableHeadRowsProps, TableHeadRowsProvidedProps } from '@pure-pivot/default-table/lib/es6/table-head-rows';
 
 export interface TableHeadProps<D> {
-    sizes: number[];
+    columnWidths: number[];
     scrollTop: number;
-    minColumnWidth?: number;
     tableDescription: TableDescription<D>;
     tableHeadRowsComponent: React.ComponentType<Pick<TableHeadRowsProps<D>, Exclude<keyof TableHeadRowsProps<D>, TableHeadRowsProvidedProps>>>;
 }
@@ -17,8 +16,7 @@ export class TableHead<D> extends React.Component<TableHeadProps<D>, never> {
         return <div style={{
             display: 'grid',
             position: 'absolute',
-            width: '100%',
-            gridTemplateColumns: this.props.sizes.map((fraction) => this.props.minColumnWidth === undefined ? `${fraction * 100}%` : `minmax(${this.props.minColumnWidth}px, ${fraction * 100}%)`).join(' '),
+            gridTemplateColumns: this.props.columnWidths.map((size) => `${size}px`).join(' '),
             top: this.props.scrollTop,
             backgroundColor: 'white'
         }}>
