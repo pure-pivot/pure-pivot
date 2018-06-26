@@ -10,6 +10,7 @@ import { TableHeadGroupCell, TableHeadGroupCellProps } from './table-head-group-
 import { TableHeadValueCell, TableHeadValueCellProps } from './table-head-value-cell';
 import { TableBodyCellProps, TableBodyCell } from './table-body-cell';
 import { TableHeadRowsProps, TableHeadRows } from './table-head-rows';
+import { TableBodyRowProps, TableBodyRow } from './table-body-row';
 
 export interface TableConfiguration<D> {
     tableContainerComponent: React.ComponentType<Pick<TableContainerProps<D>, Exclude<keyof TableContainerProps<D>, TableContainerProvidedProps>>>;
@@ -26,7 +27,7 @@ export interface TableConfigurationBuilder<D> {
     tableHeadRowComponent: React.ReactType;
     tableBodyComponent: React.ComponentType<TableBodyProps<D>>;
     tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>;
-    tableBodyRowComponent: React.ReactType;
+    tableBodyRowComponent: React.ComponentType<TableBodyRowProps<D>>;
     tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
     withTableContainerComponent<C>(this: C, tableContainerComponent: React.ComponentType<TableContainerProps<D>>): C;
     withTableHeadComponent<C>(this: C, tableHeadComponent: React.ComponentType<TableHeadProps<D>>): C;
@@ -56,7 +57,7 @@ export function createTableConfigurationBuilder<D>(plugins: ((tableConfiguration
         tableHeadRowComponent: 'tr',
         tableBodyComponent: TableBody,
         tableBodyRowsComponent: TableBodyRows,
-        tableBodyRowComponent: 'tr',
+        tableBodyRowComponent: TableBodyRow,
         tableBodyCellComponent: TableBodyCell,
         withTableContainerComponent(tableContainerComponent: React.ComponentClass<TableContainerProps<D>>) {
             builder.tableContainerComponent = tableContainerComponent;
@@ -98,7 +99,7 @@ export function createTableConfigurationBuilder<D>(plugins: ((tableConfiguration
             builder.tableBodyRowsComponent = tableBodyRowsComponent;
             return this;
         },
-        withTableBodyRowComponent(tableBodyRowComponent: React.ReactType) {
+        withTableBodyRowComponent(tableBodyRowComponent: React.ComponentType<TableBodyRowProps<D>>) {
             builder.tableBodyRowComponent = tableBodyRowComponent;
             return this;
         },
