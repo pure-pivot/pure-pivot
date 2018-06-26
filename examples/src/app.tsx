@@ -18,6 +18,7 @@ import { getHeadValueRowCellId } from '../../packages/core/src/util/id-helper';
 import { autoSorting } from '../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../packages/auto-sorting/src/model';
 import { ToggleComponent } from '../../packages/auto-sorting/src/toggle-component';
+import { assertOrThrow, isString, isNumber } from '../../packages/core/src/util/assertion';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -180,12 +181,79 @@ const configurationBuilder = createConfigurationBuilder<Data>()
 //     order: 'descending'
 // })
 
+export interface StringEqualsOperator {
+    type: 'string-equals';
+    value: string;
+}
+
+export function applyStringEqualsOperator(operator: StringEqualsOperator, value: string) {
+    return operator.value === value;
+}
+
+export interface NumberEqualsOperator {
+    type: 'number-equals';
+    value: number;
+}
+
+export function applyNumberEqualsOperator(operator: NumberEqualsOperator, value: number) {
+    return operator.value === value;
+}
+
+export type Operator = StringEqualsOperator | NumberEqualsOperator;
+
+export function applyOperator(operator: Operator, value: any) {
+    switch (operator.type) {
+        case 'string-equals':
+            return applyStringEqualsOperator(operator, assertOrThrow(value, isString));
+        case 'number-equals':
+            return applyNumberEqualsOperator(operator, assertOrThrow(value, isNumber));
+    }
+}
+
+export interface MethodFilter {
+    key: 'method';
+    operator: StringEqualsOperator | null;
+}
+
+export interface StatusCodeFilter {
+    key: 'statusCode';
+    operator: NumberEqualsOperator | null;
+}
+
+export interface TimeFilter {
+    key: 'time';
+    operator: NumberEqualsOperator | null;
+}
+
+export interface UrlFilter {
+    key: 'url';
+    operator: StringEqualsOperator | null;
+}
+
+export interface DurationFilter {
+    key: 'duration';
+    operator: NumberEqualsOperator | null;
+}
+
+export type Filter = MethodFilter | StatusCodeFilter | TimeFilter | UrlFilter | DurationFilter;
+
+export function applyFilter(filter: Filter, data: Data[]) {
+    if (filter.operator === null) {
+        return data;
+    } else {
+        const operator = filter.operator;
+        return data.filter((row) => applyOperator(operator, row[filter.key]));
+    }
+}
+
 export interface AppState {
     async: WithStatus<{ data: Data[], tableDescription: TableDescription<Data> }>;
     sizes: Sizes;
     offset: number;
     table: Element | null;
     sorting: SortingDescriptor | null;
+    // filters: Filters<Data>;
+    filter: Filter | null;
 }
 
 export class App extends React.Component<{}, AppState> {
@@ -194,7 +262,17 @@ export class App extends React.Component<{}, AppState> {
         sizes: {},
         offset: 0,
         table: null,
-        sorting: null
+        sorting: null,
+        // filters: {
+        //     url: {
+        //         key: 'method',
+        //         filter: {
+        //             type: 'equals',
+        //             value: 305
+        //         }
+        //     }
+        // },
+        filter: null
     };
 
     tableConfiguration = createTableConfigurationBuilder<Data>()
@@ -292,6 +370,50 @@ export class App extends React.Component<{}, AppState> {
             });
     }
 
+    renderFilterTypeSelection() {
+        if (this.state.filter !== null) {
+            return <React.Fragment>
+                <select>
+                </select>
+            </React.Fragment>;
+        }
+    }
+
+    renderFilterSelection() {
+        return <React.Fragment>
+            <select
+                value={this.state.filter === null ? '' : this.state.filter.key}
+                onChange={(event) => {
+                    switch (event.currentTarget.value) {
+                        case 'method':
+                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+                            break;
+                        case 'statusCode':
+                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+                            break;
+                        case 'time':
+                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+                            break;
+                        case 'url':
+                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+                            break;
+                        case 'duration':
+                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+                            break;
+                    }
+                }}
+            >
+                <option value="" disabled>Select field</option>
+                <option value="method">Method</option>
+                <option value="statusCode">Status code</option>
+                <option value="time">Time</option>
+                <option value="url">URL</option>
+                <option value="duration">Duration</option>
+            </select>
+            {this.renderFilterTypeSelection()}
+        </React.Fragment>;
+    }
+
     render() {
         if (this.state.async.status === 'loading') {
             return <React.Fragment>
@@ -303,6 +425,8 @@ export class App extends React.Component<{}, AppState> {
             </pre>;
         } else {
             return <React.Fragment>
+                <h3>Filters</h3>
+                {this.renderFilterSelection()}
                 <h3>Table</h3>
                 <this.tableConfiguration.tableContainerComponent
                     ref={(ref) => {
