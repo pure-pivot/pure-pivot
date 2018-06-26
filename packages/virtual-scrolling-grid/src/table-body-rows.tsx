@@ -3,12 +3,13 @@ import * as shallowEqual from 'shallowequal';
 import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 import { TableBodyCellProps } from '@pure-pivot/default-table/lib/es6/table-body-cell';
 import { getBodyRowCellId } from '@pure-pivot/core/lib/es6/util/id-helper';
+import { TableBodyRowProps } from '@pure-pivot/default-table/lib/es6/table-body-row';
 
 export interface TableBodyRowsProps<D> {
     start: number;
     end: number;
     tableDescription: TableDescription<D>;
-    tableBodyRowComponent: React.ReactType;
+    tableBodyRowComponent: React.ComponentType<TableBodyRowProps<D>>;
     tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>;
 }
 
@@ -21,7 +22,7 @@ export class TableBodyRows<D> extends React.Component<TableBodyRowsProps<D>, nev
 
     render() {
         return this.props.tableDescription.bodyRows.slice(this.props.start, this.props.end).map((row, index) =>
-            <this.props.tableBodyRowComponent key={this.props.start + index}>
+            <this.props.tableBodyRowComponent key={this.props.start + index} row={row}>
                 {this.props.tableDescription.columns.filter((column) => column.type === 'head-column').map((column) => {
                     const id = getBodyRowCellId(this.props.start + index, column);
                     return <this.props.tableBodyCellComponent
