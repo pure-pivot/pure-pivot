@@ -39,7 +39,7 @@ export interface TableConfigurationBuilder<D> {
     withTableHeadValueCellComponent<C>(this: C, tableHeadValueCellComponent: React.ComponentType<TableHeadValueCellProps<D>>): C;
     withTableBodyComponent<C>(this: C, tableBodyComponent: React.ComponentType<TableBodyProps<D>>): C;
     withTableBodyRowsComponent<C>(this: C, tableBodyRowsComponent: React.ComponentType<TableBodyRowsProps<D>>): C;
-    withTableBodyRowComponent<C>(this: C, tableBodyRowComponent: React.ReactType): C;
+    withTableBodyRowComponent<C>(this: C, tableBodyRowComponent: React.ComponentType<TableBodyRowProps<D>>): C;
     withTableBodyCellComponent<C>(this: C, tableBodyCellComponent: React.ComponentType<TableBodyCellProps<D>>): C;
     withPlugin<C>(plugin: (tableConfigurationBuilder: this) => C): C;
     build(): TableConfiguration<D>;

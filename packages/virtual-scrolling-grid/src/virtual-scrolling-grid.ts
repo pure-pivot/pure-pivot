@@ -9,6 +9,7 @@ import { TableBodyRows, TableBodyRowsProps } from './table-body-rows';
 import { TableHeadProps, TableHead } from './table-head';
 import { TableBodyProps, TableBody } from './table-body';
 import { TableWrapper } from './table-wrapper';
+import { TableBodyRow } from './table-body-row';
 
 // TODO: keep all existing functionality of builder, or drop it and make one monolithic component for now, and then perhaps custom .with calls in future
 
@@ -36,7 +37,7 @@ export const virtualGrid = <D>() => (tableConfigurationBuilder: TableConfigurati
     tableConfigurationBuilder.withTableHeadRowComponent(React.Fragment);
     tableConfigurationBuilder.withTableHeadGroupCellComponent(TableHeadGroupCell);
     tableConfigurationBuilder.withTableHeadValueCellComponent(TableHeadValueCell);
-    tableConfigurationBuilder.withTableBodyRowComponent(React.Fragment);
+    tableConfigurationBuilder.withTableBodyRowComponent(TableBodyRow);
     tableConfigurationBuilder.withTableBodyCellComponent(TableBodyCell);
 
     const builder: VirtualScrollingTableConfigurationBuilder<D> = {
