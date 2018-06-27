@@ -22,6 +22,13 @@ export class OperatorStringSelect extends React.Component<OperatorStringSelectPr
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as StringOperators);
                 }}
             />
+            <input
+                type="text"
+                value={this.props.operator.value}
+                onChange={(event) => {
+                    this.props.onOperatorChange({ type: this.props.operator.type, value: event.currentTarget.value } as StringOperators);
+                }}
+            />
         </React.Fragment>;
     }
 }

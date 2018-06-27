@@ -22,6 +22,13 @@ export class OperatorNumberSelect extends React.Component<OperatorNumberSelectPr
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as NumberOperators);
                 }}
             />
+            <input
+                type="number"
+                value={this.props.operator.value}
+                onChange={(event) => {
+                    this.props.onOperatorChange({ type: this.props.operator.type, value: parseFloat(event.currentTarget.value) } as NumberOperators);
+                }}
+            />
         </React.Fragment>;
     }
 }

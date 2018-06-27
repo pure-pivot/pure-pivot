@@ -22,6 +22,14 @@ export class OperatorDateSelect extends React.Component<OperatorDateSelectProps,
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as DateOperators);
                 }}
             />
+            <input
+                type="datetime-local"
+                value={new Date(this.props.operator.value).toISOString().substr(0, 16)}
+                onChange={(event) => {
+                    console.log(event.currentTarget.value);
+                    this.props.onOperatorChange({ type: this.props.operator.type, value: +new Date(event.currentTarget.value) } as DateOperators);
+                }}
+            />
         </React.Fragment>;
     }
 }
