@@ -8,21 +8,18 @@ const options: Option<DateOperators['type']>[] = [
 ];
 
 export interface OperatorDateSelectProps {
-    operator: DateOperators | null;
+    operator: DateOperators;
     onOperatorChange: (operator: DateOperators) => void;
 }
 
 export class OperatorDateSelect extends React.Component<OperatorDateSelectProps, never> {
     render() {
-        const type = this.props.operator === null ? null : this.props.operator.type;
-        const value = this.props.operator === null ? '' : this.props.operator.value;
-
         return <React.Fragment>
             <OperatorSelect
-                value={type}
+                value={this.props.operator.type}
                 options={options}
                 onOptionChange={(type: DateOperators['type']) => {
-                    this.props.onOperatorChange({ type, value } as DateOperators);
+                    this.props.onOperatorChange({ type, value: this.props.operator.value } as DateOperators);
                 }}
             />
         </React.Fragment>;

@@ -8,21 +8,18 @@ const options: Option<NumberOperators['type']>[] = [
 ];
 
 export interface OperatorNumberSelectProps {
-    operator: NumberOperators | null;
+    operator: NumberOperators;
     onOperatorChange: (operator: NumberOperators) => void;
 }
 
 export class OperatorNumberSelect extends React.Component<OperatorNumberSelectProps, never> {
     render() {
-        const type = this.props.operator === null ? null : this.props.operator.type;
-        const value = this.props.operator === null ? '' : this.props.operator.value;
-
         return <React.Fragment>
             <OperatorSelect
-                value={type}
+                value={this.props.operator.type}
                 options={options}
                 onOptionChange={(type: NumberOperators['type']) => {
-                    this.props.onOperatorChange({ type, value } as NumberOperators);
+                    this.props.onOperatorChange({ type, value: this.props.operator.value } as NumberOperators);
                 }}
             />
         </React.Fragment>;

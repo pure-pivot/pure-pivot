@@ -8,24 +8,20 @@ const options: Option<StringOperators['type']>[] = [
 ];
 
 export interface OperatorStringSelectProps {
-    operator: StringOperators | null;
+    operator: StringOperators;
     onOperatorChange: (operator: StringOperators) => void;
 }
 
 export class OperatorStringSelect extends React.Component<OperatorStringSelectProps, never> {
     render() {
-        const type = this.props.operator === null ? null : this.props.operator.type;
-        const value = this.props.operator === null ? '' : this.props.operator.value;
-
         return <React.Fragment>
             <OperatorSelect
-                value={type}
+                value={this.props.operator.type}
                 options={options}
                 onOptionChange={(type: StringOperators['type']) => {
-                    this.props.onOperatorChange({ type, value } as StringOperators);
+                    this.props.onOperatorChange({ type, value: this.props.operator.value } as StringOperators);
                 }}
             />
-            <input type="text" value={value} onChange={(event) => this.props.onOperatorChange({})} />
         </React.Fragment>;
     }
 }

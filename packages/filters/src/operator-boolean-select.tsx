@@ -8,23 +8,29 @@ const options: Option<BooleanOperators['type']>[] = [
 ];
 
 export interface OperatorBooleanSelectProps {
-    operator: BooleanOperators | null;
+    operator: BooleanOperators;
     onOperatorChange: (operator: BooleanOperators) => void;
 }
 
 export class OperatorBooleanSelect extends React.Component<OperatorBooleanSelectProps, never> {
     render() {
-        const type = this.props.operator === null ? null : this.props.operator.type;
-        const value = this.props.operator === null ? '' : this.props.operator.value;
-
         return <React.Fragment>
             <OperatorSelect
-                value={type}
+                value={this.props.operator.type}
                 options={options}
                 onOptionChange={(type: BooleanOperators['type']) => {
-                    this.props.onOperatorChange({ type, value } as BooleanOperators);
+                    this.props.onOperatorChange({ type, value: this.props.operator.value } as BooleanOperators);
                 }}
             />
+            <select
+                value={this.props.operator.value ? 'true' : 'false'}
+                onChange={(event) => {
+                    this.props.onOperatorChange({ type: this.props.operator.type, value: event.currentTarget.value === 'true' } as BooleanOperators);
+                }}
+            >
+                <option value="true">True</option>
+                <option value="false">False</option>
+            </select>
         </React.Fragment>;
     }
 }
