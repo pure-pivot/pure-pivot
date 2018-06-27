@@ -19,6 +19,7 @@ import { autoSorting } from '../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../packages/auto-sorting/src/model';
 import { ToggleComponent } from '../../packages/auto-sorting/src/toggle-component';
 import { assertOrThrow, isString, isNumber } from '../../packages/core/src/util/assertion';
+import { FilterSelect } from '../../packages/filters/src/filter-select';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -190,6 +191,17 @@ export function applyStringEqualsOperator(operator: StringEqualsOperator, value:
     return operator.value === value;
 }
 
+export interface StringNotEqualsOperator {
+    type: 'string-not-equals';
+    value: string;
+}
+
+export function applyStringNotEqualsOperator(operator: StringNotEqualsOperator, value: string) {
+    return operator.value !== value;
+}
+
+export type StringOperators = StringEqualsOperator | StringNotEqualsOperator;
+
 export interface NumberEqualsOperator {
     type: 'number-equals';
     value: number;
@@ -199,7 +211,9 @@ export function applyNumberEqualsOperator(operator: NumberEqualsOperator, value:
     return operator.value === value;
 }
 
-export type Operator = StringEqualsOperator | NumberEqualsOperator;
+export type NumberOperators = NumberEqualsOperator;
+
+export type Operator = StringOperators | NumberOperators;
 
 export function applyOperator(operator: Operator, value: any) {
     switch (operator.type) {
@@ -212,27 +226,27 @@ export function applyOperator(operator: Operator, value: any) {
 
 export interface MethodFilter {
     key: 'method';
-    operator: StringEqualsOperator | null;
+    operator: StringOperators | null;
 }
 
 export interface StatusCodeFilter {
     key: 'statusCode';
-    operator: NumberEqualsOperator | null;
+    operator: NumberOperators | null;
 }
 
 export interface TimeFilter {
     key: 'time';
-    operator: NumberEqualsOperator | null;
+    operator: NumberOperators | null;
 }
 
 export interface UrlFilter {
     key: 'url';
-    operator: StringEqualsOperator | null;
+    operator: StringOperators | null;
 }
 
 export interface DurationFilter {
     key: 'duration';
-    operator: NumberEqualsOperator | null;
+    operator: NumberOperators | null;
 }
 
 export type Filter = MethodFilter | StatusCodeFilter | TimeFilter | UrlFilter | DurationFilter;
@@ -370,48 +384,73 @@ export class App extends React.Component<{}, AppState> {
             });
     }
 
-    renderFilterTypeSelection() {
-        if (this.state.filter !== null) {
-            return <React.Fragment>
-                <select>
-                </select>
-            </React.Fragment>;
-        }
-    }
+    // renderStringFilterTypeSelection(operator: StringOperators | null) {
+    //     return <select
+    //         value={operator === null ? '' : operator.type}
+    //         onChange={(event) => {
+    //             switch (event.currentTarget.value) {
+    //                 case 'string-equals':
+    //                     this.setState({ filter: {} });
+    //                     break;
+    //             }
+    //         }}
+    //     >
+    //         <option value="" disabled>Select operator</option>
+    //         <option value="string-equals">=</option>
+    //         <option value="string-not-equals">!=</option>
+    //     </select>;
+    // }
+
+    // renderFilterTypeSelection() {
+    //     if (this.state.filter !== null) {
+    //         switch (this.state.filter.key) {
+    //             case 'method':
+    //                 return this.renderStringFilterTypeSelection(this.state.filter.operator);
+    //         }
+    //     }
+    // }
 
     renderFilterSelection() {
-        return <React.Fragment>
-            <select
-                value={this.state.filter === null ? '' : this.state.filter.key}
-                onChange={(event) => {
-                    switch (event.currentTarget.value) {
-                        case 'method':
-                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-                            break;
-                        case 'statusCode':
-                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-                            break;
-                        case 'time':
-                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-                            break;
-                        case 'url':
-                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-                            break;
-                        case 'duration':
-                            this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-                            break;
-                    }
-                }}
-            >
-                <option value="" disabled>Select field</option>
-                <option value="method">Method</option>
-                <option value="statusCode">Status code</option>
-                <option value="time">Time</option>
-                <option value="url">URL</option>
-                <option value="duration">Duration</option>
-            </select>
-            {this.renderFilterTypeSelection()}
-        </React.Fragment>;
+        return <FilterSelect fields={{
+            method: { type: 'string', label: 'Method' },
+            statusCode: { type: 'number', label: 'Status code' },
+            time: { type: 'date', label: 'Time' },
+            url: { type: 'string', label: 'URL' },
+            duration: { type: 'number', label: 'Duration' }
+        }} />;
+
+        // return <React.Fragment>
+        //     <select
+        //         value={this.state.filter === null ? '' : this.state.filter.key}
+        //         onChange={(event) => {
+        //             switch (event.currentTarget.value) {
+        //                 case 'method':
+        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+        //                     break;
+        //                 case 'statusCode':
+        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+        //                     break;
+        //                 case 'time':
+        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+        //                     break;
+        //                 case 'url':
+        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+        //                     break;
+        //                 case 'duration':
+        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
+        //                     break;
+        //             }
+        //         }}
+        //     >
+        //         <option value="" disabled>Select field</option>
+        //         <option value="method">Method</option>
+        //         <option value="statusCode">Status code</option>
+        //         <option value="time">Time</option>
+        //         <option value="url">URL</option>
+        //         <option value="duration">Duration</option>
+        //     </select>
+        //     {this.renderFilterTypeSelection()}
+        // </React.Fragment>;
     }
 
     render() {

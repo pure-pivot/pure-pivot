@@ -1,0 +1,45 @@
+{
+  "name": "@pure-pivot/filters",
+  "version": "0.1.0",
+  "description": "",
+  "main": "lib/es5/index.js",
+  "module": "lib/es6/index.js",
+  "types": "lib/es6/index.d.ts",
+  "files": [
+    "src",
+    "lib"
+  ],
+  "peerDependencies": {
+    "react": "*"
+  },
+  "devDependencies": {
+    "@types/react": "^16.3.13",
+    "@types/shallowequal": "^0.2.2",
+    "cross-env": "^5.1.5",
+    "react": "^16.3.2",
+    "rimraf": "^2.6.2",
+    "tslint": "^5.9.1",
+    "typescript": "2.8.3"
+  },
+  "scripts": {
+    "lint": "tslint --config ../../tslint.json --project tsconfig.json",
+    "build:es5": "tsc --target es5 --module commonjs --outDir lib/es5 --declarationDir lib/es5",
+    "build:es6": "tsc --target es6 --module es6 --outDir lib/es6 --declarationDir lib/es6",
+    "build": "rimraf lib && npm run lint && npm run build:es5 && npm run build:es6",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pure-pivot/pure-pivot.git"
+  },
+  "author": "Wouter van Heeswijk",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/pure-pivot/pure-pivot/issues"
+  },
+  "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
+  "dependencies": {
+    "@pure-pivot/core": "^0.1.18",
+    "shallowequal": "^1.0.2"
+  }
+}
