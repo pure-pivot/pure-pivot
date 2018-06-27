@@ -8,6 +8,7 @@ import { OperatorBooleanSelect } from './operator-boolean-select';
 
 export interface FilterSelectProps {
     fields: Fields;
+    onFilterChange: (fieldId: string, operator: Operator) => void;
 }
 
 export interface FilterSelectState {
@@ -73,6 +74,16 @@ export class FilterSelect extends React.Component<FilterSelectProps, FilterSelec
         }
     }
 
+    renderSave() {
+        if (this.state.fieldId !== null && this.state.operator !== null) {
+            const fieldId = this.state.fieldId;
+            const operator = this.state.operator;
+            return <button onClick={() => this.props.onFilterChange(this.state.fieldId, this.state.operator)}>
+                Save
+            </button>;
+        }
+    }
+
     render() {
         return <React.Fragment>
             <select
@@ -85,6 +96,7 @@ export class FilterSelect extends React.Component<FilterSelectProps, FilterSelec
                 )}
             </select>
             {this.renderOperatorSelect()}
+            {this.renderSave()}
         </React.Fragment>;
     }
 }
