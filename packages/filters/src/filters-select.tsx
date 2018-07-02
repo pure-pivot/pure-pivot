@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FilterSelect, FilterSelectState } from './filter-select';
+import { FilterSelect } from './filter-select';
 import { Fields, Filters, Filter } from './model';
 
 export interface NullableFilters {

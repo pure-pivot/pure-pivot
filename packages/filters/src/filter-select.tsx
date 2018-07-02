@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { OperatorSelect } from './operator-select';
-import { Fields, Operator, FieldType, isStringOperators, isNumberOperators, isDateOperators, isBooleanOperators, Filter } from './model';
+import { Fields, Operator, isStringOperators, isNumberOperators, isDateOperators, isBooleanOperators, Filter } from './model';
 import { OperatorStringSelect } from './operator-string-select';
 import { OperatorNumberSelect } from './operator-number-select';
 import { OperatorDateSelect } from './operator-date-select';

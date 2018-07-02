@@ -1,19 +1,10 @@
 {
-    "compilerOptions": {
-        "outDir": "./dist/",
-        "sourceMap": true,
-        "allowSyntheticDefaultImports": false,
-        "noImplicitAny": true,
-        "strict": true,
-        "moduleResolution": "node",
-        "module": "es6",
-        "target": "es6",
-        "jsx": "react",
-        "typeRoots": [
-            "node_modules/@types"
-        ]
-    },
+    "extends": "../../tsconfig.json",
     "include": [
-        "./src/**/*"
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "lib"
     ]
 }
