@@ -12,7 +12,7 @@ export interface OperatorNumberSelectProps {
     onOperatorChange: (operator: NumberOperators) => void;
 }
 
-export class OperatorNumberSelect extends React.Component<OperatorNumberSelectProps, never> {
+export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSelectProps, never> {
     render() {
         return <React.Fragment>
             <OperatorSelect
@@ -24,9 +24,13 @@ export class OperatorNumberSelect extends React.Component<OperatorNumberSelectPr
             />
             <input
                 type="number"
-                value={this.props.operator.value}
+                step="any"
+                defaultValue={this.props.operator.value.toString()}
                 onChange={(event) => {
-                    this.props.onOperatorChange({ type: this.props.operator.type, value: parseFloat(event.currentTarget.value) } as NumberOperators);
+                    const value = parseFloat(event.currentTarget.value);
+                    if (!Number.isNaN(value)) {
+                        this.props.onOperatorChange({ type: this.props.operator.type, value } as NumberOperators);
+                    }
                 }}
             />
         </React.Fragment>;

@@ -16,15 +16,15 @@ export interface ToggleComponentProps {
 }
 
 export function DefaultAscendingComponent(props: SubComponentProps) {
-    return <span onClick={props.onToggle}>▲</span>;
+    return <button onClick={props.onToggle}>▲</button>;
 }
 
 export function DefaultDescendingComponent(props: SubComponentProps) {
-    return <span onClick={props.onToggle}>▼</span>;
+    return <button onClick={props.onToggle}>▼</button>;
 }
 
 export function DefaultInactiveComponent(props: SubComponentProps) {
-    return <span onClick={props.onToggle}>▬</span>;
+    return <button onClick={props.onToggle}>▬</button>;
 }
 
 export function ToggleComponent(props: ToggleComponentProps) {

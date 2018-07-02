@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { OperatorSelect } from './operator-select';
-import { Fields, Operator, FieldType, isStringOperators, isNumberOperators, isDateOperators, isBooleanOperators } from './model';
+import { Fields, Operator, FieldType, isStringOperators, isNumberOperators, isDateOperators, isBooleanOperators, Filter } from './model';
 import { OperatorStringSelect } from './operator-string-select';
 import { OperatorNumberSelect } from './operator-number-select';
 import { OperatorDateSelect } from './operator-date-select';
@@ -8,7 +8,8 @@ import { OperatorBooleanSelect } from './operator-boolean-select';
 
 export interface FilterSelectProps {
     fields: Fields;
-    onFilterChange: (fieldId: string, operator: Operator) => void;
+    defaultFilter: Filter | null;
+    onFilterChange: (filter: Filter) => void;
 }
 
 export interface FilterSelectState {
@@ -16,10 +17,10 @@ export interface FilterSelectState {
     operator: Operator | null;
 }
 
-export class FilterSelect extends React.Component<FilterSelectProps, FilterSelectState> {
+export class FilterSelect extends React.PureComponent<FilterSelectProps, FilterSelectState> {
     state: FilterSelectState = {
-        fieldId: null,
-        operator: null
+        fieldId: this.props.defaultFilter && this.props.defaultFilter.fieldId,
+        operator: this.props.defaultFilter && this.props.defaultFilter.operator
     };
 
     renderStringSelect(operator: Operator) {
@@ -76,16 +77,21 @@ export class FilterSelect extends React.Component<FilterSelectProps, FilterSelec
 
     renderSave() {
         if (this.state.fieldId !== null && this.state.operator !== null) {
-            const fieldId = this.state.fieldId;
-            const operator = this.state.operator;
-            return <button onClick={() => this.props.onFilterChange(this.state.fieldId, this.state.operator)}>
+            return <button type="submit">
                 Save
             </button>;
         }
     }
 
     render() {
-        return <React.Fragment>
+        return <form
+            onSubmit={(event) => {
+                event.preventDefault();
+                if (this.state.fieldId !== null && this.state.operator !== null) {
+                    this.props.onFilterChange({ fieldId: this.state.fieldId, operator: this.state.operator });
+                }
+            }}
+        >
             <select
                 value={this.state.fieldId === null ? '' : this.state.fieldId}
                 onChange={(event) => this.setState({ fieldId: event.currentTarget.value, operator: this.getDefaultOperator(event.currentTarget.value) })}
@@ -97,6 +103,6 @@ export class FilterSelect extends React.Component<FilterSelectProps, FilterSelec
             </select>
             {this.renderOperatorSelect()}
             {this.renderSave()}
-        </React.Fragment>;
+        </form>;
     }
 }

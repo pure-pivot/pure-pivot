@@ -66,13 +66,6 @@ export type Operator = StringOperators | NumberOperators | DateOperators | Boole
 
 export type FieldType = 'string' | 'boolean' | 'number' | 'date';
 
-// export interface OperatorType {
-//     string: StringOperators;
-//     boolean: BooleanOperators;
-//     number: NumberOperators;
-//     date: DateOperators;
-// }
-
 export interface Field {
     type: FieldType;
     label: string;
@@ -80,4 +73,13 @@ export interface Field {
 
 export interface Fields {
     [Key: string]: Field;
+}
+
+export interface Filter {
+    fieldId: string;
+    operator: Operator;
+}
+
+export interface Filters {
+    [Key: string]: Filter;
 }

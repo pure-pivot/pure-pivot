@@ -12,7 +12,7 @@ export interface OperatorStringSelectProps {
     onOperatorChange: (operator: StringOperators) => void;
 }
 
-export class OperatorStringSelect extends React.Component<OperatorStringSelectProps, never> {
+export class OperatorStringSelect extends React.PureComponent<OperatorStringSelectProps, never> {
     render() {
         return <React.Fragment>
             <OperatorSelect

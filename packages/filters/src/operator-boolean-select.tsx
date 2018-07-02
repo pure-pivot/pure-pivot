@@ -12,7 +12,7 @@ export interface OperatorBooleanSelectProps {
     onOperatorChange: (operator: BooleanOperators) => void;
 }
 
-export class OperatorBooleanSelect extends React.Component<OperatorBooleanSelectProps, never> {
+export class OperatorBooleanSelect extends React.PureComponent<OperatorBooleanSelectProps, never> {
     render() {
         return <React.Fragment>
             <OperatorSelect

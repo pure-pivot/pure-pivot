@@ -14,7 +14,6 @@
   },
   "devDependencies": {
     "@types/react": "^16.3.13",
-    "@types/shallowequal": "^0.2.2",
     "cross-env": "^5.1.5",
     "react": "^16.3.2",
     "rimraf": "^2.6.2",
@@ -39,7 +38,6 @@
   },
   "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
-    "@pure-pivot/core": "^0.1.18",
-    "shallowequal": "^1.0.2"
+    "@pure-pivot/core": "^0.1.18"
   }
 }

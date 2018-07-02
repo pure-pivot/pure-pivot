@@ -19,7 +19,8 @@ import { autoSorting } from '../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../packages/auto-sorting/src/model';
 import { ToggleComponent } from '../../packages/auto-sorting/src/toggle-component';
 import { assertOrThrow, isString, isNumber } from '../../packages/core/src/util/assertion';
-import { FilterSelect } from '../../packages/filters/src/filter-select';
+import { FiltersSelect } from '../../packages/filters/src/filters-select';
+import { Operator, Filters } from '../../packages/filters/src/model';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -266,8 +267,7 @@ export interface AppState {
     offset: number;
     table: Element | null;
     sorting: SortingDescriptor | null;
-    // filters: Filters<Data>;
-    filter: Filter | null;
+    filters: Filters;
 }
 
 export class App extends React.Component<{}, AppState> {
@@ -277,16 +277,7 @@ export class App extends React.Component<{}, AppState> {
         offset: 0,
         table: null,
         sorting: null,
-        // filters: {
-        //     url: {
-        //         key: 'method',
-        //         filter: {
-        //             type: 'equals',
-        //             value: 305
-        //         }
-        //     }
-        // },
-        filter: null
+        filters: {}
     };
 
     tableConfiguration = createTableConfigurationBuilder<Data>()
@@ -384,73 +375,18 @@ export class App extends React.Component<{}, AppState> {
             });
     }
 
-    // renderStringFilterTypeSelection(operator: StringOperators | null) {
-    //     return <select
-    //         value={operator === null ? '' : operator.type}
-    //         onChange={(event) => {
-    //             switch (event.currentTarget.value) {
-    //                 case 'string-equals':
-    //                     this.setState({ filter: {} });
-    //                     break;
-    //             }
-    //         }}
-    //     >
-    //         <option value="" disabled>Select operator</option>
-    //         <option value="string-equals">=</option>
-    //         <option value="string-not-equals">!=</option>
-    //     </select>;
-    // }
-
-    // renderFilterTypeSelection() {
-    //     if (this.state.filter !== null) {
-    //         switch (this.state.filter.key) {
-    //             case 'method':
-    //                 return this.renderStringFilterTypeSelection(this.state.filter.operator);
-    //         }
-    //     }
-    // }
-
     renderFilterSelection() {
-        return <FilterSelect fields={{
-            method: { type: 'string', label: 'Method' },
-            statusCode: { type: 'number', label: 'Status code' },
-            time: { type: 'date', label: 'Time' },
-            url: { type: 'string', label: 'URL' },
-            duration: { type: 'number', label: 'Duration' }
-        }} />;
-
-        // return <React.Fragment>
-        //     <select
-        //         value={this.state.filter === null ? '' : this.state.filter.key}
-        //         onChange={(event) => {
-        //             switch (event.currentTarget.value) {
-        //                 case 'method':
-        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-        //                     break;
-        //                 case 'statusCode':
-        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-        //                     break;
-        //                 case 'time':
-        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-        //                     break;
-        //                 case 'url':
-        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-        //                     break;
-        //                 case 'duration':
-        //                     this.setState({ filter: { key: event.currentTarget.value, operator: null } });
-        //                     break;
-        //             }
-        //         }}
-        //     >
-        //         <option value="" disabled>Select field</option>
-        //         <option value="method">Method</option>
-        //         <option value="statusCode">Status code</option>
-        //         <option value="time">Time</option>
-        //         <option value="url">URL</option>
-        //         <option value="duration">Duration</option>
-        //     </select>
-        //     {this.renderFilterTypeSelection()}
-        // </React.Fragment>;
+        return <FiltersSelect
+            fields={{
+                method: { type: 'string', label: 'Method' },
+                statusCode: { type: 'number', label: 'Status code' },
+                time: { type: 'date', label: 'Time' },
+                url: { type: 'string', label: 'URL' },
+                duration: { type: 'number', label: 'Duration' }
+            }}
+            defaultFilters={this.state.filters}
+            onFiltersChange={(filters) => this.setState({ filters })}
+        />;
     }
 
     render() {

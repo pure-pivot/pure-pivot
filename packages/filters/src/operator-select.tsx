@@ -11,7 +11,7 @@ export interface OperatorSelectProps<T extends string> {
     onOptionChange: (value: T) => void;
 }
 
-export class OperatorSelect<T extends string> extends React.Component<OperatorSelectProps<T>, never> {
+export class OperatorSelect<T extends string> extends React.PureComponent<OperatorSelectProps<T>, never> {
     render() {
         return <select value={this.props.value === null ? '' : this.props.value} onChange={(event) => this.props.onOptionChange(event.currentTarget.value as T)}>
             <option value="" disabled>Select operator</option>

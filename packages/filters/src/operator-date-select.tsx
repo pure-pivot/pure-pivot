@@ -12,7 +12,7 @@ export interface OperatorDateSelectProps {
     onOperatorChange: (operator: DateOperators) => void;
 }
 
-export class OperatorDateSelect extends React.Component<OperatorDateSelectProps, never> {
+export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectProps, never> {
     render() {
         return <React.Fragment>
             <OperatorSelect
