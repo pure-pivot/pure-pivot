@@ -42,7 +42,7 @@
   },
   "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
-    "@pure-pivot/core": "^0.1.19",
+    "@pure-pivot/core": "^0.1.20",
     "@pure-pivot/default-table": "^0.1.15",
     "shallowequal": "^1.0.2"
   }
