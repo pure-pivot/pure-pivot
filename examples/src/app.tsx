@@ -1,5 +1,6 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import memoize from 'timed-memoize';
 // import { Configuration, createConfigurationBuilder } from '@pure-pivot/core/lib/es6/configuration';
 // import { createTableConfigurationBuilder } from '@pure-pivot/default-table/lib/es6/configuration';
 // import { virtualGrid } from '@pure-pivot/virtual-scrolling-grid';
@@ -7,7 +8,7 @@ import * as ReactDOM from 'react-dom';
 // import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 // import { Resizer } from '@pure-pivot/column-resizer/lib/es6/resizer-component';
 // import { Sizes } from '@pure-pivot/column-resizer/lib/es6/model';
-import { createConfigurationBuilder } from '../../packages/core/src/configuration';
+import { createConfigurationBuilder, Configuration } from '../../packages/core/src/configuration';
 import { createTableConfigurationBuilder } from '../../packages/default-table/src/configuration';
 import { virtualGrid } from '../../packages/virtual-scrolling-grid/src/virtual-scrolling-grid';
 import { generateTableDescription } from '../../packages/core/src/generate-table-description';
@@ -20,7 +21,8 @@ import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../packag
 import { ToggleComponent } from '../../packages/auto-sorting/src/toggle-component';
 import { assertOrThrow, isString, isNumber } from '../../packages/core/src/util/assertion';
 import { FiltersSelect } from '../../packages/filters/src/filters-select';
-import { Operator, Filters } from '../../packages/filters/src/model';
+import { Operator, Filters, Fields } from '../../packages/filters/src/model';
+import { applyOperator } from '../../packages/filters/src/index';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -183,86 +185,16 @@ const configurationBuilder = createConfigurationBuilder<Data>()
 //     order: 'descending'
 // })
 
-export interface StringEqualsOperator {
-    type: 'string-equals';
-    value: string;
-}
-
-export function applyStringEqualsOperator(operator: StringEqualsOperator, value: string) {
-    return operator.value === value;
-}
-
-export interface StringNotEqualsOperator {
-    type: 'string-not-equals';
-    value: string;
-}
-
-export function applyStringNotEqualsOperator(operator: StringNotEqualsOperator, value: string) {
-    return operator.value !== value;
-}
-
-export type StringOperators = StringEqualsOperator | StringNotEqualsOperator;
-
-export interface NumberEqualsOperator {
-    type: 'number-equals';
-    value: number;
-}
-
-export function applyNumberEqualsOperator(operator: NumberEqualsOperator, value: number) {
-    return operator.value === value;
-}
-
-export type NumberOperators = NumberEqualsOperator;
-
-export type Operator = StringOperators | NumberOperators;
-
-export function applyOperator(operator: Operator, value: any) {
-    switch (operator.type) {
-        case 'string-equals':
-            return applyStringEqualsOperator(operator, assertOrThrow(value, isString));
-        case 'number-equals':
-            return applyNumberEqualsOperator(operator, assertOrThrow(value, isNumber));
-    }
-}
-
-export interface MethodFilter {
-    key: 'method';
-    operator: StringOperators | null;
-}
-
-export interface StatusCodeFilter {
-    key: 'statusCode';
-    operator: NumberOperators | null;
-}
-
-export interface TimeFilter {
-    key: 'time';
-    operator: NumberOperators | null;
-}
-
-export interface UrlFilter {
-    key: 'url';
-    operator: StringOperators | null;
-}
-
-export interface DurationFilter {
-    key: 'duration';
-    operator: NumberOperators | null;
-}
-
-export type Filter = MethodFilter | StatusCodeFilter | TimeFilter | UrlFilter | DurationFilter;
-
-export function applyFilter(filter: Filter, data: Data[]) {
-    if (filter.operator === null) {
-        return data;
-    } else {
-        const operator = filter.operator;
-        return data.filter((row) => applyOperator(operator, row[filter.key]));
-    }
-}
+const fields: Fields<Data> = {
+    method: { type: 'string', label: 'Method', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.method)) },
+    statusCode: { type: 'number', label: 'Status code', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.statusCode)) },
+    time: { type: 'date', label: 'Time', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.time)) },
+    url: { type: 'string', label: 'URL', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.url)) },
+    duration: { type: 'number', label: 'Duration', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.duration)) }
+};
 
 export interface AppState {
-    async: WithStatus<{ data: Data[], tableDescription: TableDescription<Data> }>;
+    async: WithStatus<Data[]>;
     sizes: Sizes;
     offset: number;
     table: Element | null;
@@ -289,39 +221,28 @@ export class App extends React.Component<{}, AppState> {
                     && <ToggleComponent
                         activeSorting={this.state.sorting}
                         column={props.column}
-                        onSetActiveSorting={(sorting) => {
-                            this.setState({
-                                sorting,
-                                async: this.state.async.status === 'success'
-                                    ? {
-                                        ...this.state.async,
-                                        result: {
-                                            ...this.state.async.result,
-                                            tableDescription: generateTableDescription(this.buildConfiguration(sorting))(this.state.async.result.data)
-                                        }
-                                    }
-                                    : this.state.async
-                            });
-                        }}
+                        onSetActiveSorting={(sorting) => this.setState({ sorting })}
                     />
                 }
             </div>
         )
-        // .withTableHeadGroupRowComponent(() => null)
-        // .withTableHeadValueCellComponent((props) =>
-        //     props.column.type === 'head-column'
-        //         ? <div />
-        //         : <div children={props.children} />
-        // )
         .build();
 
-    buildConfiguration(sorting: SortingDescriptor | null) {
+    generateTableDescription = memoize<TableDescription<Data>, (configuration: Configuration<Data>, data: Data[]) => TableDescription<Data>>(generateTableDescription, { one: true, timeout: -1 });
+
+    buildConfiguration = memoize((sorting: SortingDescriptor | null, filters: Filters) => {
+        configurationBuilder.withFilters(
+            Object.keys(filters).map((key) =>
+                (data: Data[]) => fields[filters[key].id].apply(filters[key].operator, data)
+            )
+        );
+
         if (sorting === null) {
             return configurationBuilder.withAutoSorters([]).build();
         } else {
             return configurationBuilder.withAutoSorters([sorting]).build();
         }
-    }
+    }, { one: true, timeout: -1 });
 
     componentDidMount() {
         // window.setInterval(() => this.setState({ sizes: [] }), 1000);
@@ -367,7 +288,7 @@ export class App extends React.Component<{}, AppState> {
                     }
                 }
                 requests.sort((a, b) => a.time - b.time);
-                this.setState({ async: { status: 'success', result: { data: requests, tableDescription: generateTableDescription(this.buildConfiguration(this.state.sorting))(requests) } } });
+                this.setState({ async: { status: 'success', result: requests } });
             })
             .catch((error) => {
                 console.error(error);
@@ -377,13 +298,7 @@ export class App extends React.Component<{}, AppState> {
 
     renderFilterSelection() {
         return <FiltersSelect
-            fields={{
-                method: { type: 'string', label: 'Method' },
-                statusCode: { type: 'number', label: 'Status code' },
-                time: { type: 'date', label: 'Time' },
-                url: { type: 'string', label: 'URL' },
-                duration: { type: 'number', label: 'Duration' }
-            }}
+            fields={fields}
             defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
         />;
@@ -399,6 +314,8 @@ export class App extends React.Component<{}, AppState> {
                 {JSON.stringify(this.state.async.reason, null, 2)}
             </pre>;
         } else {
+            const tableDescription = this.generateTableDescription(this.buildConfiguration(this.state.sorting, this.state.filters), this.state.async.result);
+
             return <React.Fragment>
                 <h3>Filters</h3>
                 {this.renderFilterSelection()}
@@ -412,7 +329,7 @@ export class App extends React.Component<{}, AppState> {
                             }
                         }
                     }}
-                    tableDescription={this.state.async.result.tableDescription}
+                    tableDescription={tableDescription}
                     rowHeight={20}
                     overscan={2}
                     columnWidths={this.state.sizes}
@@ -425,7 +342,7 @@ export class App extends React.Component<{}, AppState> {
                             minimumColumnWidth={20}
                             onWidthsChange={(sizes) => this.setState({ sizes })}
                             onWidthsChangeEnd={() => undefined}
-                            tableDescription={this.state.async.result.tableDescription}
+                            tableDescription={tableDescription}
                             tableElement={this.state.table}
                             dragHandleWidth={20}
                             dragHandleComponent={() => <div style={{ position: 'absolute', left: 9.5, width: 1, height: '100%', backgroundColor: 'green' }} />}

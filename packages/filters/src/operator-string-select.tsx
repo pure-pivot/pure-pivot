@@ -4,7 +4,8 @@ import { OperatorSelect, Option } from './operator-select';
 
 const options: Option<StringOperators['type']>[] = [
     { value: 'string-equals', label: '=' },
-    { value: 'string-not-equals', label: '!=' }
+    { value: 'string-not-equals', label: '!=' },
+    { value: 'string-contains', label: 'contains' }
 ];
 
 export interface OperatorStringSelectProps {

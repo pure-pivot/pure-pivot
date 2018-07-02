@@ -122,7 +122,7 @@ function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: numbe
     return accumulator;
 }
 
-export const generateTableDescription = defaultGenerateTableDescriptionPlugins.reduce((generateTableDescription, plugin) => plugin(generateTableDescription), <D>(configuration: Configuration<D>) => (data: D[]): TableDescription<D> => {
+export const generateTableDescription = defaultGenerateTableDescriptionPlugins.reduce((generateTableDescription, plugin) => plugin(generateTableDescription), <D>(configuration: Configuration<D>, data: D[]): TableDescription<D> => {
     const filteredData = applyFilters(configuration.filters, data);
     const columns = applyGrouping(configuration.groups, filteredData);
     const rows = applyGrouping(configuration.selections, filteredData);

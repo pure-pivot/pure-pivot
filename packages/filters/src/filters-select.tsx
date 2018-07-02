@@ -6,8 +6,8 @@ export interface NullableFilters {
     [Key: string]: Filter | null;
 }
 
-export interface FiltersSelectProps {
-    fields: Fields;
+export interface FiltersSelectProps<D> {
+    fields: Fields<D>;
     defaultFilters: Filters;
     onFiltersChange: (filters: Filters) => void;
 }
@@ -16,7 +16,7 @@ export interface FiltersSelectState {
     filters: NullableFilters;
 }
 
-export class FiltersSelect extends React.PureComponent<FiltersSelectProps, FiltersSelectState> {
+export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>, FiltersSelectState> {
     counter: number = 0;
 
     state: FiltersSelectState = {

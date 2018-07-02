@@ -6,20 +6,20 @@ import { OperatorNumberSelect } from './operator-number-select';
 import { OperatorDateSelect } from './operator-date-select';
 import { OperatorBooleanSelect } from './operator-boolean-select';
 
-export interface FilterSelectProps {
-    fields: Fields;
+export interface FilterSelectProps<D> {
+    fields: Fields<D>;
     defaultFilter: Filter | null;
     onFilterChange: (filter: Filter) => void;
 }
 
 export interface FilterSelectState {
-    fieldId: string | null;
+    id: string | null;
     operator: Operator | null;
 }
 
-export class FilterSelect extends React.PureComponent<FilterSelectProps, FilterSelectState> {
+export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, FilterSelectState> {
     state: FilterSelectState = {
-        fieldId: this.props.defaultFilter && this.props.defaultFilter.fieldId,
+        id: this.props.defaultFilter && this.props.defaultFilter.id,
         operator: this.props.defaultFilter && this.props.defaultFilter.operator
     };
 
@@ -48,8 +48,8 @@ export class FilterSelect extends React.PureComponent<FilterSelectProps, FilterS
     }
 
     renderOperatorSelect() {
-        if (this.state.fieldId !== null && this.state.operator !== null) {
-            switch (this.props.fields[this.state.fieldId].type) {
+        if (this.state.id !== null && this.state.operator !== null) {
+            switch (this.props.fields[this.state.id].type) {
                 case 'string':
                     return this.renderStringSelect(this.state.operator);
                 case 'number':
@@ -62,8 +62,8 @@ export class FilterSelect extends React.PureComponent<FilterSelectProps, FilterS
         }
     }
 
-    getDefaultOperator(fieldId: string): Operator {
-        switch (this.props.fields[fieldId].type) {
+    getDefaultOperator(id: string): Operator {
+        switch (this.props.fields[id].type) {
             case 'string':
                 return { type: 'string-equals', value: '' };
             case 'number':
@@ -76,7 +76,7 @@ export class FilterSelect extends React.PureComponent<FilterSelectProps, FilterS
     }
 
     renderSave() {
-        if (this.state.fieldId !== null && this.state.operator !== null) {
+        if (this.state.id !== null && this.state.operator !== null) {
             return <button type="submit">
                 Save
             </button>;
@@ -87,14 +87,14 @@ export class FilterSelect extends React.PureComponent<FilterSelectProps, FilterS
         return <form
             onSubmit={(event) => {
                 event.preventDefault();
-                if (this.state.fieldId !== null && this.state.operator !== null) {
-                    this.props.onFilterChange({ fieldId: this.state.fieldId, operator: this.state.operator });
+                if (this.state.id !== null && this.state.operator !== null) {
+                    this.props.onFilterChange({ id: this.state.id, operator: this.state.operator });
                 }
             }}
         >
             <select
-                value={this.state.fieldId === null ? '' : this.state.fieldId}
-                onChange={(event) => this.setState({ fieldId: event.currentTarget.value, operator: this.getDefaultOperator(event.currentTarget.value) })}
+                value={this.state.id === null ? '' : this.state.id}
+                onChange={(event) => this.setState({ id: event.currentTarget.value, operator: this.getDefaultOperator(event.currentTarget.value) })}
             >
                 <option value="" disabled>Select field</option>
                 {Object.keys(this.props.fields).map((key) =>

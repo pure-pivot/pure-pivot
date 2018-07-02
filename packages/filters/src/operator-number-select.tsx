@@ -4,7 +4,9 @@ import { OperatorSelect, Option } from './operator-select';
 
 const options: Option<NumberOperators['type']>[] = [
     { value: 'number-equals', label: '=' },
-    { value: 'number-not-equals', label: '!=' }
+    { value: 'number-not-equals', label: '!=' },
+    { value: 'number-smaller-than', label: '<' },
+    { value: 'number-greater-than', label: '>' }
 ];
 
 export interface OperatorNumberSelectProps {

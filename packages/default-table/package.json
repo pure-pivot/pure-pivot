@@ -39,7 +39,7 @@
   },
   "homepage": "https://github.com/pure-pivot/pure-pivot#readme",
   "dependencies": {
-    "@pure-pivot/core": "^0.1.18",
+    "@pure-pivot/core": "^0.1.19",
     "shallowequal": "^1.0.2"
   }
 }

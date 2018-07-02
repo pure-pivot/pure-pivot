@@ -4,7 +4,9 @@ import { OperatorSelect, Option } from './operator-select';
 
 const options: Option<DateOperators['type']>[] = [
     { value: 'date-equals', label: '=' },
-    { value: 'date-not-equals', label: '!=' }
+    { value: 'date-not-equals', label: '!=' },
+    { value: 'date-before', label: 'before' },
+    { value: 'date-after', label: 'after' }
 ];
 
 export interface OperatorDateSelectProps {
@@ -14,6 +16,8 @@ export interface OperatorDateSelectProps {
 
 export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectProps, never> {
     render() {
+        const offset = new Date().getTimezoneOffset() * 60 * 1000;
+
         return <React.Fragment>
             <OperatorSelect
                 value={this.props.operator.type}
@@ -24,9 +28,8 @@ export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectPr
             />
             <input
                 type="datetime-local"
-                value={new Date(this.props.operator.value).toISOString().substr(0, 16)}
+                value={new Date(this.props.operator.value - offset).toISOString().substr(0, 16)}
                 onChange={(event) => {
-                    console.log(event.currentTarget.value);
                     this.props.onOperatorChange({ type: this.props.operator.type, value: +new Date(event.currentTarget.value) } as DateOperators);
                 }}
             />

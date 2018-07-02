@@ -8,10 +8,15 @@ export interface StringNotEqualsOperator {
     value: string;
 }
 
-export type StringOperators = StringEqualsOperator | StringNotEqualsOperator;
+export interface StringContainsOperator {
+    type: 'string-contains';
+    value: string;
+}
+
+export type StringOperators = StringEqualsOperator | StringNotEqualsOperator | StringContainsOperator;
 
 export function isStringOperators(object: Operator): object is StringOperators {
-    return object.type === 'string-equals' || object.type === 'string-not-equals';
+    return object.type === 'string-equals' || object.type === 'string-not-equals' || object.type === 'string-contains';
 }
 
 export interface NumberEqualsOperator {
@@ -24,10 +29,20 @@ export interface NumberNotEqualsOperator {
     value: number;
 }
 
-export type NumberOperators = NumberEqualsOperator | NumberNotEqualsOperator;
+export interface NumberSmallerThanOperator {
+    type: 'number-smaller-than';
+    value: number;
+}
+
+export interface NumberGreaterThanOperator {
+    type: 'number-greater-than';
+    value: number;
+}
+
+export type NumberOperators = NumberEqualsOperator | NumberNotEqualsOperator | NumberSmallerThanOperator | NumberGreaterThanOperator;
 
 export function isNumberOperators(object: Operator): object is NumberOperators {
-    return object.type === 'number-equals' || object.type === 'number-not-equals';
+    return object.type === 'number-equals' || object.type === 'number-not-equals' || object.type === 'number-smaller-than' || object.type === 'number-greater-than';
 }
 
 export interface DateEqualsOperator {
@@ -40,10 +55,20 @@ export interface DateNotEqualsOperator {
     value: number;
 }
 
-export type DateOperators = DateEqualsOperator | DateNotEqualsOperator;
+export interface DateBeforeOperator {
+    type: 'date-before';
+    value: number;
+}
+
+export interface DateAfterOperator {
+    type: 'date-after';
+    value: number;
+}
+
+export type DateOperators = DateEqualsOperator | DateNotEqualsOperator | DateBeforeOperator | DateAfterOperator;
 
 export function isDateOperators(object: Operator): object is DateOperators {
-    return object.type === 'date-equals' || object.type === 'date-not-equals';
+    return object.type === 'date-equals' || object.type === 'date-not-equals' || object.type === 'date-before' || object.type === 'date-after';
 }
 
 export interface BooleanEqualsOperator {
@@ -66,17 +91,18 @@ export type Operator = StringOperators | NumberOperators | DateOperators | Boole
 
 export type FieldType = 'string' | 'boolean' | 'number' | 'date';
 
-export interface Field {
+export interface Field<D> {
     type: FieldType;
     label: string;
+    apply: (operator: Operator, data: D[]) => D[];
 }
 
-export interface Fields {
-    [Key: string]: Field;
+export interface Fields<D> {
+    [Key: string]: Field<D>;
 }
 
 export interface Filter {
-    fieldId: string;
+    id: string;
     operator: Operator;
 }
 
