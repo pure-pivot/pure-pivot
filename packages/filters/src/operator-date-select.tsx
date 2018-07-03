@@ -28,6 +28,7 @@ export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectPr
             />
             <input
                 type="datetime-local"
+                required
                 value={new Date(this.props.operator.value - offset).toISOString().substr(0, 16)}
                 onChange={(event) => {
                     this.props.onOperatorChange({ type: this.props.operator.type, value: +new Date(event.currentTarget.value) } as DateOperators);
