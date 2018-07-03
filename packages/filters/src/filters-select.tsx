@@ -10,8 +10,8 @@ export interface FiltersSelectProps<D> {
     fields: Fields<D>;
     defaultFilters: Filters;
     onFiltersChange: (filters: Filters) => void;
-    filtersContainerComponent: React.ReactType;
-    filtersItemComponent: React.ReactType;
+    filtersContainerComponent: React.ComponentType<{}>;
+    filtersItemComponent: React.ComponentType<{}>;
 }
 
 export type FiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent';
