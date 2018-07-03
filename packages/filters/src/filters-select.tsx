@@ -29,7 +29,7 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
 
     componentWillReceiveProps(nextProps: FiltersSelectProps<D>) {
         if (this.props.filters !== nextProps.filters) {
-            this.setState({ filters: { ...this.state.filters, ...nextProps.filters } });
+            this.setState({ filters: nextProps.filters });
         }
     }
 
