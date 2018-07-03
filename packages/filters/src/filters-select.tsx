@@ -8,7 +8,7 @@ export interface NullableFilters {
 
 export interface FiltersSelectProps<D> {
     fields: Fields<D>;
-    defaultFilters: Filters;
+    filters: Filters;
     onFiltersChange: (filters: Filters) => void;
     filtersContainerComponent: React.ComponentType<{}>;
     filtersItemComponent: React.ComponentType<{}>;
@@ -24,8 +24,14 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
     counter: number = 0;
 
     state: FiltersSelectState = {
-        filters: this.props.defaultFilters
+        filters: this.props.filters
     };
+
+    componentWillReceiveProps(nextProps: FiltersSelectProps<D>) {
+        if (this.props.filters !== nextProps.filters) {
+            this.setState({ filters: { ...this.state.filters, ...nextProps.filters } });
+        }
+    }
 
     handleAdd() {
         while (this.counter.toString() in this.state.filters) {
