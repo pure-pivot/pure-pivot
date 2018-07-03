@@ -10,7 +10,11 @@ export interface FiltersSelectProps<D> {
     fields: Fields<D>;
     defaultFilters: Filters;
     onFiltersChange: (filters: Filters) => void;
+    filtersContainerComponent: React.ReactType;
+    filtersItemComponent: React.ReactType;
 }
+
+export type FiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent';
 
 export interface FiltersSelectState {
     filters: NullableFilters;
@@ -58,7 +62,7 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
     render() {
         return <React.Fragment>
             <button onClick={() => this.handleAdd()}>
-                Add
+                Add filter
             </button>
             <ul>
                 {Object.keys(this.state.filters).map((key) =>
