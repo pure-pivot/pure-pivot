@@ -6,8 +6,8 @@ const options: Option<StringOperators['type']>[] = [
     { value: 'string-equals', label: '=' },
     { value: 'string-not-equals', label: '!=' },
     { value: 'string-contains', label: 'contains' },
-    { value: 'is-null', label: 'is empty' },
-    { value: 'is-not-null', label: 'is not empty' }
+    { value: 'is-empty', label: 'is empty' },
+    { value: 'is-not-empty', label: 'is not empty' }
 ];
 
 export interface OperatorStringSelectProps {
@@ -27,7 +27,7 @@ export class OperatorStringSelect extends React.PureComponent<OperatorStringSele
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as StringOperators);
                 }}
             />
-            {operatorType !== 'is-null' && operatorType !== 'is-not-null' && <input
+            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
                 type="text"
                 value={this.props.operator.value}
                 onChange={(event) => {

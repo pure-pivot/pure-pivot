@@ -5,8 +5,8 @@ import { OperatorSelect, Option } from './operator-select';
 const options: Option<BooleanOperators['type']>[] = [
     { value: 'boolean-equals', label: '=' },
     { value: 'boolean-not-equals', label: '!=' },
-    { value: 'is-null', label: 'is empty' },
-    { value: 'is-not-null', label: 'is not empty' }
+    { value: 'is-empty', label: 'is empty' },
+    { value: 'is-not-empty', label: 'is not empty' }
 ];
 
 export interface OperatorBooleanSelectProps {
@@ -26,7 +26,7 @@ export class OperatorBooleanSelect extends React.PureComponent<OperatorBooleanSe
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as BooleanOperators);
                 }}
             />
-            {operatorType !== 'is-null' && operatorType !== 'is-not-null' && <select
+            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <select
                 value={this.props.operator.value ? 'true' : 'false'}
                 onChange={(event) => {
                     this.props.onOperatorChange({ type: operatorType, value: event.currentTarget.value === 'true' } as BooleanOperators);

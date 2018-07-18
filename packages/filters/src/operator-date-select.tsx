@@ -7,8 +7,8 @@ const options: Option<DateOperators['type']>[] = [
     { value: 'date-not-equals', label: '!=' },
     { value: 'date-before', label: 'before' },
     { value: 'date-after', label: 'after' },
-    { value: 'is-null', label: 'is empty' },
-    { value: 'is-not-null', label: 'is not empty' }
+    { value: 'is-empty', label: 'is empty' },
+    { value: 'is-not-empty', label: 'is not empty' }
 ];
 
 export interface OperatorDateSelectProps {
@@ -29,7 +29,7 @@ export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectPr
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as DateOperators);
                 }}
             />
-            {operatorType !== 'is-null' && operatorType !== 'is-not-null' && <input
+            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
                 type="datetime-local"
                 required
                 value={new Date(this.props.operator.value - offset).toISOString().substr(0, 16)}

@@ -7,8 +7,8 @@ const options: Option<NumberOperators['type']>[] = [
     { value: 'number-not-equals', label: '!=' },
     { value: 'number-smaller-than', label: '<' },
     { value: 'number-greater-than', label: '>' },
-    { value: 'is-null', label: 'is empty' },
-    { value: 'is-not-null', label: 'is not empty' }
+    { value: 'is-empty', label: 'is empty' },
+    { value: 'is-not-empty', label: 'is not empty' }
 ];
 
 export interface OperatorNumberSelectProps {
@@ -28,7 +28,7 @@ export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSele
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as NumberOperators);
                 }}
             />
-            {operatorType !== 'is-null' && operatorType !== 'is-not-null' && <input
+            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
                 type="number"
                 step="any"
                 defaultValue={this.props.operator.value.toString()}
