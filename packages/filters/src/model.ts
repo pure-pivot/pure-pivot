@@ -1,3 +1,13 @@
+export interface IsEmptyOperator {
+    type: 'is-empty';
+    value: any;
+}
+
+export interface IsNotEmptyOperator {
+    type: 'is-not-empty';
+    value: any;
+}
+
 export interface StringEqualsOperator {
     type: 'string-equals';
     value: string;
@@ -13,10 +23,10 @@ export interface StringContainsOperator {
     value: string;
 }
 
-export type StringOperators = StringEqualsOperator | StringNotEqualsOperator | StringContainsOperator;
+export type StringOperators = StringEqualsOperator | StringNotEqualsOperator | StringContainsOperator | IsEmptyOperator | IsNotEmptyOperator;
 
 export function isStringOperators(object: Operator): object is StringOperators {
-    return object.type === 'string-equals' || object.type === 'string-not-equals' || object.type === 'string-contains';
+    return object.type === 'string-equals' || object.type === 'string-not-equals' || object.type === 'string-contains' || object.type === 'is-empty' || object.type === 'is-not-empty';
 }
 
 export interface NumberEqualsOperator {
@@ -39,10 +49,10 @@ export interface NumberGreaterThanOperator {
     value: number;
 }
 
-export type NumberOperators = NumberEqualsOperator | NumberNotEqualsOperator | NumberSmallerThanOperator | NumberGreaterThanOperator;
+export type NumberOperators = NumberEqualsOperator | NumberNotEqualsOperator | NumberSmallerThanOperator | NumberGreaterThanOperator | IsEmptyOperator | IsNotEmptyOperator;
 
 export function isNumberOperators(object: Operator): object is NumberOperators {
-    return object.type === 'number-equals' || object.type === 'number-not-equals' || object.type === 'number-smaller-than' || object.type === 'number-greater-than';
+    return object.type === 'number-equals' || object.type === 'number-not-equals' || object.type === 'number-smaller-than' || object.type === 'number-greater-than' || object.type === 'is-empty' || object.type === 'is-not-empty';
 }
 
 export interface DateEqualsOperator {
@@ -65,10 +75,10 @@ export interface DateAfterOperator {
     value: number;
 }
 
-export type DateOperators = DateEqualsOperator | DateNotEqualsOperator | DateBeforeOperator | DateAfterOperator;
+export type DateOperators = DateEqualsOperator | DateNotEqualsOperator | DateBeforeOperator | DateAfterOperator | IsEmptyOperator | IsNotEmptyOperator;
 
 export function isDateOperators(object: Operator): object is DateOperators {
-    return object.type === 'date-equals' || object.type === 'date-not-equals' || object.type === 'date-before' || object.type === 'date-after';
+    return object.type === 'date-equals' || object.type === 'date-not-equals' || object.type === 'date-before' || object.type === 'date-after' || object.type === 'is-empty' || object.type === 'is-not-empty';
 }
 
 export interface BooleanEqualsOperator {
@@ -81,10 +91,10 @@ export interface BooleanNotEqualsOperator {
     value: boolean;
 }
 
-export type BooleanOperators = BooleanEqualsOperator | BooleanNotEqualsOperator;
+export type BooleanOperators = BooleanEqualsOperator | BooleanNotEqualsOperator | IsEmptyOperator | IsNotEmptyOperator;
 
 export function isBooleanOperators(object: Operator): object is BooleanOperators {
-    return object.type === 'boolean-equals' || object.type === 'boolean-not-equals';
+    return object.type === 'boolean-equals' || object.type === 'boolean-not-equals' || object.type === 'is-empty' || object.type === 'is-not-empty';
 }
 
 export type Operator = StringOperators | NumberOperators | DateOperators | BooleanOperators;

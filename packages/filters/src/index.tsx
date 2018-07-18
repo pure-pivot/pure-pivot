@@ -1,5 +1,9 @@
 import { assertOrThrow, isString, isNumber, isBoolean } from '@pure-pivot/core/lib/es6/util/assertion';
-import { Operator, StringEqualsOperator, StringNotEqualsOperator, NumberEqualsOperator, NumberNotEqualsOperator, BooleanEqualsOperator, BooleanNotEqualsOperator, DateEqualsOperator, DateNotEqualsOperator, StringContainsOperator, NumberSmallerThanOperator, NumberGreaterThanOperator, DateBeforeOperator, DateAfterOperator } from './model';
+import { Operator, StringEqualsOperator, StringNotEqualsOperator, NumberEqualsOperator, NumberNotEqualsOperator, BooleanEqualsOperator, BooleanNotEqualsOperator, DateEqualsOperator, DateNotEqualsOperator, StringContainsOperator, NumberSmallerThanOperator, NumberGreaterThanOperator, DateBeforeOperator, DateAfterOperator, IsEmptyOperator, IsNotEmptyOperator } from './model';
+
+function isEmpty(value: any) {
+    return value === undefined || value === null || value === '';
+}
 
 export function applyStringEqualsOperator(operator: StringEqualsOperator, value: string) {
     return operator.value === value;
@@ -53,7 +57,20 @@ export function applyDateAfterOperator(operator: DateAfterOperator, value: numbe
     return value > operator.value;
 }
 
+export function applyIsEmptyOperator(operator: IsEmptyOperator, value: any) {
+    return isEmpty(value);
+}
+
+export function applyIsNotEmptyOperator(operator: IsNotEmptyOperator, value: any) {
+    return !isEmpty(value);
+}
+
 export function applyOperator(operator: Operator, value: any): boolean {
+    if (operator.type !== 'is-empty' && operator.type !== 'is-not-empty') {
+        if (isEmpty(value)) {
+            return false;
+        }
+    }
     switch (operator.type) {
         case 'string-equals':
             return applyStringEqualsOperator(operator, assertOrThrow(value, isString));
@@ -81,5 +98,9 @@ export function applyOperator(operator: Operator, value: any): boolean {
             return applyDateBeforeOperator(operator, assertOrThrow(value, isNumber));
         case 'date-after':
             return applyDateAfterOperator(operator, assertOrThrow(value, isNumber));
+        case 'is-empty':
+            return applyIsEmptyOperator(operator, value);
+        case 'is-not-empty':
+            return applyIsNotEmptyOperator(operator, value);
     }
 }
