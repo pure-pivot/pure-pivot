@@ -1,5 +1,13 @@
 import { assertOrThrow, isString, isNumber, isBoolean } from '@pure-pivot/core/lib/es6/util/assertion';
-import { Operator, StringEqualsOperator, StringNotEqualsOperator, NumberEqualsOperator, NumberNotEqualsOperator, BooleanEqualsOperator, BooleanNotEqualsOperator, DateEqualsOperator, DateNotEqualsOperator, StringContainsOperator, NumberSmallerThanOperator, NumberGreaterThanOperator, DateBeforeOperator, DateAfterOperator } from './model';
+import { Operator, StringEqualsOperator, StringNotEqualsOperator, NumberEqualsOperator, NumberNotEqualsOperator, BooleanEqualsOperator, BooleanNotEqualsOperator, DateEqualsOperator, DateNotEqualsOperator, StringContainsOperator, NumberSmallerThanOperator, NumberGreaterThanOperator, DateBeforeOperator, DateAfterOperator, IsNullOperator, IsNotNullOperator } from './model';
+
+function isNull(value: any) {
+    return value === undefined || value === null || value === '';
+}
+
+function isNotNull(value: any) {
+    return value !== undefined && value !== null && value !== '';
+}
 
 export function applyStringEqualsOperator(operator: StringEqualsOperator, value: string) {
     return operator.value === value;
@@ -53,7 +61,20 @@ export function applyDateAfterOperator(operator: DateAfterOperator, value: numbe
     return value > operator.value;
 }
 
+export function applyIsNullOperator(operator: IsNullOperator, value: any) {
+    return isNull(value);
+}
+
+export function applyIsNotNullOperator(operator: IsNotNullOperator, value: any) {
+    return isNotNull(value);
+}
+
 export function applyOperator(operator: Operator, value: any): boolean {
+    if (operator.type !== 'is-null' && operator.type !== 'is-not-null') {
+        if (isNull(value)) {
+            return false;
+        }
+    }
     switch (operator.type) {
         case 'string-equals':
             return applyStringEqualsOperator(operator, assertOrThrow(value, isString));
@@ -81,5 +102,9 @@ export function applyOperator(operator: Operator, value: any): boolean {
             return applyDateBeforeOperator(operator, assertOrThrow(value, isNumber));
         case 'date-after':
             return applyDateAfterOperator(operator, assertOrThrow(value, isNumber));
+        case 'is-null':
+            return applyIsNullOperator(operator, value);
+        case 'is-not-null':
+            return applyIsNotNullOperator(operator, value);
     }
 }
