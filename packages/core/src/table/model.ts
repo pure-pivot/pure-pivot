@@ -50,6 +50,7 @@ export interface BodyRow<D> {
     type: 'body-row';
     level: number;
     label: string;
+    index: number;
     cells: BodyCell<D, {}>[];
 }
 
