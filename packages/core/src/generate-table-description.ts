@@ -106,12 +106,14 @@ function createBodyRows<D>(recursiveRows: RecursiveGroup[], sortedIndices: numbe
         });
     }
 
-    for (const rows of rowsWithData) {
+    for (let i = 0; i < rowsWithData.length; i++) {
+        const rows = rowsWithData[i];
         accumulator.push({
             type: 'body-row',
             level,
             label: rows.label,
-            cells: rows.cells
+            cells: rows.cells,
+            index: i
         });
 
         if (rows.childGroups) {
