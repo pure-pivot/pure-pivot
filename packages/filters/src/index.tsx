@@ -1,5 +1,5 @@
 import { assertOrThrow, isString, isNumber, isBoolean } from '@pure-pivot/core/lib/es6/util/assertion';
-import { Operator, StringEqualsOperator, StringNotEqualsOperator, NumberEqualsOperator, NumberNotEqualsOperator, BooleanEqualsOperator, BooleanNotEqualsOperator, DateEqualsOperator, DateNotEqualsOperator, StringContainsOperator, NumberSmallerThanOperator, NumberGreaterThanOperator, DateBeforeOperator, DateAfterOperator, IsEmptyOperator, IsNotEmptyOperator } from './model';
+import { Operator, StringEqualsOperator, StringNotEqualsOperator, NumberEqualsOperator, NumberNotEqualsOperator, BooleanEqualsOperator, BooleanNotEqualsOperator, DateEqualsOperator, DateNotEqualsOperator, StringContainsOperator, NumberSmallerThanOperator, NumberGreaterThanOperator, DateBeforeOperator, DateAfterOperator, IsEmptyOperator, IsNotEmptyOperator, DateEmptyOrBeforeOperator, DateEmptyOrAfterOperator } from './model';
 
 function isEmpty(value: any) {
     return value === undefined || value === null || value === '';
@@ -65,8 +65,16 @@ export function applyIsNotEmptyOperator(operator: IsNotEmptyOperator, value: any
     return !isEmpty(value);
 }
 
+export function applyDateEmptyOrBeforeOperator(operator: DateEmptyOrBeforeOperator, value: number) {
+    return isEmpty(value) || value < operator.value;
+}
+
+export function applyDateEmptyOrAfterOperator(operator: DateEmptyOrAfterOperator, value: number) {
+    return isEmpty(value) || value > operator.value;
+}
+
 export function applyOperator(operator: Operator, value: any): boolean {
-    if (operator.type !== 'is-empty' && operator.type !== 'is-not-empty') {
+    if (operator.type !== 'is-empty' && operator.type !== 'is-not-empty' && operator.type !== 'date-empty-or-before' && operator.type !== 'date-empty-or-after') {
         if (isEmpty(value)) {
             return false;
         }
@@ -102,5 +110,9 @@ export function applyOperator(operator: Operator, value: any): boolean {
             return applyIsEmptyOperator(operator, value);
         case 'is-not-empty':
             return applyIsNotEmptyOperator(operator, value);
+        case 'date-empty-or-before':
+            return applyDateEmptyOrBeforeOperator(operator, value);
+        case 'date-empty-or-after':
+            return applyDateEmptyOrAfterOperator(operator, value);
     }
 }

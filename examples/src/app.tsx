@@ -23,6 +23,8 @@ import { assertOrThrow, isString, isNumber } from '../../packages/core/src/util/
 import { FiltersSelect, FiltersSelectProps } from '../../packages/filters/src/filters-select';
 import { Operator, Filters, Fields } from '../../packages/filters/src/model';
 import { applyOperator } from '../../packages/filters/src/index';
+import { FiltersContainerComponent } from './FiltersContainerComponent';
+import { FiltersItemComponent } from './FiltersItemComponent';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -64,117 +66,118 @@ function isArrayOfData(object: any): object is Data[] {
 const configurationBuilder = createConfigurationBuilder<Data>()
     // .withFilter((data) => data.slice(0, 50))
     .withPlugin<AutoSortingConfigurationBuilder<Data>>(autoSorting)
-    .withGroup({
-        id: 'method',
-        label: 'Method',
-        grouper: (data) => {
-            const byMethod: { [Key: string]: number } = {};
-            const labels: string[] = [];
-            const dataIndices: number[] = [];
+    // .withGroup({
+    //     id: 'method',
+    //     label: 'Method',
+    //     grouper: (data) => {
+    //         const byMethod: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
 
-            for (const row of data) {
-                if (byMethod[row.method] === undefined) {
-                    byMethod[row.method] = labels.length;
-                    labels.push(row.method);
-                }
-                dataIndices.push(byMethod[row.method]);
-            }
+    //         for (const row of data) {
+    //             if (byMethod[row.method] === undefined) {
+    //                 byMethod[row.method] = labels.length;
+    //                 labels.push(row.method);
+    //             }
+    //             dataIndices.push(byMethod[row.method]);
+    //         }
 
-            return {
-                groupIndices: dataIndices,
-                groupLabels: labels
-            };
-        }
-    })
-    .withGroup({
-        id: 'statusCode',
-        label: 'Status code',
-        grouper: (data) => {
-            const byStatusCode: { [Key: string]: number } = {};
-            const labels: string[] = [];
-            const dataIndices: number[] = [];
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withGroup({
+    //     id: 'statusCode',
+    //     label: 'Status code',
+    //     grouper: (data) => {
+    //         const byStatusCode: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
 
-            for (const row of data) {
-                if (byStatusCode[row.statusCode] === undefined) {
-                    byStatusCode[row.statusCode] = labels.length;
-                    labels.push(row.statusCode.toString());
-                }
-                dataIndices.push(byStatusCode[row.statusCode]);
-            }
+    //         for (const row of data) {
+    //             if (byStatusCode[row.statusCode] === undefined) {
+    //                 byStatusCode[row.statusCode] = labels.length;
+    //                 labels.push(row.statusCode.toString());
+    //             }
+    //             dataIndices.push(byStatusCode[row.statusCode]);
+    //         }
 
-            return {
-                groupIndices: dataIndices,
-                groupLabels: labels
-            };
-        }
-    })
-    .withSelection({
-        id: 'url-first',
-        label: 'URL 1st',
-        grouper: (data) => {
-            const byUrlFirst: { [Key: string]: number } = {};
-            const labels: string[] = [];
-            const dataIndices: number[] = [];
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withSelection({
+    //     id: 'url-first',
+    //     label: 'URL 1st',
+    //     grouper: (data) => {
+    //         const byUrlFirst: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
 
-            for (const row of data) {
-                const urlFirst = row.url.split('/')[1];
-                if (byUrlFirst[urlFirst] === undefined) {
-                    byUrlFirst[urlFirst] = labels.length;
-                    labels.push(urlFirst);
-                }
-                dataIndices.push(byUrlFirst[urlFirst]);
-            }
+    //         for (const row of data) {
+    //             const urlFirst = row.url.split('/')[1];
+    //             if (byUrlFirst[urlFirst] === undefined) {
+    //                 byUrlFirst[urlFirst] = labels.length;
+    //                 labels.push(urlFirst);
+    //             }
+    //             dataIndices.push(byUrlFirst[urlFirst]);
+    //         }
 
-            return {
-                groupIndices: dataIndices,
-                groupLabels: labels
-            };
-        }
-    })
-    .withSelection({
-        id: 'url-second',
-        label: 'URL 2nd',
-        grouper: (data) => {
-            const byUrlSecond: { [Key: string]: number } = {};
-            const labels: string[] = [];
-            const dataIndices: number[] = [];
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withSelection({
+    //     id: 'url-second',
+    //     label: 'URL 2nd',
+    //     grouper: (data) => {
+    //         const byUrlSecond: { [Key: string]: number } = {};
+    //         const labels: string[] = [];
+    //         const dataIndices: number[] = [];
 
-            for (const row of data) {
-                const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
-                if (byUrlSecond[urlSecond] === undefined) {
-                    byUrlSecond[urlSecond] = labels.length;
-                    labels.push(urlSecond);
-                }
-                dataIndices.push(byUrlSecond[urlSecond]);
-            }
+    //         for (const row of data) {
+    //             const urlSecond = row.url.split('/')[2] || row.url.split('/')[1];
+    //             if (byUrlSecond[urlSecond] === undefined) {
+    //                 byUrlSecond[urlSecond] = labels.length;
+    //                 labels.push(urlSecond);
+    //             }
+    //             dataIndices.push(byUrlSecond[urlSecond]);
+    //         }
 
-            return {
-                groupIndices: dataIndices,
-                groupLabels: labels
-            };
-        }
-    })
-    .withValue({
-        id: 'count',
-        label: 'Count',
-        reducer: (values) => values.length,
-        renderer: (value: number) => value.toString(),
-        comparator: (value1, value2) => value1 - value2
-    })
-    .withValue({
-        id: 'average-duration',
-        label: 'Avg. duration',
-        reducer: (values) => values.reduce((sum, data) => sum + data.duration, 0) / values.length,
-        renderer: (value: number) => Number.isNaN(value) ? '' : `${value.toFixed(1)} ms`,
-        comparator: (value1, value2) => Number.isNaN(value1) ? -1 : Number.isNaN(value2) ? 1 : value1 - value2
-    })
-    .withValue({
-        id: 'sum-duration',
-        label: 'Sum duration',
-        reducer: (values) => values.reduce((sum, data) => sum + data.duration, 0),
-        renderer: (value: number) => `${value.toFixed(1)} ms`,
-        comparator: (value1, value2) => value1 - value2
-    });
+    //         return {
+    //             groupIndices: dataIndices,
+    //             groupLabels: labels
+    //         };
+    //     }
+    // })
+    // .withValue({
+    //     id: 'count',
+    //     label: 'Count',
+    //     reducer: (values) => values.length,
+    //     renderer: (value: number) => value.toString(),
+    //     comparator: (value1, value2) => value1 - value2
+    // })
+    // .withValue({
+    //     id: 'average-duration',
+    //     label: 'Avg. duration',
+    //     reducer: (values) => values.reduce((sum, data) => sum + data.duration, 0) / values.length,
+    //     renderer: (value: number) => Number.isNaN(value) ? '' : `${value.toFixed(1)} ms`,
+    //     comparator: (value1, value2) => Number.isNaN(value1) ? -1 : Number.isNaN(value2) ? 1 : value1 - value2
+    // })
+    // .withValue({
+    //     id: 'sum-duration',
+    //     label: 'Sum duration',
+    //     reducer: (values) => values.reduce((sum, data) => sum + data.duration, 0),
+    //     renderer: (value: number) => `${value.toFixed(1)} ms`,
+    //     comparator: (value1, value2) => value1 - value2
+    // });
+    ;
 
 // .withAutoSorter({
 //     valueId: 'sum-duration',
@@ -260,7 +263,7 @@ export class App extends React.Component<{}, AppState> {
             .then((data) => {
                 const parser = new DOMParser();
                 const DOM = parser.parseFromString(data, 'text/xml');
-                const builds = ['104259', '104260']; // DOM.querySelectorAll('builds > build');
+                const builds = ['121282', '121284']; // DOM.querySelectorAll('builds > build');
                 let promise: Promise<any[]> = Promise.resolve([]);
 
                 for (const build of builds) {
@@ -301,8 +304,8 @@ export class App extends React.Component<{}, AppState> {
             fields={fields}
             filters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
-            filtersContainerComponent={(props) => <ul {...props} />}
-            filtersItemComponent={(props) => <li {...props}/>}
+            filtersContainerComponent={FiltersContainerComponent}
+            filtersItemComponent={FiltersItemComponent}
         />;
     }
 

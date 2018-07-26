@@ -75,10 +75,20 @@ export interface DateAfterOperator {
     value: number;
 }
 
-export type DateOperators = DateEqualsOperator | DateNotEqualsOperator | DateBeforeOperator | DateAfterOperator | IsEmptyOperator | IsNotEmptyOperator;
+export interface DateEmptyOrBeforeOperator {
+    type: 'date-empty-or-before';
+    value: number;
+}
+
+export interface DateEmptyOrAfterOperator {
+    type: 'date-empty-or-after';
+    value: number;
+}
+
+export type DateOperators = DateEqualsOperator | DateNotEqualsOperator | DateBeforeOperator | DateAfterOperator | IsEmptyOperator | IsNotEmptyOperator | DateEmptyOrBeforeOperator | DateEmptyOrAfterOperator;
 
 export function isDateOperators(object: Operator): object is DateOperators {
-    return object.type === 'date-equals' || object.type === 'date-not-equals' || object.type === 'date-before' || object.type === 'date-after' || object.type === 'is-empty' || object.type === 'is-not-empty';
+    return object.type === 'date-equals' || object.type === 'date-not-equals' || object.type === 'date-before' || object.type === 'date-after' || object.type === 'is-empty' || object.type === 'is-not-empty' || object.type === 'date-empty-or-before' || object.type === 'date-empty-or-after';
 }
 
 export interface BooleanEqualsOperator {
