@@ -8,7 +8,9 @@ const options: Option<DateOperators['type']>[] = [
     { value: 'date-before', label: 'before' },
     { value: 'date-after', label: 'after' },
     { value: 'is-empty', label: 'is empty' },
-    { value: 'is-not-empty', label: 'is not empty' }
+    { value: 'is-not-empty', label: 'is not empty' },
+    { value: 'date-empty-or-before', label: 'is empty or before' },
+    { value: 'date-empty-or-after', label: 'is empty or after' }
 ];
 
 export interface OperatorDateSelectProps {
