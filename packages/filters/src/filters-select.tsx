@@ -29,7 +29,12 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
 
     componentWillReceiveProps(nextProps: FiltersSelectProps<D>) {
         if (this.props.filters !== nextProps.filters) {
-            this.setState({ filters: nextProps.filters });
+            this.setState({
+                filters: {
+                    ...this.state.filters,
+                    ...nextProps.filters
+                }
+            });
         }
     }
 
@@ -50,8 +55,9 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
     handleFilterRemove(key: string) {
         const newFilters: NullableFilters = { ...this.state.filters };
         delete newFilters[key];
-        this.setState({ filters: newFilters });
-        this.pushNewFilters(newFilters);
+        this.setState({ filters: newFilters }, () => {
+            this.pushNewFilters(newFilters);
+        });
     }
 
     pushNewFilters(newFilters: NullableFilters) {
