@@ -8,23 +8,23 @@ import memoize from 'timed-memoize';
 // import { TableDescription } from '@pure-pivot/core/lib/es6/table/model';
 // import { Resizer } from '@pure-pivot/column-resizer/lib/es6/resizer-component';
 // import { Sizes } from '@pure-pivot/column-resizer/lib/es6/model';
-import { createConfigurationBuilder, Configuration } from '../../packages/core/src/configuration';
-import { createTableConfigurationBuilder } from '../../packages/default-table/src/configuration';
-import { virtualGrid } from '../../packages/virtual-scrolling-grid/src/virtual-scrolling-grid';
-import { generateTableDescription } from '../../packages/core/src/generate-table-description';
-import { TableDescription } from '../../packages/core/src/table/model';
-import { Resizer } from '../../packages/column-resizer/src/resizer-component';
-import { Sizes } from '../../packages/column-resizer/src/model';
-import { getHeadValueRowCellId } from '../../packages/core/src/util/id-helper';
-import { autoSorting } from '../../packages/auto-sorting/src/index';
-import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../packages/auto-sorting/src/model';
-import { ToggleComponent } from '../../packages/auto-sorting/src/toggle-component';
-import { assertOrThrow, isString, isNumber } from '../../packages/core/src/util/assertion';
-import { FiltersSelect, FiltersSelectProps } from '../../packages/filters/src/filters-select';
-import { Operator, Filters, Fields } from '../../packages/filters/src/model';
-import { applyOperator } from '../../packages/filters/src/index';
-import { FiltersContainerComponent } from './FiltersContainerComponent';
-import { FiltersItemComponent } from './FiltersItemComponent';
+import { createConfigurationBuilder, Configuration } from '../../../packages/core/src/configuration';
+import { createTableConfigurationBuilder } from '../../../packages/default-table/src/configuration';
+import { virtualGrid } from '../../../packages/virtual-scrolling-grid/src/virtual-scrolling-grid';
+import { generateTableDescription } from '../../../packages/core/src/generate-table-description';
+import { TableDescription } from '../../../packages/core/src/table/model';
+import { Resizer } from '../../../packages/column-resizer/src/resizer-component';
+import { Sizes } from '../../../packages/column-resizer/src/model';
+import { getHeadValueRowCellId } from '../../../packages/core/src/util/id-helper';
+import { autoSorting } from '../../../packages/auto-sorting/src/index';
+import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../../packages/auto-sorting/src/model';
+import { ToggleComponent } from '../../../packages/auto-sorting/src/toggle-component';
+import { assertOrThrow, isString, isNumber } from '../../../packages/core/src/util/assertion';
+import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/filters-select';
+import { Operator, Filters, Fields } from '../../../packages/filters/src/model';
+import { applyOperator } from '../../../packages/filters/src/index';
+import { FiltersContainerComponent } from './filters-container-component';
+import { FiltersItemComponent } from './filters-item-component';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -199,7 +199,6 @@ const fields: Fields<Data> = {
 export interface AppState {
     async: WithStatus<Data[]>;
     sizes: Sizes;
-    offset: number;
     table: Element | null;
     sorting: SortingDescriptor | null;
     filters: Filters;
@@ -209,7 +208,6 @@ export class App extends React.Component<{}, AppState> {
     state: AppState = {
         async: { status: 'loading' },
         sizes: {},
-        offset: 0,
         table: null,
         sorting: null,
         filters: {}
