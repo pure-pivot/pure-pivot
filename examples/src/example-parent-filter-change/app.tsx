@@ -35,7 +35,7 @@ const exampleData: Data[] = [
 const configurationBuilder = createConfigurationBuilder<Data>();
 
 const fields: Fields<Data> = {
-    id: { type: 'string', label: 'ID', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.id)) },
+    id: { type: 'string', label: 'ID', apply: (operator, data) => data.filter((row) => applyOperator(operator, `${row.id}`)) },
     date: { type: 'number', label: 'date', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.date)) },
     deleted: { type: 'boolean', label: 'deleted', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.deleted)) }
 };
@@ -67,6 +67,24 @@ export class App extends React.Component<{}, AppState> {
             .build();
     }, { one: true, timeout: -1 });
 
+    handleQuickFilter(type?: string) {
+        if (!type) {
+            this.setState({ filters: { }});
+        } else {
+            if (type === 'deleted') {
+                this.setState({ filters: {
+                    quickFilterGet: {
+                        id: 'deleted',
+                        operator: {
+                            type: 'boolean-equals',
+                            value: true
+                        }
+                    }
+                }});
+            }
+        }
+    }
+
     renderFilterSelection() {
         return <FiltersSelect
             fields={fields}
@@ -81,6 +99,11 @@ export class App extends React.Component<{}, AppState> {
         const tableDescription = this.generateTableDescription(this.buildConfiguration(this.state.filters), exampleData);
 
         return <React.Fragment>
+            <div>
+                <button onClick={() => this.handleQuickFilter()}>Remove all filters from parent</button>
+            </div>
+            <h3>Quick Filters</h3>
+            <button onClick={() => this.handleQuickFilter('deleted')}>Deleted</button>
             <h3>Filters</h3>
             {this.renderFilterSelection()}
             <h3>Table</h3>
