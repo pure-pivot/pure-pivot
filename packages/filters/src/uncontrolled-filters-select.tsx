@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FilterSelect } from './filter-select';
+import { FilterSelect } from './uncontrolled-filter-select';
 import { Fields, Filters, Filter } from './model';
 
 export interface NullableFilters {
@@ -8,7 +8,7 @@ export interface NullableFilters {
 
 export interface FiltersSelectProps<D> {
     fields: Fields<D>;
-    filters: Filters;
+    defaultFilters: Filters;
     onFiltersChange: (filters: Filters) => void;
     filtersContainerComponent: React.ComponentType<{}>;
     filtersItemComponent: React.ComponentType<{}>;
@@ -24,19 +24,8 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
     counter: number = 0;
 
     state: FiltersSelectState = {
-        filters: this.props.filters
+        filters: this.props.defaultFilters
     };
-
-    componentWillReceiveProps(nextProps: FiltersSelectProps<D>) {
-        if (this.props.filters !== nextProps.filters) {
-            this.setState({
-                filters: {
-                    ...nextProps.filters,
-                    ...this.state.filters
-                }
-            });
-        }
-    }
 
     handleAdd() {
         while (this.counter.toString() in this.state.filters) {
@@ -55,9 +44,8 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
     handleFilterRemove(key: string) {
         const newFilters: NullableFilters = { ...this.state.filters };
         delete newFilters[key];
-        this.setState({ filters: newFilters }, () => {
-            this.pushNewFilters(newFilters);
-        });
+        this.setState({ filters: newFilters });
+        this.pushNewFilters(newFilters);
     }
 
     pushNewFilters(newFilters: NullableFilters) {

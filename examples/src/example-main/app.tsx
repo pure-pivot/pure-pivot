@@ -20,7 +20,7 @@ import { autoSorting } from '../../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../../packages/auto-sorting/src/model';
 import { ToggleComponent } from '../../../packages/auto-sorting/src/toggle-component';
 import { assertOrThrow, isString, isNumber } from '../../../packages/core/src/util/assertion';
-import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/filters-select';
+import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/uncontrolled-filters-select';
 import { Operator, Filters, Fields } from '../../../packages/filters/src/model';
 import { applyOperator } from '../../../packages/filters/src/index';
 import { FiltersContainerComponent } from './filters-container-component';
@@ -300,7 +300,7 @@ export class App extends React.Component<{}, AppState> {
     renderFilterSelection() {
         return <FiltersSelect
             fields={fields}
-            filters={this.state.filters}
+            defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
             filtersContainerComponent={FiltersContainerComponent}
             filtersItemComponent={FiltersItemComponent}

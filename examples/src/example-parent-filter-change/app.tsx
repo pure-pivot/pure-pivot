@@ -12,7 +12,7 @@ import { getHeadValueRowCellId } from '../../../packages/core/src/util/id-helper
 import { autoSorting } from '../../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../../packages/auto-sorting/src/model';
 import { assertOrThrow, isString, isNumber } from '../../../packages/core/src/util/assertion';
-import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/filters-select';
+import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/uncontrolled-filters-select';
 import { Operator, Filters, Fields } from '../../../packages/filters/src/model';
 import { applyOperator } from '../../../packages/filters/src/index';
 import { FiltersContainerComponent } from './filters-container-component';
@@ -35,7 +35,7 @@ const exampleData: Data[] = [
 const configurationBuilder = createConfigurationBuilder<Data>();
 
 const fields: Fields<Data> = {
-    id: { type: 'string', label: 'ID', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.id)) },
+    id: { type: 'string', label: 'ID', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.id.toString())) },
     date: { type: 'number', label: 'date', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.date)) },
     deleted: { type: 'boolean', label: 'deleted', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.deleted)) }
 };
@@ -43,12 +43,14 @@ const fields: Fields<Data> = {
 export interface AppState {
     table: Element | null;
     filters: Filters;
+    filtersKey: number;
 }
 
 export class App extends React.Component<{}, AppState> {
     state: AppState = {
         table: null,
-        filters: {}
+        filters: {},
+        filtersKey: 0
     };
 
     tableConfiguration = createTableConfigurationBuilder<Data>()
@@ -67,10 +69,32 @@ export class App extends React.Component<{}, AppState> {
             .build();
     }, { one: true, timeout: -1 });
 
+    handleQuickFilter(type?: string) {
+        if (!type) {
+            this.setState({ filters: {}, filtersKey: ++this.state.filtersKey });
+        } else {
+            if (type === 'deleted') {
+                this.setState({
+                    filters: {
+                        quickFilterGet: {
+                            id: 'deleted',
+                            operator: {
+                                type: 'boolean-equals',
+                                value: true
+                            }
+                        }
+                    },
+                    filtersKey: ++this.state.filtersKey
+                });
+            }
+        }
+    }
+
     renderFilterSelection() {
         return <FiltersSelect
+            key={this.state.filtersKey}
             fields={fields}
-            filters={this.state.filters}
+            defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
             filtersContainerComponent={FiltersContainerComponent}
             filtersItemComponent={FiltersItemComponent}
@@ -81,6 +105,11 @@ export class App extends React.Component<{}, AppState> {
         const tableDescription = this.generateTableDescription(this.buildConfiguration(this.state.filters), exampleData);
 
         return <React.Fragment>
+            <div>
+                <button onClick={() => this.handleQuickFilter()}>Remove all filters from parent</button>
+            </div>
+            <h3>Quick Filters</h3>
+            <button onClick={() => this.handleQuickFilter('deleted')}>Deleted</button>
             <h3>Filters</h3>
             {this.renderFilterSelection()}
             <h3>Table</h3>
