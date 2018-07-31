@@ -5,10 +5,12 @@ import { OperatorNumberSelect } from './operator-number-select';
 import { OperatorDateSelect } from './operator-date-select';
 import { OperatorBooleanSelect } from './operator-boolean-select';
 
+// TODO: this module can probably be replaced by a combination of controlled version + something like https://www.npmjs.com/package/uncontrollable
+
 export interface FilterSelectProps<D> {
     fields: Fields<D>;
     defaultFilter: Filter | null;
-    onFilterChange: (filter: Filter, pushChange: boolean) => void;
+    onFilterChange: (filter: Filter) => void;
 }
 
 export interface FilterSelectState {
@@ -24,25 +26,25 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, F
 
     renderStringSelect(operator: Operator) {
         if (isStringOperators(operator)) {
-            return <OperatorStringSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator }, () => this.handleChange())} />;
+            return <OperatorStringSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
         }
     }
 
     renderNumberSelect(operator: Operator) {
         if (isNumberOperators(operator)) {
-            return <OperatorNumberSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator }, () => this.handleChange())} />;
+            return <OperatorNumberSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
         }
     }
 
     renderDateSelect(operator: Operator) {
         if (isDateOperators(operator)) {
-            return <OperatorDateSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator }, () => this.handleChange())} />;
+            return <OperatorDateSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
         }
     }
 
     renderBooleanSelect(operator: Operator) {
         if (isBooleanOperators(operator)) {
-            return <OperatorBooleanSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator }, () => this.handleChange())} />;
+            return <OperatorBooleanSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
         }
     }
 
@@ -74,12 +76,6 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, F
         }
     }
 
-    handleChange() {
-        if (this.state.id !== null && this.state.operator !== null) {
-            this.props.onFilterChange({ id: this.state.id, operator: this.state.operator }, false);
-        }
-    }
-
     renderSave() {
         if (this.state.id !== null && this.state.operator !== null) {
             return <button type="submit">
@@ -93,13 +89,13 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, F
             onSubmit={(event) => {
                 event.preventDefault();
                 if (this.state.id !== null && this.state.operator !== null) {
-                    this.props.onFilterChange({ id: this.state.id, operator: this.state.operator }, true);
+                    this.props.onFilterChange({ id: this.state.id, operator: this.state.operator });
                 }
             }}
         >
             <select
                 value={this.state.id === null ? '' : this.state.id}
-                onChange={(event) => this.setState({ id: event.currentTarget.value, operator: this.getDefaultOperator(event.currentTarget.value) }, () => this.handleChange())}
+                onChange={(event) => this.setState({ id: event.currentTarget.value, operator: this.getDefaultOperator(event.currentTarget.value) })}
             >
                 <option value="" disabled>Select field</option>
                 {Object.keys(this.props.fields).map((key) =>

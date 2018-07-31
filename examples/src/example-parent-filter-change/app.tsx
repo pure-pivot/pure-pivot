@@ -12,7 +12,7 @@ import { getHeadValueRowCellId } from '../../../packages/core/src/util/id-helper
 import { autoSorting } from '../../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../../packages/auto-sorting/src/model';
 import { assertOrThrow, isString, isNumber } from '../../../packages/core/src/util/assertion';
-import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/filters-select';
+import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/uncontrolled-filters-select';
 import { Operator, Filters, Fields } from '../../../packages/filters/src/model';
 import { applyOperator } from '../../../packages/filters/src/index';
 import { FiltersContainerComponent } from './filters-container-component';
@@ -43,12 +43,14 @@ const fields: Fields<Data> = {
 export interface AppState {
     table: Element | null;
     filters: Filters;
+    filtersKey: number;
 }
 
 export class App extends React.Component<{}, AppState> {
     state: AppState = {
         table: null,
-        filters: {}
+        filters: {},
+        filtersKey: 0
     };
 
     tableConfiguration = createTableConfigurationBuilder<Data>()
@@ -69,7 +71,7 @@ export class App extends React.Component<{}, AppState> {
 
     handleQuickFilter(type?: string) {
         if (!type) {
-            this.setState({ filters: {} });
+            this.setState({ filters: {}, filtersKey: ++this.state.filtersKey });
         } else {
             if (type === 'deleted') {
                 this.setState({
@@ -81,7 +83,8 @@ export class App extends React.Component<{}, AppState> {
                                 value: true
                             }
                         }
-                    }
+                    },
+                    filtersKey: ++this.state.filtersKey
                 });
             }
         }
@@ -89,8 +92,9 @@ export class App extends React.Component<{}, AppState> {
 
     renderFilterSelection() {
         return <FiltersSelect
+            key={this.state.filtersKey}
             fields={fields}
-            filters={this.state.filters}
+            defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
             filtersContainerComponent={FiltersContainerComponent}
             filtersItemComponent={FiltersItemComponent}
