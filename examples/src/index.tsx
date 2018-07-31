@@ -11,7 +11,9 @@ ReactDOM.render(
     <ReactRouterDOM.HashRouter>
         <React.Fragment>
             <ReactRouterDOM.Link to="/main">Main</ReactRouterDOM.Link>
+            <br />
             <ReactRouterDOM.Link to="/parent-filter-change">Parent filter change</ReactRouterDOM.Link>
+            <br />
             <ReactRouterDOM.Route path="/main" component={ExampleMain} />
             <ReactRouterDOM.Route path="/parent-filter-change" component={ExampleParentFilterChange} />
         </React.Fragment>
