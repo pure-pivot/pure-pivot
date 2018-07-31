@@ -2,6 +2,8 @@ import * as React from 'react';
 import { FilterSelect } from './uncontrolled-filter-select';
 import { Fields, Filters, Filter } from './model';
 
+// TODO: this module can probably be replaced by a combination of controlled version + something like https://www.npmjs.com/package/uncontrollable
+
 export interface NullableFilters {
     [Key: string]: Filter | null;
 }

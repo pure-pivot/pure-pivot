@@ -5,6 +5,8 @@ import { OperatorNumberSelect } from './operator-number-select';
 import { OperatorDateSelect } from './operator-date-select';
 import { OperatorBooleanSelect } from './operator-boolean-select';
 
+// TODO: this module can probably be replaced by a combination of controlled version + something like https://www.npmjs.com/package/uncontrollable
+
 export interface FilterSelectProps<D> {
     fields: Fields<D>;
     defaultFilter: Filter | null;
