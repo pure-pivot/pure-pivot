@@ -35,7 +35,7 @@ const exampleData: Data[] = [
 const configurationBuilder = createConfigurationBuilder<Data>();
 
 const fields: Fields<Data> = {
-    id: { type: 'string', label: 'ID', apply: (operator, data) => data.filter((row) => applyOperator(operator, `${row.id}`)) },
+    id: { type: 'string', label: 'ID', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.id.toString())) },
     date: { type: 'number', label: 'date', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.date)) },
     deleted: { type: 'boolean', label: 'deleted', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.deleted)) }
 };
@@ -69,18 +69,20 @@ export class App extends React.Component<{}, AppState> {
 
     handleQuickFilter(type?: string) {
         if (!type) {
-            this.setState({ filters: { }});
+            this.setState({ filters: {} });
         } else {
             if (type === 'deleted') {
-                this.setState({ filters: {
-                    quickFilterGet: {
-                        id: 'deleted',
-                        operator: {
-                            type: 'boolean-equals',
-                            value: true
+                this.setState({
+                    filters: {
+                        quickFilterGet: {
+                            id: 'deleted',
+                            operator: {
+                                type: 'boolean-equals',
+                                value: true
+                            }
                         }
                     }
-                }});
+                });
             }
         }
     }

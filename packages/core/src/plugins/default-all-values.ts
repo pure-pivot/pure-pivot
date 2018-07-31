@@ -9,7 +9,7 @@ export function defaultAllValues<D>(generateTableDescription: (configuration: Co
         if (values.length <= 0 && data.length >= 1) {
             values = ObjectKeys(data[0]).map((key) => ({
                 id: `pure-pivot-default-values-${key}`,
-                label: `${key}`,
+                label: key.toString(),
                 reducer: (data: D[]) => data.map((row) => row[key]).join(', '),
                 renderer: (value: string) => value
             }));
