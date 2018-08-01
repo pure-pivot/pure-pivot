@@ -86,6 +86,19 @@ export class App extends React.Component<{}, AppState> {
                     },
                     filtersKey: ++this.state.filtersKey
                 });
+            } else if (type === 'idis3') {
+                this.setState({
+                    filters: {
+                        quickFilterGet: {
+                            id: 'id',
+                            operator: {
+                                type: 'string-equals',
+                                value: '3'
+                            }
+                        }
+                    },
+                    filtersKey: ++this.state.filtersKey
+                });
             }
         }
     }
@@ -105,11 +118,9 @@ export class App extends React.Component<{}, AppState> {
         const tableDescription = this.generateTableDescription(this.buildConfiguration(this.state.filters), exampleData);
 
         return <React.Fragment>
-            <div>
-                <button onClick={() => this.handleQuickFilter()}>Remove all filters from parent</button>
-            </div>
             <h3>Quick Filters</h3>
             <button onClick={() => this.handleQuickFilter('deleted')}>Deleted</button>
+            <button onClick={() => this.handleQuickFilter('idis3')}>ID is 3</button>
             <h3>Filters</h3>
             {this.renderFilterSelection()}
             <h3>Table</h3>
