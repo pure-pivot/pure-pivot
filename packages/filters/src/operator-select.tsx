@@ -12,8 +12,16 @@ export interface OperatorSelectProps<T extends string> {
 }
 
 export class OperatorSelect<T extends string> extends React.PureComponent<OperatorSelectProps<T>, never> {
+    selector: HTMLSelectElement | null = null;
+
+    componentDidMount() {
+        if (this.selector) {
+            this.selector.focus();
+        }
+    }
+
     render() {
-        return <select value={this.props.value === null ? '' : this.props.value} onChange={(event) => this.props.onOptionChange(event.currentTarget.value as T)}>
+        return <select ref={(ref) => this.selector = ref} value={this.props.value === null ? '' : this.props.value} onChange={(event) => this.props.onOptionChange(event.currentTarget.value as T)}>
             <option value="" disabled>Select operator</option>
             {this.props.options.map((option) =>
                 <option key={option.value} value={option.value}>{option.label}</option>

@@ -16,6 +16,14 @@ export interface OperatorStringSelectProps {
 }
 
 export class OperatorStringSelect extends React.PureComponent<OperatorStringSelectProps, never> {
+    valueField: HTMLInputElement | null = null;
+
+    componentDidMount() {
+        if (this.valueField) {
+            this.valueField.focus();
+        }
+    }
+
     render() {
         const { operator: { type: operatorType} } = this.props;
 
@@ -25,9 +33,13 @@ export class OperatorStringSelect extends React.PureComponent<OperatorStringSele
                 options={options}
                 onOptionChange={(type: StringOperators['type']) => {
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as StringOperators);
+                    if (this.valueField) {
+                        this.valueField.focus();
+                    }
                 }}
             />
             {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
+                ref={(ref) => this.valueField = ref}
                 type="text"
                 value={this.props.operator.value}
                 onChange={(event) => {
