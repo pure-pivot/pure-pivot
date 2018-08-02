@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { FilterSelect } from './controlled-filter-select';
-import { Fields, Filters, Filter } from './model';
+import { Fields, Filter } from './model';
 
 export interface NullableFilters {
     [Key: string]: Filter | null;
