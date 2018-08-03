@@ -1,16 +1,23 @@
 import * as React from 'react';
 import { Fields, Operator, isStringOperators, isNumberOperators, isDateOperators, isBooleanOperators, Filter } from './model';
-import { OperatorStringSelect } from './operator-string-select';
-import { OperatorNumberSelect } from './operator-number-select';
-import { OperatorDateSelect } from './operator-date-select';
+import { OperatorStringSelect, InputComponentProps as StringInputComponentProps } from './operator-string-select';
+import { OperatorNumberSelect, InputComponentProps as NumberInputComponentProps } from './operator-number-select';
+import { OperatorDateSelect, InputComponentProps as DateInputComponentProps } from './operator-date-select';
 import { OperatorBooleanSelect } from './operator-boolean-select';
 
 // TODO: this module can probably be replaced by a combination of controlled version + something like https://www.npmjs.com/package/uncontrollable
+
+export interface FilterSelectInputComponents {
+    date?: React.ComponentType<DateInputComponentProps>;
+    number?: React.ComponentType<NumberInputComponentProps>;
+    string?: React.ComponentType<StringInputComponentProps>;
+}
 
 export interface FilterSelectProps<D> {
     fields: Fields<D>;
     defaultFilter: Filter | null;
     onFilterChange: (filter: Filter) => void;
+    filterSelectInputComponents?: FilterSelectInputComponents;
 }
 
 export interface FilterSelectState {
@@ -26,19 +33,19 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, F
 
     renderStringSelect(operator: Operator) {
         if (isStringOperators(operator)) {
-            return <OperatorStringSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
+            return <OperatorStringSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} inputComponent={this.props.filterSelectInputComponents && this.props.filterSelectInputComponents.string} />;
         }
     }
 
     renderNumberSelect(operator: Operator) {
         if (isNumberOperators(operator)) {
-            return <OperatorNumberSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
+            return <OperatorNumberSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} inputComponent={this.props.filterSelectInputComponents && this.props.filterSelectInputComponents.number} />;
         }
     }
 
     renderDateSelect(operator: Operator) {
         if (isDateOperators(operator)) {
-            return <OperatorDateSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
+            return <OperatorDateSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} inputComponent={this.props.filterSelectInputComponents && this.props.filterSelectInputComponents.date} />;
         }
     }
 

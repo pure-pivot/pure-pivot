@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FilterSelect } from './controlled-filter-select';
+import { FilterSelect, FilterSelectInputComponents } from './controlled-filter-select';
 import { Fields, Filter } from './model';
 
 export interface NullableFilters {
@@ -13,6 +13,7 @@ export interface FiltersSelectProps<D> {
     onFilterSave: (key: string) => void;
     filtersContainerComponent: React.ComponentType<{}>;
     filtersItemComponent: React.ComponentType<{}>;
+    filterSelectInputComponents?: FilterSelectInputComponents;
 }
 
 export type FiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent';
@@ -39,10 +40,17 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
         this.props.onFiltersChange(newFilters);
     }
 
+    handleFilterRemoveAll() {
+        this.props.onFiltersChange({ });
+    }
+
     render() {
         return <React.Fragment>
             <button onClick={() => this.handleAdd()}>
                 Add filter
+            </button>
+            <button disabled={Object.keys(this.props.filters).length === 0} onClick={() => this.handleFilterRemoveAll()}>
+                Remove All
             </button>
             <this.props.filtersContainerComponent>
                 {Object.keys(this.props.filters).map((key) =>
