@@ -73,7 +73,7 @@ export class UncontrolledFiltersSelect<D> extends React.PureComponent<Uncontroll
                 Add filter
             </button>
             <button disabled={Object.keys(this.state.filters).length === 0} onClick={() => this.handleFilterRemoveAll()}>
-                Remove All
+                Remove all
             </button>
             <this.props.filtersContainerComponent>
                 {Object.keys(this.state.filters).map((key) =>

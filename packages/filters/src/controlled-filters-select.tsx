@@ -49,7 +49,7 @@ export class ControlledFiltersSelect<D> extends React.PureComponent<ControlledFi
                 Add filter
             </button>
             <button type="button" disabled={Object.keys(this.props.filters).length === 0} onClick={() => this.handleFilterRemoveAll()}>
-                Remove All
+                Remove all
             </button>
             <this.props.filtersContainerComponent>
                 {Object.keys(this.props.filters).map((key) =>
