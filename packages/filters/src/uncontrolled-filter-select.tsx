@@ -50,7 +50,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
         if (isStringOperators(operator)) {
             return <this.props.stringSelectComponent
                 operator={operator}
-                onOperatorChange={(operator) => this.setState({ operator })}
+                onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;
         }
     }
@@ -59,7 +59,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
         if (isNumberOperators(operator)) {
             return <this.props.numberSelectComponent
                 operator={operator}
-                onOperatorChange={(operator) => this.setState({ operator })}
+                onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;
         }
     }
@@ -68,7 +68,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
         if (isDateOperators(operator)) {
             return <this.props.dateSelectComponent
                 operator={operator}
-                onOperatorChange={(operator) => this.setState({ operator })}
+                onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;
         }
     }
@@ -77,7 +77,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
         if (isBooleanOperators(operator)) {
             return <this.props.booleanSelectComponent
                 operator={operator}
-                onOperatorChange={(operator) => this.setState({ operator })}
+                onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;
         }
     }

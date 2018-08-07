@@ -117,8 +117,8 @@ export class App extends React.Component<{}, AppState> {
             <filtersConfiguration.uncontrolledFiltersSelectComponent
                 key={this.state.filtersKey}
                 fields={fields}
-                defaultFilters={this.state.filters}
-                onFiltersChange={(filters) => this.setState({ filters })}
+                defaultFilters={this.state.editingFilters}
+                onFiltersChange={(filters) => this.setState({ editingFilters: filters })}
             />
             <button type="submit" disabled={this.state.editingFilters === this.state.filters}>Save all</button>
         </form>;
@@ -128,9 +128,6 @@ export class App extends React.Component<{}, AppState> {
         const tableDescription = this.generateTableDescription(this.buildConfiguration(this.state.filters), exampleData);
 
         return <React.Fragment>
-            <div>
-                <button onClick={() => this.handleQuickFilter()}>Remove all filters from parent</button>
-            </div>
             <h3>Quick Filters</h3>
             <button onClick={() => this.handleQuickFilter('deleted')}>Deleted</button>
             <h3>Filters</h3>

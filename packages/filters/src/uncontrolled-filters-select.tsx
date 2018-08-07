@@ -52,8 +52,8 @@ export class UncontrolledFiltersSelect<D> extends React.PureComponent<Uncontroll
     }
 
     handleFilterRemoveAll() {
-        this.setState({ filters: { } });
-        this.pushNewFilters({ });
+        this.setState({ filters: {} });
+        this.pushNewFilters({});
     }
 
     pushNewFilters(newFilters: NullableFilters) {
