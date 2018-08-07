@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { DateOperators } from './model';
-import { OperatorSelect, Option } from './operator-select';
+import { DateOperators } from '../../model';
+import { OperatorSelect, Option } from '../../operator-select';
+import { DateInputProps } from './date-input';
 
 const options: Option<DateOperators['type']>[] = [
     { value: 'date-equals', label: '=' },
@@ -13,33 +14,20 @@ const options: Option<DateOperators['type']>[] = [
     { value: 'date-empty-or-after', label: 'is empty or after' }
 ];
 
-export interface InputComponentProps {
+export interface OperatorDateSelectProps {
     operator: DateOperators;
     onOperatorChange: (operator: DateOperators) => void;
+    dateInputComponent: React.ComponentType<DateInputProps>;
 }
 
-export interface OperatorDateSelectProps extends InputComponentProps {
-    inputComponent?: React.ComponentType<InputComponentProps>;
-}
+export type OperatorDateSelectProvidedProps = 'dateInputComponent';
 
 export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectProps, never> {
-    renderInputComponent(): any {
-        const offset = new Date().getTimezoneOffset() * 60 * 1000;
-
+    renderInputComponent() {
         if (this.props.operator.type !== 'is-empty' && this.props.operator.type !== 'is-not-empty') {
-            if (this.props.inputComponent) {
-                return <this.props.inputComponent
-                    operator={this.props.operator}
-                    onOperatorChange={(changedOperator: DateOperators) => this.props.onOperatorChange(changedOperator) }
-                />;
-            }
-            return <input
-                type="datetime-local"
-                required
-                value={new Date(this.props.operator.value - offset).toISOString().substr(0, 16)}
-                onChange={(event) => {
-                    this.props.onOperatorChange({ type: this.props.operator.type, value: +new Date(event.currentTarget.value) } as DateOperators);
-                }}
+            return <this.props.dateInputComponent
+                operator={this.props.operator}
+                onOperatorChange={this.props.onOperatorChange}
             />;
         }
     }

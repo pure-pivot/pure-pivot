@@ -12,11 +12,10 @@ import { getHeadValueRowCellId } from '../../../packages/core/src/util/id-helper
 import { autoSorting } from '../../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../../packages/auto-sorting/src/model';
 import { assertOrThrow, isString, isNumber } from '../../../packages/core/src/util/assertion';
-import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/uncontrolled-filters-select';
+import { UncontrolledFiltersSelect, UncontrolledFiltersSelectProps } from '../../../packages/filters/src/uncontrolled-filters-select';
 import { Operator, Filters, Fields } from '../../../packages/filters/src/model';
 import { applyOperator } from '../../../packages/filters/src/index';
-import { FiltersContainerComponent } from './filters-container-component';
-import { FiltersItemComponent } from './filters-item-component';
+import { configurationBuilder as filtersConfigurationBuilder } from '../../../packages/filters/src/configuration';
 
 export interface Data {
     id: string;
@@ -33,6 +32,15 @@ const exampleData: Data[] = [
 ];
 
 const configurationBuilder = createConfigurationBuilder<Data>();
+
+const filtersConfiguration = filtersConfigurationBuilder<Data>()
+    .withBooleanInputComponent((props) =>
+        <label>
+            Yes/no
+            <input type="checkbox" checked={!!props.operator.value} onChange={(event) => props.onOperatorChange({ ...props.operator, value: event.currentTarget.checked })} />
+        </label>
+    )
+    .build();
 
 const fields: Fields<Data> = {
     id: { type: 'string', label: 'ID', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.id.toString())) },
@@ -91,13 +99,11 @@ export class App extends React.Component<{}, AppState> {
     }
 
     renderFilterSelection() {
-        return <FiltersSelect
+        return <filtersConfiguration.uncontrolledFiltersSelectComponent
             key={this.state.filtersKey}
             fields={fields}
             defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
-            filtersContainerComponent={FiltersContainerComponent}
-            filtersItemComponent={FiltersItemComponent}
         />;
     }
 

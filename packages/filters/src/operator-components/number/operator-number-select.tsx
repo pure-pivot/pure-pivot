@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { NumberOperators } from './model';
-import { OperatorSelect, Option } from './operator-select';
+import { NumberOperators } from '../../model';
+import { OperatorSelect, Option } from '../../operator-select';
+import { NumberInputProps } from './number-input';
 
 const options: Option<NumberOperators['type']>[] = [
     { value: 'number-equals', label: '=' },
@@ -11,34 +12,20 @@ const options: Option<NumberOperators['type']>[] = [
     { value: 'is-not-empty', label: 'is not empty' }
 ];
 
-export interface InputComponentProps {
+export interface OperatorNumberSelectProps {
     operator: NumberOperators;
     onOperatorChange: (operator: NumberOperators) => void;
+    numberInputComponent: React.ComponentType<NumberInputProps>;
 }
 
-export interface OperatorNumberSelectProps extends InputComponentProps {
-    inputComponent?: React.ComponentType<InputComponentProps>;
-}
+export type OperatorNumberSelectProvidedProps = 'numberInputComponent';
 
 export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSelectProps, never> {
     renderInputComponent(): any {
         if (this.props.operator.type !== 'is-empty' && this.props.operator.type !== 'is-not-empty') {
-            if (this.props.inputComponent) {
-                return <this.props.inputComponent
-                    operator={this.props.operator}
-                    onOperatorChange={(changedOperator: NumberOperators) => this.props.onOperatorChange(changedOperator) }
-                />;
-            }
-            return <input
-                type="number"
-                step="any"
-                defaultValue={this.props.operator.value.toString()}
-                onChange={(event) => {
-                    const value = parseFloat(event.currentTarget.value);
-                    if (!Number.isNaN(value)) {
-                        this.props.onOperatorChange({ type: this.props.operator.type, value } as NumberOperators);
-                    }
-                }}
+            return <this.props.numberInputComponent
+                operator={this.props.operator}
+                onOperatorChange={this.props.onOperatorChange}
             />;
         }
     }

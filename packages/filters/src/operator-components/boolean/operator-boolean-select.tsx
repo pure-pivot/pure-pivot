@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { BooleanOperators } from './model';
-import { OperatorSelect, Option } from './operator-select';
+import { BooleanOperators } from '../../model';
+import { OperatorSelect, Option } from '../../operator-select';
+import { BooleanInputProps } from './boolean-input';
 
 const options: Option<BooleanOperators['type']>[] = [
     { value: 'boolean-equals', label: '=' },
@@ -12,12 +13,22 @@ const options: Option<BooleanOperators['type']>[] = [
 export interface OperatorBooleanSelectProps {
     operator: BooleanOperators;
     onOperatorChange: (operator: BooleanOperators) => void;
+    booleanInputComponent: React.ComponentType<BooleanInputProps>;
 }
 
-export class OperatorBooleanSelect extends React.PureComponent<OperatorBooleanSelectProps, never> {
-    render() {
-        const { operator: { type: operatorType} } = this.props;
+export type OperatorBooleanSelectProvidedProps = 'booleanInputComponent';
 
+export class OperatorBooleanSelect extends React.PureComponent<OperatorBooleanSelectProps, never> {
+    renderInputComponent() {
+        if (this.props.operator.type !== 'is-empty' && this.props.operator.type !== 'is-not-empty') {
+            return <this.props.booleanInputComponent
+                operator={this.props.operator}
+                onOperatorChange={this.props.onOperatorChange}
+            />;
+        }
+    }
+
+    render() {
         return <React.Fragment>
             <OperatorSelect
                 value={this.props.operator.type}
@@ -26,15 +37,7 @@ export class OperatorBooleanSelect extends React.PureComponent<OperatorBooleanSe
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as BooleanOperators);
                 }}
             />
-            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <select
-                value={this.props.operator.value ? 'true' : 'false'}
-                onChange={(event) => {
-                    this.props.onOperatorChange({ type: operatorType, value: event.currentTarget.value === 'true' } as BooleanOperators);
-                }}
-            >
-                <option value="true">True</option>
-                <option value="false">False</option>
-            </select>}
+            {this.renderInputComponent()}
         </React.Fragment>;
     }
 }
