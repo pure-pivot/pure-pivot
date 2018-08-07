@@ -42,14 +42,18 @@ const fields: Fields<Data> = {
 
 export interface AppState {
     table: Element | null;
+    editingFilters: Filters;
     filters: Filters;
     filtersKey: number;
 }
 
+const defaultFilters = {};
+
 export class App extends React.Component<{}, AppState> {
     state: AppState = {
         table: null,
-        filters: {},
+        editingFilters: defaultFilters,
+        filters: defaultFilters,
         filtersKey: 0
     };
 
@@ -71,34 +75,47 @@ export class App extends React.Component<{}, AppState> {
 
     handleQuickFilter(type?: string) {
         if (!type) {
-            this.setState({ filters: {}, filtersKey: ++this.state.filtersKey });
+            this.setState({ editingFilters: {}, filters: {}, filtersKey: ++this.state.filtersKey });
         } else {
             if (type === 'deleted') {
-                this.setState({
-                    filters: {
-                        quickFilterGet: {
-                            id: 'deleted',
-                            operator: {
-                                type: 'boolean-equals',
-                                value: true
-                            }
+                const filters: Filters = {
+                    quickFilterGet: {
+                        id: 'deleted',
+                        operator: {
+                            type: 'boolean-equals',
+                            value: true
                         }
-                    },
+                    }
+                };
+
+                this.setState({
+                    editingFilters: filters,
+                    filters,
                     filtersKey: ++this.state.filtersKey
                 });
             }
         }
     }
 
+    handleSaveFilters() {
+        this.setState({ filters: this.state.editingFilters });
+    }
+
     renderFilterSelection() {
-        return <FiltersSelect
-            key={this.state.filtersKey}
-            fields={fields}
-            defaultFilters={this.state.filters}
-            onFiltersChange={(filters) => this.setState({ filters })}
-            filtersContainerComponent={FiltersContainerComponent}
-            filtersItemComponent={FiltersItemComponent}
-        />;
+        return <form onSubmit={(event) => {
+            event.preventDefault();
+            this.handleSaveFilters();
+        }} >
+            <FiltersSelect
+                key={this.state.filtersKey}
+                fields={fields}
+                defaultFilters={this.state.editingFilters}
+                onFiltersChange={(filters) => this.setState({ editingFilters: filters })}
+                filtersContainerComponent={FiltersContainerComponent}
+                filtersItemComponent={FiltersItemComponent}
+            />
+            <button type="submit" disabled={this.state.editingFilters === this.state.filters}>Save all</button>
+        </form>;
     }
 
     render() {

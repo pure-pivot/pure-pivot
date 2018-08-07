@@ -9,7 +9,6 @@ export interface FilterSelectProps<D> {
     fields: Fields<D>;
     filter: Filter | null;
     onFilterChange: (filter: Filter) => void;
-    onFilterSave: () => void;
 }
 
 export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, never> {
@@ -65,21 +64,8 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, n
         }
     }
 
-    renderSave() {
-        if (this.props.filter !== null) {
-            return <button type="submit">
-                Save
-            </button>;
-        }
-    }
-
     render() {
-        return <form
-            onSubmit={(event) => {
-                event.preventDefault();
-                this.props.onFilterSave();
-            }}
-        >
+        return <React.Fragment>
             <select
                 value={this.props.filter === null ? '' : this.props.filter.id}
                 onChange={(event) => this.props.onFilterChange({ id: event.currentTarget.value, operator: this.getDefaultOperator(event.currentTarget.value) })}
@@ -90,7 +76,6 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, n
                 )}
             </select>
             {this.renderOperatorSelect()}
-            {this.renderSave()}
-        </form>;
+        </React.Fragment>;
     }
 }

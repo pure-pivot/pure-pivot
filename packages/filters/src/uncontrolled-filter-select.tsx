@@ -24,27 +24,43 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, F
         operator: this.props.defaultFilter && this.props.defaultFilter.operator
     };
 
+    handleOperatorChange(operator: Operator) {
+        this.setState({ operator });
+        if (this.state.id !== null) {
+            this.props.onFilterChange({
+                id: this.state.id,
+                operator
+            });
+        }
+    }
+
+    handleFieldChange(id: string) {
+        const filter = { id, operator: this.getDefaultOperator(id) };
+        this.setState(filter);
+        this.props.onFilterChange(filter);
+    }
+
     renderStringSelect(operator: Operator) {
         if (isStringOperators(operator)) {
-            return <OperatorStringSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
+            return <OperatorStringSelect operator={operator} onOperatorChange={(operator) => this.handleOperatorChange(operator)} />;
         }
     }
 
     renderNumberSelect(operator: Operator) {
         if (isNumberOperators(operator)) {
-            return <OperatorNumberSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
+            return <OperatorNumberSelect operator={operator} onOperatorChange={(operator) => this.handleOperatorChange(operator)} />;
         }
     }
 
     renderDateSelect(operator: Operator) {
         if (isDateOperators(operator)) {
-            return <OperatorDateSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
+            return <OperatorDateSelect operator={operator} onOperatorChange={(operator) => this.handleOperatorChange(operator)} />;
         }
     }
 
     renderBooleanSelect(operator: Operator) {
         if (isBooleanOperators(operator)) {
-            return <OperatorBooleanSelect operator={operator} onOperatorChange={(operator) => this.setState({ operator })} />;
+            return <OperatorBooleanSelect operator={operator} onOperatorChange={(operator) => this.handleOperatorChange(operator)} />;
         }
     }
 
@@ -76,26 +92,11 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, F
         }
     }
 
-    renderSave() {
-        if (this.state.id !== null && this.state.operator !== null) {
-            return <button type="submit">
-                Save
-            </button>;
-        }
-    }
-
     render() {
-        return <form
-            onSubmit={(event) => {
-                event.preventDefault();
-                if (this.state.id !== null && this.state.operator !== null) {
-                    this.props.onFilterChange({ id: this.state.id, operator: this.state.operator });
-                }
-            }}
-        >
+        return <React.Fragment>
             <select
                 value={this.state.id === null ? '' : this.state.id}
-                onChange={(event) => this.setState({ id: event.currentTarget.value, operator: this.getDefaultOperator(event.currentTarget.value) })}
+                onChange={(event) => this.handleFieldChange(event.currentTarget.value)}
             >
                 <option value="" disabled>Select field</option>
                 {Object.keys(this.props.fields).map((key) =>
@@ -103,7 +104,6 @@ export class FilterSelect<D> extends React.PureComponent<FilterSelectProps<D>, F
                 )}
             </select>
             {this.renderOperatorSelect()}
-            {this.renderSave()}
-        </form>;
+        </React.Fragment>;
     }
 }

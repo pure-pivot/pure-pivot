@@ -10,7 +10,6 @@ export interface FiltersSelectProps<D> {
     fields: Fields<D>;
     filters: NullableFilters;
     onFiltersChange: (filters: NullableFilters) => void;
-    onFilterSave: (key: string) => void;
     filtersContainerComponent: React.ComponentType<{}>;
     filtersItemComponent: React.ComponentType<{}>;
 }
@@ -41,7 +40,7 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
 
     render() {
         return <React.Fragment>
-            <button onClick={() => this.handleAdd()}>
+            <button type="button" onClick={() => this.handleAdd()}>
                 Add filter
             </button>
             <this.props.filtersContainerComponent>
@@ -51,9 +50,8 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
                             fields={this.props.fields}
                             filter={this.props.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
-                            onFilterSave={() => this.props.onFilterSave(key)}
                         />
-                        <button onClick={() => this.handleFilterRemove(key)}>
+                        <button type="button" onClick={() => this.handleFilterRemove(key)}>
                             Remove
                         </button>
                     </this.props.filtersItemComponent>

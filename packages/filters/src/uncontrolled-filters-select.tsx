@@ -63,7 +63,7 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
 
     render() {
         return <React.Fragment>
-            <button onClick={() => this.handleAdd()}>
+            <button type="button" onClick={() => this.handleAdd()}>
                 Add filter
             </button>
             <this.props.filtersContainerComponent>
@@ -74,7 +74,7 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
                             defaultFilter={this.state.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
                         />
-                        <button onClick={() => this.handleFilterRemove(key)}>
+                        <button type="button" onClick={() => this.handleFilterRemove(key)}>
                             Remove
                         </button>
                     </this.props.filtersItemComponent>
