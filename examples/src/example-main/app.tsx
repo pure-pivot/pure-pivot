@@ -20,11 +20,11 @@ import { autoSorting } from '../../../packages/auto-sorting/src/index';
 import { SortingDescriptor, AutoSortingConfigurationBuilder } from '../../../packages/auto-sorting/src/model';
 import { ToggleComponent } from '../../../packages/auto-sorting/src/toggle-component';
 import { assertOrThrow, isString, isNumber } from '../../../packages/core/src/util/assertion';
-import { FiltersSelect, FiltersSelectProps } from '../../../packages/filters/src/uncontrolled-filters-select';
 import { Operator, Filters, Fields } from '../../../packages/filters/src/model';
 import { applyOperator } from '../../../packages/filters/src/index';
 import { FiltersContainerComponent } from './filters-container-component';
 import { FiltersItemComponent } from './filters-item-component';
+import { configurationBuilder as filtersConfigurationBuilder } from '../../../packages/filters/src/configuration';
 
 export interface WithStatusLoading {
     status: 'loading';
@@ -188,6 +188,8 @@ const configurationBuilder = createConfigurationBuilder<Data>()
 //     order: 'descending'
 // })
 
+const filtersConfiguration = filtersConfigurationBuilder<Data>().build();
+
 const fields: Fields<Data> = {
     method: { type: 'string', label: 'Method', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.method)) },
     statusCode: { type: 'number', label: 'Status code', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.statusCode)) },
@@ -298,12 +300,10 @@ export class App extends React.Component<{}, AppState> {
     }
 
     renderFilterSelection() {
-        return <FiltersSelect
+        return <filtersConfiguration.uncontrolledFiltersSelectComponent
             fields={fields}
             defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
-            filtersContainerComponent={FiltersContainerComponent}
-            filtersItemComponent={FiltersItemComponent}
         />;
     }
 

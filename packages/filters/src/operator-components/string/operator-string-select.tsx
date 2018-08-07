@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StringOperators } from './model';
-import { OperatorSelect, Option } from './operator-select';
+import { StringOperators } from '../../model';
+import { OperatorSelect, Option } from '../../operator-select';
+import { StringInputProps } from './string-input';
 
 const options: Option<StringOperators['type']>[] = [
     { value: 'string-equals', label: '=' },
@@ -13,27 +14,31 @@ const options: Option<StringOperators['type']>[] = [
 export interface OperatorStringSelectProps {
     operator: StringOperators;
     onOperatorChange: (operator: StringOperators) => void;
+    stringInputComponent: React.ComponentType<StringInputProps>;
 }
 
-export class OperatorStringSelect extends React.PureComponent<OperatorStringSelectProps, never> {
-    render() {
-        const { operator: { type: operatorType} } = this.props;
+export type OperatorStringSelectProvidedProps = 'stringInputComponent';
 
+export class OperatorStringSelect extends React.PureComponent<OperatorStringSelectProps, never> {
+    renderInputComponent() {
+        if (this.props.operator.type !== 'is-empty' && this.props.operator.type !== 'is-not-empty') {
+            return <this.props.stringInputComponent
+                operator={this.props.operator}
+                onOperatorChange={this.props.onOperatorChange}
+            />;
+        }
+    }
+
+    render() {
         return <React.Fragment>
             <OperatorSelect
-                value={operatorType}
+                value={this.props.operator.type}
                 options={options}
                 onOptionChange={(type: StringOperators['type']) => {
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as StringOperators);
                 }}
             />
-            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
-                type="text"
-                value={this.props.operator.value}
-                onChange={(event) => {
-                    this.props.onOperatorChange({ type: operatorType, value: event.currentTarget.value } as StringOperators);
-                }}
-            />}
+            {this.renderInputComponent()}
         </React.Fragment>;
     }
 }
