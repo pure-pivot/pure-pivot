@@ -36,6 +36,11 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
         this.setState({ filters: { ...this.state.filters, [this.counter.toString()]: null } });
     }
 
+    handleRemoveAll() {
+        this.setState({ filters: { }});
+        this.pushNewFilters({ });
+    }
+
     handleFilterChange(key: string, filter: Filter) {
         const newFilters: NullableFilters = { ...this.state.filters };
         newFilters[key] = filter;
@@ -65,6 +70,9 @@ export class FiltersSelect<D> extends React.PureComponent<FiltersSelectProps<D>,
         return <React.Fragment>
             <button onClick={() => this.handleAdd()}>
                 Add filter
+            </button>
+            <button disabled={Object.keys(this.state.filters).length === 0} onClick={() => this.handleRemoveAll()}>
+                Remove all
             </button>
             <this.props.filtersContainerComponent>
                 {Object.keys(this.state.filters).map((key) =>

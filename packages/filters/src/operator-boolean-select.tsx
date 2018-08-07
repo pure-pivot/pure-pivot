@@ -15,6 +15,14 @@ export interface OperatorBooleanSelectProps {
 }
 
 export class OperatorBooleanSelect extends React.PureComponent<OperatorBooleanSelectProps, never> {
+    valueField: HTMLSelectElement | null = null;
+
+    componentDidMount() {
+        if (this.valueField) {
+            this.valueField.focus();
+        }
+    }
+
     render() {
         const { operator: { type: operatorType} } = this.props;
 
@@ -24,9 +32,13 @@ export class OperatorBooleanSelect extends React.PureComponent<OperatorBooleanSe
                 options={options}
                 onOptionChange={(type: BooleanOperators['type']) => {
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as BooleanOperators);
+                    if (this.valueField) {
+                        this.valueField.focus();
+                    }
                 }}
             />
             {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <select
+                ref={(ref) => this.valueField = ref}
                 value={this.props.operator.value ? 'true' : 'false'}
                 onChange={(event) => {
                     this.props.onOperatorChange({ type: operatorType, value: event.currentTarget.value === 'true' } as BooleanOperators);

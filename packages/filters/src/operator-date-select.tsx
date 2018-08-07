@@ -19,6 +19,14 @@ export interface OperatorDateSelectProps {
 }
 
 export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectProps, never> {
+    valueField: HTMLInputElement | null = null;
+
+    componentDidMount() {
+        if (this.valueField) {
+            this.valueField.focus();
+        }
+    }
+
     render() {
         const { operator: { type: operatorType} } = this.props;
         const offset = new Date().getTimezoneOffset() * 60 * 1000;
@@ -29,9 +37,13 @@ export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectPr
                 options={options}
                 onOptionChange={(type: DateOperators['type']) => {
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as DateOperators);
+                    if (this.valueField) {
+                        this.valueField.focus();
+                    }
                 }}
             />
             {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
+                ref={(ref) => this.valueField = ref}
                 type="datetime-local"
                 required
                 value={new Date(this.props.operator.value - offset).toISOString().substr(0, 16)}

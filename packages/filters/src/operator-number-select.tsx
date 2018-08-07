@@ -17,6 +17,14 @@ export interface OperatorNumberSelectProps {
 }
 
 export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSelectProps, never> {
+    valueField: HTMLInputElement | null = null;
+
+    componentDidMount() {
+        if (this.valueField) {
+            this.valueField.focus();
+        }
+    }
+
     render() {
         const { operator: { type: operatorType} } = this.props;
 
@@ -26,9 +34,13 @@ export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSele
                 options={options}
                 onOptionChange={(type: NumberOperators['type']) => {
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as NumberOperators);
+                    if (this.valueField) {
+                        this.valueField.focus();
+                    }
                 }}
             />
             {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
+                ref={(ref) => this.valueField = ref}
                 type="number"
                 step="any"
                 defaultValue={this.props.operator.value.toString()}
