@@ -11,34 +11,48 @@ const options: Option<NumberOperators['type']>[] = [
     { value: 'is-not-empty', label: 'is not empty' }
 ];
 
-export interface OperatorNumberSelectProps {
+export interface InputComponentProps {
     operator: NumberOperators;
     onOperatorChange: (operator: NumberOperators) => void;
 }
 
-export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSelectProps, never> {
-    render() {
-        const { operator: { type: operatorType} } = this.props;
+export interface OperatorNumberSelectProps extends InputComponentProps {
+    inputComponent?: React.ComponentType<InputComponentProps>;
+}
 
-        return <React.Fragment>
-            <OperatorSelect
-                value={operatorType}
-                options={options}
-                onOptionChange={(type: NumberOperators['type']) => {
-                    this.props.onOperatorChange({ type, value: this.props.operator.value } as NumberOperators);
-                }}
-            />
-            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
+export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSelectProps, never> {
+    renderInputComponent(): any {
+        if (this.props.operator.type !== 'is-empty' && this.props.operator.type !== 'is-not-empty') {
+            if (this.props.inputComponent) {
+                return <this.props.inputComponent
+                    operator={this.props.operator}
+                    onOperatorChange={(changedOperator: NumberOperators) => this.props.onOperatorChange(changedOperator) }
+                />;
+            }
+            return <input
                 type="number"
                 step="any"
                 defaultValue={this.props.operator.value.toString()}
                 onChange={(event) => {
                     const value = parseFloat(event.currentTarget.value);
                     if (!Number.isNaN(value)) {
-                        this.props.onOperatorChange({ type: operatorType, value } as NumberOperators);
+                        this.props.onOperatorChange({ type: this.props.operator.type, value } as NumberOperators);
                     }
                 }}
-            />}
+            />;
+        }
+    }
+
+    render() {
+        return <React.Fragment>
+            <OperatorSelect
+                value={this.props.operator.type}
+                options={options}
+                onOptionChange={(type: NumberOperators['type']) => {
+                    this.props.onOperatorChange({ type, value: this.props.operator.value } as NumberOperators);
+                }}
+            />
+            {this.renderInputComponent()}
         </React.Fragment>;
     }
 }
