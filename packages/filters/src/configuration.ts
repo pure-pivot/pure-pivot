@@ -31,6 +31,8 @@ export interface ConfigurationBuilder<D> {
     dateSelectComponent: React.ComponentType<OperatorDateSelectProps>;
     numberSelectComponent: React.ComponentType<OperatorNumberSelectProps>;
     stringSelectComponent: React.ComponentType<OperatorStringSelectProps>;
+    withFiltersContainerComponent(filtersContainerComponent: React.ComponentType<{}>): this;
+    withFiltersItemComponent(filtersItemComponent: React.ComponentType<{}>): this;
     withBooleanInputComponent(booleanInputComponent: React.ComponentType<BooleanInputProps>): this;
     withDateInputComponent(dateInputComponent: React.ComponentType<DateInputProps>): this;
     withNumberInputComponent(numberInputComponent: React.ComponentType<NumberInputProps>): this;
@@ -50,6 +52,14 @@ export function configurationBuilder<D>(): ConfigurationBuilder<D> {
         dateSelectComponent: OperatorDateSelect,
         numberSelectComponent: OperatorNumberSelect,
         stringSelectComponent: OperatorStringSelect,
+        withFiltersContainerComponent(filtersContainerComponent: React.ComponentType<{}>) {
+            builder.filtersContainerComponent = filtersContainerComponent;
+            return this;
+        },
+        withFiltersItemComponent(filtersItemComponent: React.ComponentType<{}>) {
+            builder.filtersItemComponent = filtersItemComponent;
+            return this;
+        },
         withBooleanInputComponent(booleanInputComponent: React.ComponentType<BooleanInputProps>) {
             builder.booleanInputComponent = booleanInputComponent;
             return this;
