@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { DateOperators } from './model';
-import { OperatorSelect, Option } from './operator-select';
+import { DateOperators } from '../../model';
+import { OperatorSelect, Option } from '../../operator-select';
+import { DateInputProps } from './date-input';
 
 const options: Option<DateOperators['type']>[] = [
     { value: 'date-equals', label: '=' },
@@ -16,29 +17,31 @@ const options: Option<DateOperators['type']>[] = [
 export interface OperatorDateSelectProps {
     operator: DateOperators;
     onOperatorChange: (operator: DateOperators) => void;
+    dateInputComponent: React.ComponentType<DateInputProps>;
 }
 
-export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectProps, never> {
-    render() {
-        const { operator: { type: operatorType} } = this.props;
-        const offset = new Date().getTimezoneOffset() * 60 * 1000;
+export type OperatorDateSelectProvidedProps = 'dateInputComponent';
 
+export class OperatorDateSelect extends React.PureComponent<OperatorDateSelectProps, never> {
+    renderInputComponent() {
+        if (this.props.operator.type !== 'is-empty' && this.props.operator.type !== 'is-not-empty') {
+            return <this.props.dateInputComponent
+                operator={this.props.operator}
+                onOperatorChange={this.props.onOperatorChange}
+            />;
+        }
+    }
+
+    render() {
         return <React.Fragment>
             <OperatorSelect
-                value={operatorType}
+                value={this.props.operator.type}
                 options={options}
                 onOptionChange={(type: DateOperators['type']) => {
                     this.props.onOperatorChange({ type, value: this.props.operator.value } as DateOperators);
                 }}
             />
-            {operatorType !== 'is-empty' && operatorType !== 'is-not-empty' && <input
-                type="datetime-local"
-                required
-                value={new Date(this.props.operator.value - offset).toISOString().substr(0, 16)}
-                onChange={(event) => {
-                    this.props.onOperatorChange({ type: operatorType, value: +new Date(event.currentTarget.value) } as DateOperators);
-                }}
-            />}
+            {this.renderInputComponent()}
         </React.Fragment>;
     }
 }
