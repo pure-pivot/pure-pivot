@@ -21,6 +21,7 @@ export interface UncontrolledFiltersSelectProps<D> {
     addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
     removeFilterButtonComponent: React.ComponentType<RemoveFilterButtonProps>;
     removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
+    displayRemoveFilterButtonAt: { start: boolean, end: boolean };
 }
 
 export type UncontrolledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'uncontrolledFilterSelectComponent' | 'addFilterButtonComponent' | 'removeFilterButtonComponent' | 'removeAllButtonComponent';
@@ -80,12 +81,13 @@ export class UncontrolledFiltersSelect<D> extends React.PureComponent<Uncontroll
             <this.props.filtersContainerComponent>
                 {Object.keys(this.state.filters).map((key) =>
                     <this.props.filtersItemComponent key={key}>
+                        {this.props.displayRemoveFilterButtonAt.start && <this.props.removeFilterButtonComponent filterKey={key} onClick={(key) => this.handleFilterRemove(key)} />}
                         <this.props.uncontrolledFilterSelectComponent
                             fields={this.props.fields}
                             defaultFilter={this.state.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
                         />
-                        <this.props.removeFilterButtonComponent filterKey={key} onClick={(key) => this.handleFilterRemove(key)} />
+                        {this.props.displayRemoveFilterButtonAt.end && <this.props.removeFilterButtonComponent filterKey={key} onClick={(key) => this.handleFilterRemove(key)} />}
                     </this.props.filtersItemComponent>
                 )}
             </this.props.filtersContainerComponent>

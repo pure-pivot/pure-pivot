@@ -19,6 +19,7 @@ export interface ControlledFiltersSelectProps<D> {
     addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
     removeFilterButtonComponent: React.ComponentType<RemoveFilterButtonProps>;
     removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
+    displayRemoveFilterButtonAt: { start: boolean, end: boolean };
 }
 
 export type ControlledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'controlledFilterSelectComponent' | 'addFilterButtonComponent' | 'removeFilterButtonComponent' | 'removeAllButtonComponent';
@@ -56,12 +57,13 @@ export class ControlledFiltersSelect<D> extends React.PureComponent<ControlledFi
             <this.props.filtersContainerComponent>
                 {Object.keys(this.props.filters).map((key) =>
                     <this.props.filtersItemComponent key={key}>
+                        {this.props.displayRemoveFilterButtonAt.start && <this.props.removeFilterButtonComponent filterKey={key} onClick={(key) => this.handleFilterRemove(key)} />}
                         <this.props.controlledFilterSelectComponent
                             fields={this.props.fields}
                             filter={this.props.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
                         />
-                        <this.props.removeFilterButtonComponent filterKey={key} onClick={(key) => this.handleFilterRemove(key)} />
+                        {this.props.displayRemoveFilterButtonAt.end && <this.props.removeFilterButtonComponent filterKey={key} onClick={(key) => this.handleFilterRemove(key)} />}
                     </this.props.filtersItemComponent>
                 )}
             </this.props.filtersContainerComponent>
