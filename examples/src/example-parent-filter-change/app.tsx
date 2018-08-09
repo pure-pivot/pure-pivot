@@ -119,6 +119,7 @@ export class App extends React.Component<{}, AppState> {
                 fields={fields}
                 defaultFilters={this.state.editingFilters}
                 onFiltersChange={(filters) => this.setState({ editingFilters: filters })}
+                displayRemoveFilterButtonAt={{ start: false, end: true }}
             />
             <button type="submit" disabled={this.state.editingFilters === this.state.filters}>Save all</button>
         </form>;

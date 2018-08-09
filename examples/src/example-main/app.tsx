@@ -304,6 +304,7 @@ export class App extends React.Component<{}, AppState> {
             fields={fields}
             defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
+            displayRemoveFilterButtonAt={{ start: true, end: false }}
         />;
     }
 
