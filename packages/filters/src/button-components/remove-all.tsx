@@ -7,8 +7,8 @@ export interface RemoveAllButtonProps {
 
 export class RemoveAllButton extends React.Component<RemoveAllButtonProps, never> {
     render() {
-        return <button type="button" disabled={this.props.disabled} onClick={() => this.props.onClick()}>
-                Remove all
+        return <button type="button" disabled={this.props.disabled} onClick={this.props.onClick}>
+            Remove all
         </button>;
     }
 }
