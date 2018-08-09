@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 export interface RemoveFilterButtonProps {
-    filterKey: string;
     onClick: () => void;
 }
 
