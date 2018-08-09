@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { UncontrolledFilterSelectProps, UncontrolledFilterSelectProvidedProps } from './uncontrolled-filter-select';
 import { Fields, Filters, Filter } from './model';
+import { AddFilterButtonProps } from './button-components/add-filter';
+import { RemoveFilterButtonProps } from './button-components/remove-filter';
+import { RemoveAllButtonProps } from './button-components/remove-all';
+import { FiltersItemComponentProps, FiltersItemComponentProvidedProps } from './filters-item-component';
 
 // TODO: this module can probably be replaced by a combination of controlled version + something like https://www.npmjs.com/package/uncontrollable
 
@@ -13,11 +17,13 @@ export interface UncontrolledFiltersSelectProps<D> {
     defaultFilters: Filters;
     onFiltersChange: (filters: Filters) => void;
     filtersContainerComponent: React.ComponentType<{}>;
-    filtersItemComponent: React.ComponentType<{}>;
+    filtersItemComponent: React.ComponentType<Pick<FiltersItemComponentProps, Exclude<keyof FiltersItemComponentProps, FiltersItemComponentProvidedProps>>>;
     uncontrolledFilterSelectComponent: React.ComponentType<Pick<UncontrolledFilterSelectProps<D>, Exclude<keyof UncontrolledFilterSelectProps<D>, UncontrolledFilterSelectProvidedProps>>>;
+    addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
+    removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
 }
 
-export type UncontrolledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'uncontrolledFilterSelectComponent';
+export type UncontrolledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'uncontrolledFilterSelectComponent' | 'addFilterButtonComponent' | 'removeFilterButtonComponent' | 'removeAllButtonComponent';
 
 export interface UncontrolledFiltersSelectState {
     filters: NullableFilters;
@@ -69,23 +75,16 @@ export class UncontrolledFiltersSelect<D> extends React.PureComponent<Uncontroll
 
     render() {
         return <React.Fragment>
-            <button type="button" onClick={() => this.handleAdd()}>
-                Add filter
-            </button>
-            <button disabled={Object.keys(this.state.filters).length === 0} onClick={() => this.handleFilterRemoveAll()}>
-                Remove all
-            </button>
+            <this.props.addFilterButtonComponent onClick={() => this.handleAdd()} />
+            <this.props.removeAllButtonComponent disabled={Object.keys(this.state.filters).length === 0} onClick={() => this.handleFilterRemoveAll()} />
             <this.props.filtersContainerComponent>
                 {Object.keys(this.state.filters).map((key) =>
-                    <this.props.filtersItemComponent key={key}>
+                    <this.props.filtersItemComponent key={key} onFilterRemove={() => this.handleFilterRemove(key)}>
                         <this.props.uncontrolledFilterSelectComponent
                             fields={this.props.fields}
                             defaultFilter={this.state.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
                         />
-                        <button type="button" onClick={() => this.handleFilterRemove(key)}>
-                            Remove
-                        </button>
                     </this.props.filtersItemComponent>
                 )}
             </this.props.filtersContainerComponent>

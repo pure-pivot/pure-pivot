@@ -1,6 +1,10 @@
 import * as React from 'react';
 import { ControlledFilterSelectProps, ControlledFilterSelectProvidedProps } from './controlled-filter-select';
 import { Fields, Filter } from './model';
+import { AddFilterButtonProps } from './button-components/add-filter';
+import { RemoveFilterButtonProps } from './button-components/remove-filter';
+import { RemoveAllButtonProps } from './button-components/remove-all';
+import { FiltersItemComponentProps, FiltersItemComponentProvidedProps } from './filters-item-component';
 
 export interface NullableFilters {
     [Key: string]: Filter | null;
@@ -11,11 +15,13 @@ export interface ControlledFiltersSelectProps<D> {
     filters: NullableFilters;
     onFiltersChange: (filters: NullableFilters) => void;
     filtersContainerComponent: React.ComponentType<{}>;
-    filtersItemComponent: React.ComponentType<{}>;
+    filtersItemComponent: React.ComponentType<Pick<FiltersItemComponentProps, Exclude<keyof FiltersItemComponentProps, FiltersItemComponentProvidedProps>>>;
     controlledFilterSelectComponent: React.ComponentType<Pick<ControlledFilterSelectProps<D>, Exclude<keyof ControlledFilterSelectProps<D>, ControlledFilterSelectProvidedProps>>>;
+    addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
+    removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
 }
 
-export type ControlledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'controlledFilterSelectComponent';
+export type ControlledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'controlledFilterSelectComponent' | 'addFilterButtonComponent' | 'removeFilterButtonComponent' | 'removeAllButtonComponent';
 
 export class ControlledFiltersSelect<D> extends React.PureComponent<ControlledFiltersSelectProps<D>, never> {
     counter: number = 0;
@@ -45,23 +51,16 @@ export class ControlledFiltersSelect<D> extends React.PureComponent<ControlledFi
 
     render() {
         return <React.Fragment>
-            <button type="button" onClick={() => this.handleAdd()}>
-                Add filter
-            </button>
-            <button type="button" disabled={Object.keys(this.props.filters).length === 0} onClick={() => this.handleFilterRemoveAll()}>
-                Remove all
-            </button>
+            <this.props.addFilterButtonComponent onClick={() => this.handleAdd()} />
+            <this.props.removeAllButtonComponent disabled={Object.keys(this.props.filters).length === 0} onClick={() => this.handleFilterRemoveAll()} />
             <this.props.filtersContainerComponent>
                 {Object.keys(this.props.filters).map((key) =>
-                    <this.props.filtersItemComponent key={key}>
+                    <this.props.filtersItemComponent key={key} onFilterRemove={() => this.handleFilterRemove(key)}>
                         <this.props.controlledFilterSelectComponent
                             fields={this.props.fields}
                             filter={this.props.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
                         />
-                        <button type="button" onClick={() => this.handleFilterRemove(key)}>
-                            Remove
-                        </button>
                     </this.props.filtersItemComponent>
                 )}
             </this.props.filtersContainerComponent>
