@@ -4,6 +4,7 @@ import { Fields, Filters, Filter } from './model';
 import { AddFilterButtonProps } from './button-components/add-filter';
 import { RemoveFilterButtonProps } from './button-components/remove-filter';
 import { RemoveAllButtonProps } from './button-components/remove-all';
+import { FiltersItemComponentProps, FiltersItemComponentProvidedProps } from './filters-item-component';
 
 // TODO: this module can probably be replaced by a combination of controlled version + something like https://www.npmjs.com/package/uncontrollable
 
@@ -16,12 +17,10 @@ export interface UncontrolledFiltersSelectProps<D> {
     defaultFilters: Filters;
     onFiltersChange: (filters: Filters) => void;
     filtersContainerComponent: React.ComponentType<{}>;
-    filtersItemComponent: React.ComponentType<{}>;
+    filtersItemComponent: React.ComponentType<Pick<FiltersItemComponentProps, Exclude<keyof FiltersItemComponentProps, FiltersItemComponentProvidedProps>>>;
     uncontrolledFilterSelectComponent: React.ComponentType<Pick<UncontrolledFilterSelectProps<D>, Exclude<keyof UncontrolledFilterSelectProps<D>, UncontrolledFilterSelectProvidedProps>>>;
     addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
-    removeFilterButtonComponent: React.ComponentType<RemoveFilterButtonProps>;
     removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
-    displayRemoveFilterButtonAt: { start: boolean, end: boolean };
 }
 
 export type UncontrolledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'uncontrolledFilterSelectComponent' | 'addFilterButtonComponent' | 'removeFilterButtonComponent' | 'removeAllButtonComponent';
@@ -80,14 +79,12 @@ export class UncontrolledFiltersSelect<D> extends React.PureComponent<Uncontroll
             <this.props.removeAllButtonComponent disabled={Object.keys(this.state.filters).length === 0} onClick={() => this.handleFilterRemoveAll()} />
             <this.props.filtersContainerComponent>
                 {Object.keys(this.state.filters).map((key) =>
-                    <this.props.filtersItemComponent key={key}>
-                        {this.props.displayRemoveFilterButtonAt.start && <this.props.removeFilterButtonComponent onClick={() => this.handleFilterRemove(key)} />}
+                    <this.props.filtersItemComponent key={key} onFilterRemove={() => this.handleFilterRemove(key)}>
                         <this.props.uncontrolledFilterSelectComponent
                             fields={this.props.fields}
                             defaultFilter={this.state.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
                         />
-                        {this.props.displayRemoveFilterButtonAt.end && <this.props.removeFilterButtonComponent onClick={() => this.handleFilterRemove(key)} />}
                     </this.props.filtersItemComponent>
                 )}
             </this.props.filtersContainerComponent>

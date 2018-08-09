@@ -188,7 +188,9 @@ const configurationBuilder = createConfigurationBuilder<Data>()
 //     order: 'descending'
 // })
 
-const filtersConfiguration = filtersConfigurationBuilder<Data>().build();
+const filtersConfiguration = filtersConfigurationBuilder<Data>()
+    .withFiltersItemComponent(FiltersItemComponent)
+    .build();
 
 const fields: Fields<Data> = {
     method: { type: 'string', label: 'Method', apply: (operator, data) => data.filter((row) => applyOperator(operator, row.method)) },
@@ -304,7 +306,6 @@ export class App extends React.Component<{}, AppState> {
             fields={fields}
             defaultFilters={this.state.filters}
             onFiltersChange={(filters) => this.setState({ filters })}
-            displayRemoveFilterButtonAt={{ start: true, end: false }}
         />;
     }
 
