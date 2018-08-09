@@ -14,6 +14,9 @@ import { OperatorBooleanSelect, OperatorBooleanSelectProps } from './operator-co
 import { OperatorDateSelect, OperatorDateSelectProps } from './operator-components/date/operator-date-select';
 import { OperatorNumberSelect, OperatorNumberSelectProps } from './operator-components/number/operator-number-select';
 import { OperatorStringSelect, OperatorStringSelectProps } from './operator-components/string/operator-string-select';
+import { AddFilterButton, AddFilterButtonProps } from './button-components/add-filter';
+import { RemoveFilterButton, RemoveFilterButtonProps } from './button-components/remove-filter';
+import { RemoveAllButton, RemoveAllButtonProps } from './button-components/remove-all';
 
 export interface Configuration<D> {
     uncontrolledFiltersSelectComponent: React.ComponentType<Pick<UncontrolledFiltersSelectProps<D>, Exclude<keyof UncontrolledFiltersSelectProps<D>, UncontrolledFiltersSelectProvidedProps>>>;
@@ -31,12 +34,18 @@ export interface ConfigurationBuilder<D> {
     dateSelectComponent: React.ComponentType<OperatorDateSelectProps>;
     numberSelectComponent: React.ComponentType<OperatorNumberSelectProps>;
     stringSelectComponent: React.ComponentType<OperatorStringSelectProps>;
+    addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
+    removeFilterButtonComponent: React.ComponentType<RemoveFilterButtonProps>;
+    removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
     withFiltersContainerComponent(filtersContainerComponent: React.ComponentType<{}>): this;
     withFiltersItemComponent(filtersItemComponent: React.ComponentType<{}>): this;
     withBooleanInputComponent(booleanInputComponent: React.ComponentType<BooleanInputProps>): this;
     withDateInputComponent(dateInputComponent: React.ComponentType<DateInputProps>): this;
     withNumberInputComponent(numberInputComponent: React.ComponentType<NumberInputProps>): this;
     withStringInputComponent(stringInputComponent: React.ComponentType<StringInputProps>): this;
+    withAddFilterButtonComponent(addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>): this;
+    withRemoveFilterButtonComponent(removeFilterButtonComponent: React.ComponentType<RemoveFilterButtonProps>): this;
+    withRemoveAllButtonComponent(removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>): this;
     build(): Configuration<D>;
 }
 
@@ -52,6 +61,9 @@ export function configurationBuilder<D>(): ConfigurationBuilder<D> {
         dateSelectComponent: OperatorDateSelect,
         numberSelectComponent: OperatorNumberSelect,
         stringSelectComponent: OperatorStringSelect,
+        addFilterButtonComponent: AddFilterButton,
+        removeFilterButtonComponent: RemoveFilterButton,
+        removeAllButtonComponent: RemoveAllButton,
         withFiltersContainerComponent(filtersContainerComponent: React.ComponentType<{}>) {
             builder.filtersContainerComponent = filtersContainerComponent;
             return this;
@@ -74,6 +86,18 @@ export function configurationBuilder<D>(): ConfigurationBuilder<D> {
         },
         withStringInputComponent(stringInputComponent: React.ComponentType<StringInputProps>) {
             builder.stringInputComponent = stringInputComponent;
+            return this;
+        },
+        withAddFilterButtonComponent(addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>) {
+            builder.addFilterButtonComponent = addFilterButtonComponent;
+            return this;
+        },
+        withRemoveFilterButtonComponent(removeFilterButtonComponent: React.ComponentType<RemoveFilterButtonProps>) {
+            builder.removeFilterButtonComponent = removeFilterButtonComponent;
+            return this;
+        },
+        withRemoveAllButtonComponent(removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>) {
+            builder.removeAllButtonComponent = removeAllButtonComponent;
             return this;
         },
         build() {
@@ -101,11 +125,17 @@ export function configurationBuilder<D>(): ConfigurationBuilder<D> {
                 controlledFiltersSelectComponent: provideProps(controlledFiltersSelectComponent, {
                     filtersContainerComponent: builder.filtersContainerComponent,
                     filtersItemComponent: builder.filtersItemComponent,
+                    addFilterButtonComponent: builder.addFilterButtonComponent,
+                    removeFilterButtonComponent: builder.removeFilterButtonComponent,
+                    removeAllButtonComponent: builder.removeAllButtonComponent,
                     controlledFilterSelectComponent: provideProps(controlledFilterSelectComponent, selectComponents)
                 }),
                 uncontrolledFiltersSelectComponent: provideProps(uncontrolledFiltersSelectComponent, {
                     filtersContainerComponent: builder.filtersContainerComponent,
                     filtersItemComponent: builder.filtersItemComponent,
+                    addFilterButtonComponent: builder.addFilterButtonComponent,
+                    removeFilterButtonComponent: builder.removeFilterButtonComponent,
+                    removeAllButtonComponent: builder.removeAllButtonComponent,
                     uncontrolledFilterSelectComponent: provideProps(uncontrolledFilterSelectComponent, selectComponents)
                 })
             };
