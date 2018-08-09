@@ -10,9 +10,8 @@ export type FiltersItemComponentProvidedProps = 'removeFilterButtonComponent';
 
 export class FiltersItemComponent extends React.Component<FiltersItemComponentProps, never> {
     render() {
-        const { onFilterRemove, removeFilterButtonComponent, children } = this.props;
         return <li>
-            {children}
+            {this.props.children}
             <this.props.removeFilterButtonComponent onClick={this.props.onFilterRemove} />
         </li>;
     }

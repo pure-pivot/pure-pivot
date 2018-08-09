@@ -2,7 +2,6 @@ import * as React from 'react';
 import { ControlledFilterSelectProps, ControlledFilterSelectProvidedProps } from './controlled-filter-select';
 import { Fields, Filter } from './model';
 import { AddFilterButtonProps } from './button-components/add-filter';
-import { RemoveFilterButtonProps } from './button-components/remove-filter';
 import { RemoveAllButtonProps } from './button-components/remove-all';
 import { FiltersItemComponentProps, FiltersItemComponentProvidedProps } from './filters-item-component';
 
