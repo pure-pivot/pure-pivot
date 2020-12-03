@@ -24,6 +24,10 @@ export interface Configuration<D> {
 }
 
 export interface ConfigurationBuilder<D> {
+    controlledFilterSelectComponent: React.ComponentType<ControlledFilterSelectProps<D>>;
+    controlledFiltersSelectComponent: React.ComponentType<ControlledFiltersSelectProps<D>>;
+    uncontrolledFilterSelectComponent: React.ComponentType<UncontrolledFilterSelectProps<D>>;
+    uncontrolledFiltersSelectComponent: React.ComponentType<UncontrolledFiltersSelectProps<D>>;
     filtersContainerComponent: React.ComponentType<{}>;
     filtersItemComponent: React.ComponentType<FiltersItemComponentProps>;
     booleanInputComponent: React.ComponentType<BooleanInputProps>;
@@ -51,6 +55,10 @@ export interface ConfigurationBuilder<D> {
 
 export function configurationBuilder<D>(): ConfigurationBuilder<D> {
     const builder: ConfigurationBuilder<D> = {
+        controlledFilterSelectComponent: ControlledFilterSelect,
+        controlledFiltersSelectComponent: ControlledFiltersSelect,
+        uncontrolledFilterSelectComponent: UncontrolledFilterSelect,
+        uncontrolledFiltersSelectComponent: UncontrolledFiltersSelect,
         filtersContainerComponent: FiltersContainerComponent,
         filtersItemComponent: FiltersItemComponent,
         booleanInputComponent: BooleanInput,
@@ -101,11 +109,6 @@ export function configurationBuilder<D>(): ConfigurationBuilder<D> {
             return this;
         },
         build() {
-            const controlledFilterSelectComponent: React.ComponentType<ControlledFilterSelectProps<D>> = ControlledFilterSelect;
-            const controlledFiltersSelectComponent: React.ComponentType<ControlledFiltersSelectProps<D>> = ControlledFiltersSelect;
-            const uncontrolledFilterSelectComponent: React.ComponentType<UncontrolledFilterSelectProps<D>> = UncontrolledFilterSelect;
-            const uncontrolledFiltersSelectComponent: React.ComponentType<UncontrolledFiltersSelectProps<D>> = UncontrolledFiltersSelect;
-
             const selectComponents = {
                 booleanSelectComponent: provideProps(builder.booleanSelectComponent, {
                     booleanInputComponent: builder.booleanInputComponent
@@ -122,23 +125,23 @@ export function configurationBuilder<D>(): ConfigurationBuilder<D> {
             };
 
             return {
-                controlledFiltersSelectComponent: provideProps(controlledFiltersSelectComponent, {
+                controlledFiltersSelectComponent: provideProps(builder.controlledFiltersSelectComponent, {
                     filtersContainerComponent: builder.filtersContainerComponent,
                     filtersItemComponent: provideProps(builder.filtersItemComponent, {
                         removeFilterButtonComponent: builder.removeFilterButtonComponent
                     }),
                     addFilterButtonComponent: builder.addFilterButtonComponent,
                     removeAllButtonComponent: builder.removeAllButtonComponent,
-                    controlledFilterSelectComponent: provideProps(controlledFilterSelectComponent, selectComponents)
+                    controlledFilterSelectComponent: provideProps(builder.controlledFilterSelectComponent, selectComponents)
                 }),
-                uncontrolledFiltersSelectComponent: provideProps(uncontrolledFiltersSelectComponent, {
+                uncontrolledFiltersSelectComponent: provideProps(builder.uncontrolledFiltersSelectComponent, {
                     filtersContainerComponent: builder.filtersContainerComponent,
                     filtersItemComponent: provideProps(builder.filtersItemComponent, {
                         removeFilterButtonComponent: builder.removeFilterButtonComponent
                     }),
                     addFilterButtonComponent: builder.addFilterButtonComponent,
                     removeAllButtonComponent: builder.removeAllButtonComponent,
-                    uncontrolledFilterSelectComponent: provideProps(uncontrolledFilterSelectComponent, selectComponents)
+                    uncontrolledFilterSelectComponent: provideProps(builder.uncontrolledFilterSelectComponent, selectComponents)
                 })
             };
         }
