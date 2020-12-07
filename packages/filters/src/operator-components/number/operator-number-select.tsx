@@ -12,18 +12,20 @@ const options: Option<NumberOperators['type']>[] = [
     { value: 'is-not-empty', label: 'is not empty' }
 ];
 
-export interface OperatorNumberSelectProps {
+export interface OperatorNumberSelectProps<C> {
+    context: C;
     operator: NumberOperators;
     onOperatorChange: (operator: NumberOperators) => void;
-    numberInputComponent: React.ComponentType<NumberInputProps>;
+    numberInputComponent: React.ComponentType<NumberInputProps<C>>;
 }
 
 export type OperatorNumberSelectProvidedProps = 'numberInputComponent';
 
-export class OperatorNumberSelect extends React.PureComponent<OperatorNumberSelectProps, never> {
+export class OperatorNumberSelect<C> extends React.PureComponent<OperatorNumberSelectProps<C>, never> {
     renderInputComponent(): any {
         if (this.props.operator.type !== 'is-empty' && this.props.operator.type !== 'is-not-empty') {
             return <this.props.numberInputComponent
+                context={this.props.context}
                 operator={this.props.operator}
                 onOperatorChange={this.props.onOperatorChange}
             />;

@@ -7,14 +7,15 @@ import { OperatorBooleanSelectProps, OperatorBooleanSelectProvidedProps } from '
 
 // TODO: this module can probably be replaced by a combination of controlled version + something like https://www.npmjs.com/package/uncontrollable
 
-export interface UncontrolledFilterSelectProps<D> {
+export interface UncontrolledFilterSelectProps<D, C> {
+    context: C;
     fields: Fields<D>;
     defaultFilter: Filter | null;
     onFilterChange: (filter: Filter) => void;
-    stringSelectComponent: React.ComponentType<Pick<OperatorStringSelectProps, Exclude<keyof OperatorStringSelectProps, OperatorStringSelectProvidedProps>>>;
-    numberSelectComponent: React.ComponentType<Pick<OperatorNumberSelectProps, Exclude<keyof OperatorNumberSelectProps, OperatorNumberSelectProvidedProps>>>;
-    dateSelectComponent: React.ComponentType<Pick<OperatorDateSelectProps, Exclude<keyof OperatorDateSelectProps, OperatorDateSelectProvidedProps>>>;
-    booleanSelectComponent: React.ComponentType<Pick<OperatorBooleanSelectProps, Exclude<keyof OperatorBooleanSelectProps, OperatorBooleanSelectProvidedProps>>>;
+    stringSelectComponent: React.ComponentType<Pick<OperatorStringSelectProps<C>, Exclude<keyof OperatorStringSelectProps<C>, OperatorStringSelectProvidedProps>>>;
+    numberSelectComponent: React.ComponentType<Pick<OperatorNumberSelectProps<C>, Exclude<keyof OperatorNumberSelectProps<C>, OperatorNumberSelectProvidedProps>>>;
+    dateSelectComponent: React.ComponentType<Pick<OperatorDateSelectProps<C>, Exclude<keyof OperatorDateSelectProps<C>, OperatorDateSelectProvidedProps>>>;
+    booleanSelectComponent: React.ComponentType<Pick<OperatorBooleanSelectProps<C>, Exclude<keyof OperatorBooleanSelectProps<C>, OperatorBooleanSelectProvidedProps>>>;
 }
 
 export interface UncontrolledFilterSelectState {
@@ -24,7 +25,7 @@ export interface UncontrolledFilterSelectState {
 
 export type UncontrolledFilterSelectProvidedProps = 'stringSelectComponent' | 'numberSelectComponent' | 'dateSelectComponent' | 'booleanSelectComponent';
 
-export class UncontrolledFilterSelect<D> extends React.PureComponent<UncontrolledFilterSelectProps<D>, UncontrolledFilterSelectState> {
+export class UncontrolledFilterSelect<D, C> extends React.PureComponent<UncontrolledFilterSelectProps<D, C>, UncontrolledFilterSelectState> {
     state: UncontrolledFilterSelectState = {
         id: this.props.defaultFilter && this.props.defaultFilter.id,
         operator: this.props.defaultFilter && this.props.defaultFilter.operator
@@ -49,6 +50,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
     renderStringSelect(operator: Operator) {
         if (isStringOperators(operator)) {
             return <this.props.stringSelectComponent
+                context={this.props.context}
                 operator={operator}
                 onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;
@@ -58,6 +60,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
     renderNumberSelect(operator: Operator) {
         if (isNumberOperators(operator)) {
             return <this.props.numberSelectComponent
+                context={this.props.context}
                 operator={operator}
                 onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;
@@ -67,6 +70,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
     renderDateSelect(operator: Operator) {
         if (isDateOperators(operator)) {
             return <this.props.dateSelectComponent
+                context={this.props.context}
                 operator={operator}
                 onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;
@@ -76,6 +80,7 @@ export class UncontrolledFilterSelect<D> extends React.PureComponent<Uncontrolle
     renderBooleanSelect(operator: Operator) {
         if (isBooleanOperators(operator)) {
             return <this.props.booleanSelectComponent
+                context={this.props.context}
                 operator={operator}
                 onOperatorChange={(operator) => this.handleOperatorChange(operator)}
             />;

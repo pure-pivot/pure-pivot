@@ -5,22 +5,24 @@ import { OperatorNumberSelectProps, OperatorNumberSelectProvidedProps } from './
 import { OperatorDateSelectProps, OperatorDateSelectProvidedProps } from './operator-components/date/operator-date-select';
 import { OperatorBooleanSelectProps, OperatorBooleanSelectProvidedProps } from './operator-components/boolean/operator-boolean-select';
 
-export interface ControlledFilterSelectProps<D> {
+export interface ControlledFilterSelectProps<D, C> {
+    context: C;
     fields: Fields<D>;
     filter: Filter | null;
     onFilterChange: (filter: Filter) => void;
-    stringSelectComponent: React.ComponentType<Pick<OperatorStringSelectProps, Exclude<keyof OperatorStringSelectProps, OperatorStringSelectProvidedProps>>>;
-    numberSelectComponent: React.ComponentType<Pick<OperatorNumberSelectProps, Exclude<keyof OperatorNumberSelectProps, OperatorNumberSelectProvidedProps>>>;
-    dateSelectComponent: React.ComponentType<Pick<OperatorDateSelectProps, Exclude<keyof OperatorDateSelectProps, OperatorDateSelectProvidedProps>>>;
-    booleanSelectComponent: React.ComponentType<Pick<OperatorBooleanSelectProps, Exclude<keyof OperatorBooleanSelectProps, OperatorBooleanSelectProvidedProps>>>;
+    stringSelectComponent: React.ComponentType<Pick<OperatorStringSelectProps<C>, Exclude<keyof OperatorStringSelectProps<C>, OperatorStringSelectProvidedProps>>>;
+    numberSelectComponent: React.ComponentType<Pick<OperatorNumberSelectProps<C>, Exclude<keyof OperatorNumberSelectProps<C>, OperatorNumberSelectProvidedProps>>>;
+    dateSelectComponent: React.ComponentType<Pick<OperatorDateSelectProps<C>, Exclude<keyof OperatorDateSelectProps<C>, OperatorDateSelectProvidedProps>>>;
+    booleanSelectComponent: React.ComponentType<Pick<OperatorBooleanSelectProps<C>, Exclude<keyof OperatorBooleanSelectProps<C>, OperatorBooleanSelectProvidedProps>>>;
 }
 
 export type ControlledFilterSelectProvidedProps = 'stringSelectComponent' | 'numberSelectComponent' | 'dateSelectComponent' | 'booleanSelectComponent';
 
-export class ControlledFilterSelect<D> extends React.PureComponent<ControlledFilterSelectProps<D>, never> {
+export class ControlledFilterSelect<D, C> extends React.PureComponent<ControlledFilterSelectProps<D, C>, never> {
     renderStringSelect(filter: Filter) {
         if (isStringOperators(filter.operator)) {
             return <this.props.stringSelectComponent
+                context={this.props.context}
                 operator={filter.operator}
                 onOperatorChange={(operator) => this.props.onFilterChange({ ...filter, operator })}
             />;
@@ -30,6 +32,7 @@ export class ControlledFilterSelect<D> extends React.PureComponent<ControlledFil
     renderNumberSelect(filter: Filter) {
         if (isNumberOperators(filter.operator)) {
             return <this.props.numberSelectComponent
+                context={this.props.context}
                 operator={filter.operator}
                 onOperatorChange={(operator) => this.props.onFilterChange({ ...filter, operator })}
             />;
@@ -39,6 +42,7 @@ export class ControlledFilterSelect<D> extends React.PureComponent<ControlledFil
     renderDateSelect(filter: Filter) {
         if (isDateOperators(filter.operator)) {
             return <this.props.dateSelectComponent
+                context={this.props.context}
                 operator={filter.operator}
                 onOperatorChange={(operator) => this.props.onFilterChange({ ...filter, operator })}
             />;
@@ -48,6 +52,7 @@ export class ControlledFilterSelect<D> extends React.PureComponent<ControlledFil
     renderBooleanSelect(filter: Filter) {
         if (isBooleanOperators(filter.operator)) {
             return <this.props.booleanSelectComponent
+                context={this.props.context}
                 operator={filter.operator}
                 onOperatorChange={(operator) => this.props.onFilterChange({ ...filter, operator })}
             />;

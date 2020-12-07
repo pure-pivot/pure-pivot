@@ -11,13 +11,14 @@ export interface NullableFilters {
     [Key: string]: Filter | null;
 }
 
-export interface UncontrolledFiltersSelectProps<D> {
+export interface UncontrolledFiltersSelectProps<D, C> {
+    context: C;
     fields: Fields<D>;
     defaultFilters: Filters;
     onFiltersChange: (filters: Filters) => void;
     filtersContainerComponent: React.ComponentType<{}>;
     filtersItemComponent: React.ComponentType<Pick<FiltersItemComponentProps, Exclude<keyof FiltersItemComponentProps, FiltersItemComponentProvidedProps>>>;
-    uncontrolledFilterSelectComponent: React.ComponentType<Pick<UncontrolledFilterSelectProps<D>, Exclude<keyof UncontrolledFilterSelectProps<D>, UncontrolledFilterSelectProvidedProps>>>;
+    uncontrolledFilterSelectComponent: React.ComponentType<Pick<UncontrolledFilterSelectProps<D, C>, Exclude<keyof UncontrolledFilterSelectProps<D, C>, UncontrolledFilterSelectProvidedProps>>>;
     addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
     removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
 }
@@ -28,7 +29,7 @@ export interface UncontrolledFiltersSelectState {
     filters: NullableFilters;
 }
 
-export class UncontrolledFiltersSelect<D> extends React.PureComponent<UncontrolledFiltersSelectProps<D>, UncontrolledFiltersSelectState> {
+export class UncontrolledFiltersSelect<D, C> extends React.PureComponent<UncontrolledFiltersSelectProps<D, C>, UncontrolledFiltersSelectState> {
     counter: number = 0;
 
     state: UncontrolledFiltersSelectState = {
@@ -80,6 +81,7 @@ export class UncontrolledFiltersSelect<D> extends React.PureComponent<Uncontroll
                 {Object.keys(this.state.filters).map((key) =>
                     <this.props.filtersItemComponent key={key} onFilterRemove={() => this.handleFilterRemove(key)}>
                         <this.props.uncontrolledFilterSelectComponent
+                            context={this.props.context}
                             fields={this.props.fields}
                             defaultFilter={this.state.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}

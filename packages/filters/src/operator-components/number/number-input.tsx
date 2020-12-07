@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { NumberOperators } from '../../model';
 
-export interface NumberInputProps {
+export interface NumberInputProps<C> {
+    context: C;
     operator: NumberOperators;
     onOperatorChange: (operator: NumberOperators) => void;
 }
 
-export class NumberInput extends React.Component<NumberInputProps, never> {
+export class NumberInput<C> extends React.Component<NumberInputProps<C>, never> {
     render() {
         return <input
             type="number"

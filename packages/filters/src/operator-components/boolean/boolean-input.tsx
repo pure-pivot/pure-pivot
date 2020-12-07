@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { BooleanOperators } from '../../model';
 
-export interface BooleanInputProps {
+export interface BooleanInputProps<C> {
+    context: C;
     operator: BooleanOperators;
     onOperatorChange: (operator: BooleanOperators) => void;
 }
 
-export class BooleanInput extends React.Component<BooleanInputProps, never> {
+export class BooleanInput<C> extends React.Component<BooleanInputProps<C>, never> {
     render() {
         return <select
             value={this.props.operator.value ? 'true' : 'false'}

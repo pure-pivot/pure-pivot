@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { StringOperators } from '../../model';
 
-export interface StringInputProps {
+export interface StringInputProps<C> {
+    context: C;
     operator: StringOperators;
     onOperatorChange: (operator: StringOperators) => void;
 }
 
-export class StringInput extends React.Component<StringInputProps, never> {
+export class StringInput<C> extends React.Component<StringInputProps<C>, never> {
     render() {
         return <input
             type="text"

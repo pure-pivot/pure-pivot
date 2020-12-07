@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { DateOperators } from '../../model';
 
-export interface DateInputProps {
+export interface DateInputProps<C> {
+    context: C;
     operator: DateOperators;
     onOperatorChange: (operator: DateOperators) => void;
 }
 
-export class DateInput extends React.Component<DateInputProps, never> {
+export class DateInput<C> extends React.Component<DateInputProps<C>, never> {
     render() {
         const offset = new Date().getTimezoneOffset() * 60 * 1000;
 

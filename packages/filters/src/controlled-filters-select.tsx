@@ -9,20 +9,21 @@ export interface NullableFilters {
     [Key: string]: Filter | null;
 }
 
-export interface ControlledFiltersSelectProps<D> {
+export interface ControlledFiltersSelectProps<D, C> {
+    context: C;
     fields: Fields<D>;
     filters: NullableFilters;
     onFiltersChange: (filters: NullableFilters) => void;
     filtersContainerComponent: React.ComponentType<{}>;
     filtersItemComponent: React.ComponentType<Pick<FiltersItemComponentProps, Exclude<keyof FiltersItemComponentProps, FiltersItemComponentProvidedProps>>>;
-    controlledFilterSelectComponent: React.ComponentType<Pick<ControlledFilterSelectProps<D>, Exclude<keyof ControlledFilterSelectProps<D>, ControlledFilterSelectProvidedProps>>>;
+    controlledFilterSelectComponent: React.ComponentType<Pick<ControlledFilterSelectProps<D, C>, Exclude<keyof ControlledFilterSelectProps<D, C>, ControlledFilterSelectProvidedProps>>>;
     addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
     removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
 }
 
 export type ControlledFiltersSelectProvidedProps = 'filtersContainerComponent' | 'filtersItemComponent' | 'controlledFilterSelectComponent' | 'addFilterButtonComponent' | 'removeFilterButtonComponent' | 'removeAllButtonComponent';
 
-export class ControlledFiltersSelect<D> extends React.PureComponent<ControlledFiltersSelectProps<D>, never> {
+export class ControlledFiltersSelect<D, C> extends React.PureComponent<ControlledFiltersSelectProps<D, C>, never> {
     counter: number = 0;
 
     handleAdd() {
@@ -56,6 +57,7 @@ export class ControlledFiltersSelect<D> extends React.PureComponent<ControlledFi
                 {Object.keys(this.props.filters).map((key) =>
                     <this.props.filtersItemComponent key={key} onFilterRemove={() => this.handleFilterRemove(key)}>
                         <this.props.controlledFilterSelectComponent
+                            context={this.props.context}
                             fields={this.props.fields}
                             filter={this.props.filters[key]}
                             onFilterChange={(filter) => this.handleFilterChange(key, filter)}
