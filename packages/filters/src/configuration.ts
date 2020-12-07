@@ -41,6 +41,10 @@ export interface ConfigurationBuilder<D> {
     addFilterButtonComponent: React.ComponentType<AddFilterButtonProps>;
     removeFilterButtonComponent: React.ComponentType<RemoveFilterButtonProps>;
     removeAllButtonComponent: React.ComponentType<RemoveAllButtonProps>;
+    withControlledFilterSelectComponent(controlledFilterSelectComponent: React.ComponentType<ControlledFilterSelectProps<D>>): this;
+    withControlledFiltersSelectComponent(controlledFiltersSelectComponent: React.ComponentType<ControlledFiltersSelectProps<D>>): this;
+    withUncontrolledFilterSelectComponent(uncontrolledFilterSelectComponent: React.ComponentType<UncontrolledFilterSelectProps<D>>): this;
+    withUncontrolledFiltersSelectComponent(uncontrolledFiltersSelectComponent: React.ComponentType<UncontrolledFiltersSelectProps<D>>): this;
     withFiltersContainerComponent(filtersContainerComponent: React.ComponentType<{}>): this;
     withFiltersItemComponent(filtersItemComponent: React.ComponentType<FiltersItemComponentProps>): this;
     withBooleanInputComponent(booleanInputComponent: React.ComponentType<BooleanInputProps>): this;
@@ -72,6 +76,22 @@ export function configurationBuilder<D>(): ConfigurationBuilder<D> {
         addFilterButtonComponent: AddFilterButton,
         removeFilterButtonComponent: RemoveFilterButton,
         removeAllButtonComponent: RemoveAllButton,
+        withControlledFilterSelectComponent(controlledFilterSelectComponent: React.ComponentType<ControlledFilterSelectProps<D>>) {
+            builder.controlledFilterSelectComponent = controlledFilterSelectComponent;
+            return this;
+        },
+        withControlledFiltersSelectComponent(controlledFiltersSelectComponent: React.ComponentType<ControlledFiltersSelectProps<D>>) {
+            builder.controlledFiltersSelectComponent = controlledFiltersSelectComponent;
+            return this;
+        },
+        withUncontrolledFilterSelectComponent(uncontrolledFilterSelectComponent: React.ComponentType<UncontrolledFilterSelectProps<D>>) {
+            builder.uncontrolledFilterSelectComponent = uncontrolledFilterSelectComponent;
+            return this;
+        },
+        withUncontrolledFiltersSelectComponent(uncontrolledFiltersSelectComponent: React.ComponentType<UncontrolledFiltersSelectProps<D>>) {
+            builder.uncontrolledFiltersSelectComponent = uncontrolledFiltersSelectComponent;
+            return this;
+        },
         withFiltersContainerComponent(filtersContainerComponent: React.ComponentType<{}>) {
             builder.filtersContainerComponent = filtersContainerComponent;
             return this;
